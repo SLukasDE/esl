@@ -9,7 +9,7 @@ With ESL I try to define some standard classes that you can use directy for some
 
 I try to follow two goals with this framework.
 1. The usage of this classes MUST BE simple, simple, simple. Almost everything should be self-explanatory.
-2. ESL does NOT contain an specific implementation for this high level classes. It's just something like an interface definition and everybody can make it's own binding for this framework.
+2. ESL does NOT contain any specific implementation for this high level classes. It's just something like an interface definition and everybody can make it's own binding for this framework.
 
 Implementations are bindings to this framework. As result you can use ESL directly and you link some specific implementation to your code, e.g. one for HTTP client communication and another one for logging if you need these two features. Later if you are not satisfied with one of these implementaion then you can use another implementation without changing your code.
 You just need to know how to use ESL classes if you want to use this framework. You don't need to know how the implementation works.
