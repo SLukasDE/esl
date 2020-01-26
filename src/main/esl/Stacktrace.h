@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,46 +28,77 @@ SOFTWARE.
 #endif
 
 #include <esl/stacktrace/Interface.h>
-#include <esl/logging/Logger.h>
-#include <esl/logging/Level.h>
-#include <boost/exception/all.hpp>
+#include <esl/logging/Location.h>
+#include <esl/logging/StreamReal.h>
+#include <esl/logging/StreamEmpty.h>
+//#include <boost/exception/all.hpp>
 #include <ostream>
 #include <memory>
 
 namespace esl {
 
 class Stacktrace {
-//	static logging::Logger logger;
 public:
 	Stacktrace();
 	Stacktrace(const esl::Stacktrace&);
 	~Stacktrace() = default;
 
-	static void allowDummy();
-
-	void dump(std::ostream& oStream) const;
-//	void dump(logging::Level level = logging::Level::ERROR) const;
-	void dump(logging::Logger& logger, logging::Level level = logging::Level::ERROR) const;
+	void dump(std::ostream& stream) const;
+	void dump(esl::logging::StreamReal& stream, esl::logging::Location location = esl::logging::Location{}) const;
+	inline void dump(esl::logging::StreamEmpty& stream, esl::logging::Location location = esl::logging::Location{}) const { };
 
 private:
 	std::unique_ptr<stacktrace::Interface::Stacktrace> stacktrace;
 };
 
+template <class T>
+class
+StacktraceInjector: public T /*, public std::exception */ {
+public:
+    explicit StacktraceInjector(T const & x, const Stacktrace& aStacktrace)
+    : T(x),
+	  stacktrace(aStacktrace)
+    { }
+
+    ~StacktraceInjector()
+    { }
+
+    static inline const Stacktrace* getStacktrace(const T& t) {
+    	const StacktraceInjector* stacktraceInjector = dynamic_cast<const StacktraceInjector *>(&t);
+        if(stacktraceInjector) {
+            return &stacktraceInjector->stacktrace;
+        }
+        else {
+            return nullptr;
+        }
+    }
+
+private:
+    Stacktrace stacktrace;
+};
+
+/*
 typedef boost::error_info<esl::Stacktrace, esl::Stacktrace> StacktraceType;
 
 template <class E>
 auto addStacktrace(const E& e) -> decltype(boost::enable_error_info(e)) {
     return boost::enable_error_info(e) << esl::StacktraceType(esl::Stacktrace());
 }
-/*
-template <class E>
-auto getStacktrace(const E& e) -> decltype(boost::get_error_info<esl::StacktraceType>(const_cast<E&>(e))) {
-	return boost::get_error_info<esl::StacktraceType>(const_cast<E&>(e));
-}
-*/
+
 template <class E>
 esl::Stacktrace* getStacktrace(const E& e) {
 	return boost::get_error_info<esl::StacktraceType>(const_cast<E&>(e));
+}
+*/
+
+template <class E>
+StacktraceInjector<E> addStacktrace(const E& e) {
+    return StacktraceInjector<E>(e, esl::Stacktrace());
+}
+
+template <class E>
+const esl::Stacktrace* getStacktrace(const E& e) {
+	return StacktraceInjector<E>::getStacktrace(e);
 }
 
 template<typename F, typename... Args>
@@ -76,6 +107,9 @@ auto callStacktrace(F f, Args... args) -> decltype(f(args...)) {
 		return f(args...);
     }
 	catch (std::exception& e) {
+		if(getStacktrace(e)) {
+			throw;
+		}
 		throw esl::addStacktrace(e);
     }
     catch (...) {

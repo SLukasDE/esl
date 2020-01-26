@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,39 +21,29 @@ SOFTWARE.
 */
 
 #include <esl/logging/StreamReal.h>
-//#include <esl/logging/Logger.h>
-#include <esl/logging/Id.h>
+#include <esl/logging/Location.h>
 
 #include <esl/logging/Interface.h>
-#include <esl/bootstrap/Interface.h>
 #include <esl/Module.h>
-#include <esl/Stacktrace.h>
 
 namespace esl {
 namespace logging {
-
-namespace {
-
-std::pair<std::reference_wrapper<std::ostream>, void*> addWriter(Id id, bool** enabled) {
-	esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion());
-	const Interface* interface = static_cast<const Interface*>(esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion()));
-
-	if(interface == nullptr) {
-		throw esl::addStacktrace(std::runtime_error("no implementation available for \"esl-logging\""));
-	}
-
-	return interface->addWriter(id, enabled);
-}
-
-}
 
 StreamReal::StreamReal(const char* typeName, Level ll)
 : typeName(typeName),
   level(ll)
 { }
 
-StreamWriter StreamReal::operator()(void* object) {
+StreamWriter StreamReal::operator()(const void* object) {
     return StreamWriter(getStreamWriter(object, nullptr, nullptr, 0));
+}
+
+StreamWriter StreamReal::operator()(const char* function, const char* file, unsigned int lineNo) {
+    return StreamWriter(getStreamWriter(nullptr, function, file, lineNo));
+}
+
+StreamWriter StreamReal::operator()(const void* object, const char* function, const char* file, unsigned int lineNo) {
+    return StreamWriter(getStreamWriter(object, function, file, lineNo));
 }
 
 StreamWriter StreamReal::operator<<(std::ostream& (*pf)(std::ostream&)) {
@@ -62,18 +52,28 @@ StreamWriter StreamReal::operator<<(std::ostream& (*pf)(std::ostream&)) {
     return streamWriter;
 }
 
-StreamWriter StreamReal::operator()(const char* function, const char* file, unsigned int lineNo) {
-    return StreamWriter(getStreamWriter(nullptr, function, file, lineNo));
+bool StreamReal::isEnabled() const {
+	const Interface* interface = esl::getModule().getInterfacePointer<Interface>();
+
+	if(interface == nullptr) {
+		return false;
+	}
+	if(enabled == nullptr) {
+		enabled = &interface->isEnabled(typeName, level);
+	}
+
+	return *enabled;
 }
 
-StreamWriter StreamReal::operator()(void* object, const char* function, const char* file, unsigned int lineNo) {
-    return StreamWriter(getStreamWriter(object, function, file, lineNo));
-}
+StreamWriter StreamReal::getStreamWriter(const void* object, const char* function, const char* file, unsigned int lineNo) {
+	Location location(level, object, typeName, function, file, lineNo, std::this_thread::get_id());
+	const Interface* interface = esl::getModule().getInterfacePointer<Interface>();
 
-StreamWriter StreamReal::getStreamWriter(void* object, const char* function, const char* file, unsigned int lineNo) {
-	Id id(level, object, typeName, function, file, lineNo, std::this_thread::get_id());
-	std::pair<std::ostream&, void*> oStreamAndData = addWriter(id, &enabled);
-	return StreamWriter(id, oStreamAndData.first, oStreamAndData.second);
+	if(interface) {
+		std::pair<std::ostream&, void*> oStreamAndData = interface->addWriter(location, &enabled);
+		return StreamWriter(location, &oStreamAndData.first, oStreamAndData.second);
+	}
+	return StreamWriter(location, nullptr, nullptr);
 }
 
 } /* namespace logging */

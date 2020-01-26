@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,7 @@ namespace appender {
 
 MemBuffer::MemBuffer(std::size_t maxRows, std::size_t maxColumns)
 : Appender(),
-  ids(maxRows+1),
+  locations(maxRows+1),
   maxRows(maxRows+1),
   maxColumns(maxColumns)
 {
@@ -45,24 +45,24 @@ MemBuffer::MemBuffer(std::size_t maxRows, std::size_t maxColumns)
 MemBuffer::~MemBuffer() {
 }
 
-std::vector<std::tuple<Id, std::string>> MemBuffer::getBuffer() const {
-	std::vector<std::tuple<Id, std::string>> rv;
+std::vector<std::tuple<Location, std::string>> MemBuffer::getBuffer() const {
+	std::vector<std::tuple<Location, std::string>> rv;
 
 	if(maxColumns == 0) {
 		for(std::size_t tmpIdxCons = rowConsumer; tmpIdxCons != rowProducer; tmpIdxCons = (tmpIdxCons + 1) % maxRows) {
-	    	rv.push_back(std::make_tuple(ids[tmpIdxCons], lines[tmpIdxCons]));
+	    	rv.push_back(std::make_tuple(locations[tmpIdxCons], lines[tmpIdxCons]));
 	    }
 	}
 	else {
 		for(std::size_t tmpIdxCons = rowConsumer; tmpIdxCons != rowProducer; tmpIdxCons = (tmpIdxCons + 1) % maxRows) {
-	    	rv.push_back(std::make_tuple(ids[tmpIdxCons], std::string(&rows[tmpIdxCons][0])));
+	    	rv.push_back(std::make_tuple(locations[tmpIdxCons], std::string(&rows[tmpIdxCons][0])));
 	    }
 	}
 
 	return rv;
 }
 
-void MemBuffer::flushNewLine(const Id& id, bool enabled) {
+void MemBuffer::flushNewLine(const Location& location, bool enabled) {
 	switch(getRecordLevel()) {
 	case RecordLevel::OFF:
 		return;
@@ -90,7 +90,7 @@ void MemBuffer::flushNewLine(const Id& id, bool enabled) {
 	}
 }
 
-void MemBuffer::write(const Id& id, bool enabled, const char* str, std::size_t len) {
+void MemBuffer::write(const Location& location, bool enabled, const char* str, std::size_t len) {
 	switch(getRecordLevel()) {
 	case RecordLevel::OFF:
 		return;
@@ -106,7 +106,7 @@ void MemBuffer::write(const Id& id, bool enabled, const char* str, std::size_t l
     while(len > 0) {
         bool lineWritten = false;
 
-        ids[rowProducer] = id;
+        locations[rowProducer] = location;
 
         for(std::size_t i = 0; i < len; ++i) {
             if(str[i] != '\n') {

@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,10 +24,9 @@ SOFTWARE.
 #include <esl/logging/Level.h>
 
 #include <esl/logging/Interface.h>
-#include <esl/bootstrap/Interface.h>
 #include <esl/Module.h>
-#include <esl/Stacktrace.h>
 
+#include <functional>
 #include <time.h>
 #include <ctime>
 
@@ -38,14 +37,8 @@ namespace logging {
 namespace {
 
 unsigned int getLoggerThreadNo(std::thread::id threadId) {
-	esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion());
-	const Interface* interface = static_cast<const Interface*>(esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion()));
-
-	if(interface == nullptr) {
-		throw esl::addStacktrace(std::runtime_error("no implementation available for \"esl-logging\""));
-	}
-
-	return interface->getThreadNo(threadId);
+	const Interface* interface = esl::getModule().getInterfacePointer<Interface>();
+	return interface ? interface->getThreadNo(threadId) : static_cast<unsigned int>(std::hash<std::thread::id>{}(threadId));
 }
 
 std::string formatStrToSize(std::string str, bool spacesAtLeftSide = false, const std::size_t strSize = 50) {
@@ -113,7 +106,7 @@ std::string formatThreadNo(unsigned int threadNo) {
 	return formatStrToSize(std::to_string(threadNo),true, 3);
 }
 
-std::string formatObject(void* object) {
+std::string formatObject(const void* object) {
 	char buffer[20];
 	std::snprintf(buffer, 20, "%p", object);
 	return formatStrToSize(buffer, false, 18);
@@ -132,95 +125,95 @@ bool Layout::getShowTimestamp() const {
 	return showTimestamp;
 }
 
-void Layout::setShowTimestamp(bool showTimestamp) {
-	this->showTimestamp = showTimestamp;
+void Layout::setShowTimestamp(bool aShowTimestamp) {
+	showTimestamp = aShowTimestamp;
 }
 
 bool Layout::getShowLevel() const {
 	return showLevel;
 }
 
-void Layout::setShowLevel(bool showLevel) {
-	this->showLevel = showLevel;
+void Layout::setShowLevel(bool aShowLevel) {
+	showLevel = aShowLevel;
 }
 
 bool Layout::getShowTypeName() const {
 	return showTypeName;
 }
 
-void Layout::setShowTypeName(bool showTypeName) {
-	this->showTypeName = showTypeName;
+void Layout::setShowTypeName(bool aShowTypeName) {
+	showTypeName = aShowTypeName;
 }
 
 bool Layout::getShowAddress() const {
 	return showAddress;
 }
 
-void Layout::setShowAddress(bool showAddress) {
-	this->showAddress = showAddress;
+void Layout::setShowAddress(bool aShowAddress) {
+	showAddress = aShowAddress;
 }
 
 bool Layout::getShowFile() const {
 	return showFile;
 }
 
-void Layout::setShowFile(bool showFile) {
-	this->showFile = showFile;
+void Layout::setShowFile(bool aShowFile) {
+	showFile = aShowFile;
 }
 
 bool Layout::getShowFunction() const {
 	return showFunction;
 }
 
-void Layout::setShowFunction(bool showFunction) {
-	this->showFunction = showFunction;
+void Layout::setShowFunction(bool aShowFunction) {
+	showFunction = aShowFunction;
 }
 
 bool Layout::getShowLineNo() const {
 	return showLineNo;
 }
 
-void Layout::setShowLineNo(bool showLineNo) {
-	this->showLineNo = showLineNo;
+void Layout::setShowLineNo(bool aShowLineNo) {
+	showLineNo = aShowLineNo;
 }
 
 bool Layout::getShowThreadNo() const {
 	return showThreadNo;
 }
 
-void Layout::setShowThreadNo(bool showThreadNo) {
-	this->showThreadNo = showThreadNo;
+void Layout::setShowThreadNo(bool aShowThreadNo) {
+	showThreadNo = aShowThreadNo;
 }
 
-std::string Layout::makePrefix(const Id& id) {
+std::string Layout::makePrefix(const Location& location) {
 	std::string rv;
 
 	if(showTimestamp) {
-		rv += formatTimestamp(id.timestamp);
+		rv += formatTimestamp(location.timestamp);
 	}
 
 	if(showLevel) {
-		rv += formatLevel(id.level);
+		rv += formatLevel(location.level);
 	}
 
     rv += "(";
 	if(showTypeName) {
-	    rv += formatTypeName(id.typeName);
+	    rv += formatTypeName(location.typeName);
 	}
 	if(showThreadNo) {
-		rv += "-" + formatThreadNo(getLoggerThreadNo(id.threadId));
+		rv += "-" + formatThreadNo(getLoggerThreadNo(location.threadId));
 	}
 	if(showAddress) {
-		rv += " @ " + formatObject(id.object);
+		rv += " @ " + formatObject(location.object);
 	}
 	if(showFunction) {
-		rv += "|" + formatStrToSize(makeString(id.function), false, 20);
+		rv += "|" + formatStrToSize(makeString(location.function), false, 20);
 	}
 	if(showFile) {
-		rv += "|" + formatStrToSize(makeString(id.file), false, 20);
+		rv += "|" + formatStrToSize(makeString(location.file), false, 20);
 	}
 	if(showLineNo) {
-		rv += "|" + formatLineNo(id.line);
+		rv += "|" + formatLineNo(location.line);
 	}
 	rv += "): ";
 

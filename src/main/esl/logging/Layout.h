@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@ SOFTWARE.
 #ifndef ESL_LOGGING_LAYOUT_H_
 #define ESL_LOGGING_LAYOUT_H_
 
-#include <esl/logging/Id.h>
+#include <esl/logging/Location.h>
 #include <string>
 
 namespace esl {
@@ -58,7 +58,7 @@ public:
 	bool getShowThreadNo() const;
 	void setShowThreadNo(bool showThreadNo = true);
 
-	std::string makePrefix(const Id& id);
+	std::string makePrefix(const Location& location);
 
 private:
 	bool showTimestamp = true;

@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@ SOFTWARE.
 #define ESL_LOGGING_APPENDER_MEMBUFFER_H_
 
 #include <esl/logging/Appender.h>
-#include <esl/logging/Id.h>
+#include <esl/logging/Location.h>
 #include <vector>
 #include <string>
 #include <tuple>
@@ -39,11 +39,11 @@ public:
 	~MemBuffer();
 
 	/* method is (currently) NOT thread-safe */
-	std::vector<std::tuple<Id, std::string>> getBuffer() const;
+	std::vector<std::tuple<Location, std::string>> getBuffer() const;
 
 protected:
-	void flushNewLine(const Id& id, bool enabled) override;
-	void write(const Id& id, bool enabled, const char* ptr, std::size_t size) override;
+	void flushNewLine(const Location& location, bool enabled) override;
+	void write(const Location& location, bool enabled, const char* ptr, std::size_t size) override;
 
 private:
     using LineBuffer = std::vector<char>;
@@ -54,7 +54,7 @@ private:
     // this is the dynamic buffer, used if maxColumns=0
     std::vector<std::string> lines;
 
-    std::vector<Id> ids;
+    std::vector<Location> locations;
 
 	const std::size_t maxRows;
 	const std::size_t maxColumns;

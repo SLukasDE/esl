@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,9 @@ SOFTWARE.
 #define ESL_HTTP_SERVER_SOCKET_H_
 
 #include <esl/http/server/Interface.h>
-#include <esl/http/server/RequestHandlerFactory.h>
+#include <esl/http/server/RequestHandler.h>
+
+
 #include <cstdint>
 #include <memory>
 
@@ -34,9 +36,10 @@ namespace server {
 
 class Socket final : public Interface::Socket {
 public:
-	Socket(uint16_t port, uint16_t numThreads, RequestHandlerFactory requestHandlerFactory);
+	Socket(uint16_t port, uint16_t numThreads, RequestHandler::Factory requestHandlerFactory);
 
 	void addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) override;
+	void setObject(const std::string& id, GetObject getObject) override;
 	bool listen() override;
 	void release() override;
 

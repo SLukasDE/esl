@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,60 +24,38 @@ SOFTWARE.
 #include <esl/logging/Appender.h>
 
 #include <esl/logging/Interface.h>
-#include <esl/bootstrap/Interface.h>
 #include <esl/Module.h>
-#include <esl/Stacktrace.h>
 
 namespace esl {
 namespace logging {
 
-namespace {
-
-void setLoggerUnblocked(bool isUnblocked) {
-	esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion());
-	const Interface* interface = static_cast<const Interface*>(esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion()));
-
-	if(interface == nullptr) {
-		throw esl::addStacktrace(std::runtime_error("no implementation available for \"esl-logging\""));
+void setUnblocked(bool isUnblocked) {
+	const Interface* interface = esl::getModule().getInterfacePointer<Interface>();
+	if(interface) {
+		interface->setUnblocked(isUnblocked);
 	}
-
-	interface->setUnblocked(isUnblocked);
 }
 
-void setLoggerLevel(Level logLevel, const std::string& typeName) {
-	esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion());
-	const Interface* interface = static_cast<const Interface*>(esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion()));
-
-	if(interface == nullptr) {
-		throw esl::addStacktrace(std::runtime_error("no implementation available for \"esl-logging\""));
+void setLevel(Level logLevel, const std::string& typeName) {
+	const Interface* interface = esl::getModule().getInterfacePointer<Interface>();
+	if(interface) {
+		interface->setLevel(logLevel, typeName);
 	}
-
-	interface->setLevel(logLevel, typeName);
 }
 
-void addLoggerAppender(Appender& appender) {
-	esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion());
-	const Interface* interface = static_cast<const Interface*>(esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion()));
-
-	if(interface == nullptr) {
-		throw esl::addStacktrace(std::runtime_error("no implementation available for \"esl-logging\""));
+void addAppender(Appender& appender) {
+	const Interface* interface = esl::getModule().getInterfacePointer<Interface>();
+	if(interface) {
+		interface->addAppender(appender);
 	}
-
-	interface->addAppender(appender);
 }
 
-std::vector<std::reference_wrapper<Appender>> getLoggerAppenders() {
-	esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion());
-	const Interface* interface = static_cast<const Interface*>(esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion()));
-
-	if(interface == nullptr) {
-		throw esl::addStacktrace(std::runtime_error("no implementation available for \"esl-logging\""));
-	}
-
-	return interface->getAppenders();
+std::vector<std::reference_wrapper<Appender>> getAppenders() {
+	const Interface* interface = esl::getModule().getInterfacePointer<Interface>();
+	return interface ? interface->getAppenders() : std::vector<std::reference_wrapper<Appender>>{};
 }
 
-
+#if 0
 unsigned int getLoggerThreadNo(std::thread::id threadId) {
 	esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion());
 	const Interface* interface = static_cast<const Interface*>(esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion()));
@@ -88,42 +66,11 @@ unsigned int getLoggerThreadNo(std::thread::id threadId) {
 
 	return interface->getThreadNo(threadId);
 }
-
-}
-
-Logger::Logger(const char* aTypeName)
-: trace(aTypeName, Level::TRACE),
-  debug(aTypeName, Level::DEBUG),
-  info(aTypeName, Level::INFO),
-  warn(aTypeName, Level::WARN),
-  error(aTypeName, Level::ERROR),
-  typeName(aTypeName)
-{
-}
-
-void Logger::setUnblocked(bool isUnblocked) {
-	setLoggerUnblocked(isUnblocked);
-}
-
-void Logger::setLevel(Level logLevel) {
-	setLevel(logLevel, typeName);
-}
-
-void Logger::setLevel(Level logLevel, const std::string& typeName) {
-	setLoggerLevel(logLevel, typeName);
-}
-
-void Logger::addAppender(Appender& appender) {
-	addLoggerAppender(appender);
-}
-
-std::vector<std::reference_wrapper<Appender>> Logger::getAppenders() {
-	return getLoggerAppenders();
-}
+#endif
 
 } /* namespace logging */
 
-esl::logging::Logger logger("esl");
+esl::logging::Logger<> logger("esl");
 
 } /* namespace esl */
 

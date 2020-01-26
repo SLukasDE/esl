@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,6 @@ SOFTWARE.
 #define SRC_MAIN_C___ESL_SERVICE_CLIENT_CONNECTION_H_
 
 #include <esl/http/client/Interface.h>
-//#include <esl/http/client/Request.h>
-//#include <esl/http/client/Response.h>
 #include <string>
 #include <memory>
 

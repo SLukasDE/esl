@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@ SOFTWARE.
 #ifndef ESL_LOGGING_STREAMWRITER_H_
 #define ESL_LOGGING_STREAMWRITER_H_
 
-#include <esl/logging/Id.h>
+#include <esl/logging/Location.h>
 #include <ostream>
 
 namespace esl {
@@ -38,21 +38,41 @@ public:
 	StreamWriter& operator=(const StreamWriter&) = delete;
 	StreamWriter& operator=(StreamWriter&&) = delete;
 
-	template<typename T2>
-	inline StreamWriter& operator<<(const T2& t2) {
-		oStream << t2;
+	template<typename T>
+	inline StreamWriter& operator<<(const T& t) {
+		if(oStream) {
+			(*oStream) << t;
+		}
 		return *this;
 	}
 
     StreamWriter& operator<<(std::ostream& (*pf)(std::ostream&));
 
+    template<typename T>
+	inline StreamWriter& write(const T& t) {
+		if(oStream) {
+			(*oStream) << t;
+		}
+		return *this;
+	}
+
+    template<typename T, typename... Args>
+	inline StreamWriter& write(const T& t, Args... args) {
+		if(oStream) {
+			(*oStream) << t;
+			return write(args...);
+		}
+		return *this;
+	}
+
+
 private:
-	StreamWriter(Id id, std::ostream& oStream, void* data);
+	StreamWriter(Location location, std::ostream* oStream, void* data);
 	StreamWriter(StreamWriter&& streamWriter);
 
     bool doUnlock;
-    Id id;
-    std::ostream& oStream;
+    Location location;
+    std::ostream* oStream;
     void* data;
 };
 

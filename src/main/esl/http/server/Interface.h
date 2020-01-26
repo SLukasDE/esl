@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,9 +23,15 @@ SOFTWARE.
 #ifndef ESL_HTTP_SERVER_INTERFACE_H_
 #define ESL_HTTP_SERVER_INTERFACE_H_
 
-#include <esl/bootstrap/Interface.h>
+#include <esl/module/Interface.h>
+#include <esl/Object.h>
 #include <esl/Module.h>
-#include <esl/http/server/RequestHandlerFactory.h>
+
+//#include <esl/http/server/RequestHandlerFactory.h>
+#include <esl/http/server/RequestHandler.h>
+#include <esl/http/server/RequestContext.h>
+#include <string>
+#include <functional>
 #include <cstdint>
 #include <vector>
 
@@ -33,21 +39,25 @@ namespace esl {
 namespace http {
 namespace server {
 
-struct Interface : esl::bootstrap::Interface {
+struct Interface : esl::module::Interface {
 	/* ******************************************** *
 	 * type definitions required for this interface *
 	 * ******************************************** */
+
 	class Socket {
 	public:
+		using GetObject = std::function<Object*(const RequestContext&)>;
+
 		Socket() = default;
 		virtual ~Socket() = default;
 
 		virtual void addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) = 0;
+		virtual void setObject(const std::string& id, GetObject getObject) = 0;
 		virtual bool listen() = 0;
 		virtual void release() = 0;
 	};
 
-	using CreateSocket = Socket* (*)(uint16_t port, uint16_t numThreads, RequestHandlerFactory requestHandlerFactory);
+	using CreateSocket = Socket* (*)(uint16_t port, uint16_t numThreads, RequestHandler::Factory requestHandlerFactory);
 
 	/* ************************************ *
 	 * standard API definition of interface *
@@ -56,6 +66,7 @@ struct Interface : esl::bootstrap::Interface {
 	static inline const char* getId() {
 		return "esl-http-server";
 	}
+
 	static inline const std::string& getApiVersion() {
 		return esl::getModule().getApiVersion();
 	}
@@ -64,12 +75,11 @@ struct Interface : esl::bootstrap::Interface {
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	static inline void initialize(Interface& interface, CreateSocket createSocket) {
-		interface.next = nullptr;
-		interface.id = getId();
-		interface.apiVersion = getApiVersion();
-		interface.createSocket = createSocket;
-	}
+	Interface(std::string module, std::string implementation,
+			CreateSocket aCreateSocket)
+	: esl::module::Interface(std::move(module), getId(), std::move(implementation), getApiVersion()),
+	  createSocket(aCreateSocket)
+	{ }
 
 	CreateSocket createSocket;
 };

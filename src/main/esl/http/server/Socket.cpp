@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,36 +21,24 @@ SOFTWARE.
 */
 
 #include <esl/http/server/Socket.h>
-#include <esl/bootstrap/Interface.h>
 #include <esl/Module.h>
-#include <esl/Stacktrace.h>
 
 namespace esl {
 namespace http {
 namespace server {
 
-namespace {
-
-Interface::Socket* createSocket(uint16_t port, uint16_t numThreads, RequestHandlerFactory requestHandlerFactory) {
-	const Interface* interface = static_cast<const Interface*>(esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion()));
-
-	if(interface == nullptr) {
-		throw esl::addStacktrace(std::runtime_error("no implementation available for \"esl::http::server::Socket\""));
-	}
-
-	return interface->createSocket(port, numThreads, requestHandlerFactory);
-}
-
-}
-
-Socket::Socket(uint16_t port, uint16_t numThreads, RequestHandlerFactory requestHandlerFactory)
+Socket::Socket(uint16_t port, uint16_t numThreads, RequestHandler::Factory requestHandlerFactory)
 : Interface::Socket(),
-  socket(createSocket(port, numThreads, requestHandlerFactory))
+  socket(esl::getModule().getInterface<Interface>().createSocket(port, numThreads, requestHandlerFactory))
 {
 }
 
 void Socket::addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) {
 	return socket->addTLSHost(hostname, certificate, key);
+}
+
+void Socket::setObject(const std::string& id, GetObject getObject) {
+	return socket->setObject(id, getObject);
 }
 
 bool Socket::listen() {

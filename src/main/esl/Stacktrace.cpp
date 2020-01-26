@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,91 +21,45 @@ SOFTWARE.
 */
 
 #include <esl/Stacktrace.h>
-#include <esl/bootstrap/Interface.h>
+#include <esl/stacktrace/Interface.h>
 #include <esl/Module.h>
 
 namespace esl {
 
 namespace {
 
-bool initialized = false;
-const stacktrace::Interface* interface = nullptr;
 const char* dummyMessage = "no implementation available for \"esl::Stacktrace\"";
 
 stacktrace::Interface::Stacktrace* createStacktrace() {
-	if(initialized == false) {
-		initialized = true;
-		interface = static_cast<const stacktrace::Interface*>(esl::getModule().getInterface(stacktrace::Interface::getId(), stacktrace::Interface::getApiVersion()));
-
-		if(interface == nullptr) {
-			throw esl::addStacktrace(std::runtime_error(dummyMessage));
-		}
-	}
-
-	if(interface == nullptr) {
-		return nullptr;
-	}
-
-	return interface->createStacktrace();
+	const stacktrace::Interface* interface = esl::getModule().getInterfacePointer<stacktrace::Interface>();
+	return interface ? interface->createStacktrace() : nullptr;
 }
 
 } /* anonymous Namespace */
 
-
-//logging::Logger Stacktrace::logger("esl::Stacktrace");
-
 Stacktrace::Stacktrace()
-: stacktrace(createStacktrace()) {
-}
+: stacktrace(createStacktrace())
+{ }
 
 Stacktrace::Stacktrace(const esl::Stacktrace& aStacktrace)
-: stacktrace(aStacktrace.stacktrace ? aStacktrace.stacktrace->clone() : nullptr) {
-}
+: stacktrace(aStacktrace.stacktrace ? aStacktrace.stacktrace->clone() : nullptr)
+{ }
 
-void Stacktrace::allowDummy() {
-	if(initialized == false && interface == nullptr) {
-		interface = static_cast<const stacktrace::Interface*>(esl::getModule().getInterface(stacktrace::Interface::getId(), stacktrace::Interface::getApiVersion()));
-	}
-	initialized = true;
-}
-
-void Stacktrace::dump(std::ostream& oStream) const {
+void Stacktrace::dump(std::ostream& stream) const {
 	if(stacktrace) {
-		stacktrace->dump(oStream);
+		stacktrace->dump(stream);
 	}
 	else {
-		oStream << dummyMessage << "\n";
+		stream << dummyMessage << "\n";
 	}
 }
-/*
-void Stacktrace::dump(logging::Level level) const {
-	dump(logger, level);
-}
-*/
-void Stacktrace::dump(logging::Logger& logger, logging::Level level) const {
+
+void Stacktrace::dump(esl::logging::StreamReal& stream, esl::logging::Location location) const {
 	if(stacktrace) {
-		stacktrace->dump(logger, level);
+		stacktrace->dump(stream, location);
 	}
 	else {
-		switch(level) {
-		case esl::logging::Level::TRACE:
-			logger.trace << dummyMessage << "\n";
-			break;
-		case esl::logging::Level::DEBUG:
-			logger.debug << dummyMessage << "\n";
-			break;
-		case esl::logging::Level::INFO:
-			logger.info << dummyMessage << "\n";
-			break;
-		case esl::logging::Level::WARN:
-			logger.warn << dummyMessage << "\n";
-			break;
-		case esl::logging::Level::ERROR:
-			logger.error << dummyMessage << "\n";
-			break;
-		default: /* logging::Level::SILENT */
-			break;
-		}
+		stream << dummyMessage << "\n";
 	}
 }
 

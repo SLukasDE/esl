@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,30 +21,14 @@ SOFTWARE.
 */
 
 #include <esl/system/Process.h>
-#include <esl/logging/Logger.h>
-#include <esl/Stacktrace.h>
+//#include <esl/module/Interface.h>
+#include <esl/Module.h>
 
 namespace esl {
 namespace system {
 
-namespace {
-
-Interface::Process& createProcess() {
-	esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion());
-	const Interface* interface = static_cast<const Interface*>(esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion()));
-
-	if(interface == nullptr) {
-		throw esl::addStacktrace(std::runtime_error("no implementation available for \"esl::system::Process\""));
-	}
-
-	return *interface->createProcess();
-}
-
-}
-
 Process::Process()
-: // Interface::Process(),
-  process(createProcess())
+: process(esl::getModule().getInterface<Interface>().createProcess())
 { }
 
 Process::~Process() {
@@ -52,11 +36,11 @@ Process::~Process() {
 }
 
 void Process::enableTimeMeasurement(bool enabled) {
-	process.enableTimeMeasurement(enabled);
+	process->enableTimeMeasurement(enabled);
 }
 
 void Process::setWorkingDirectory(const std::string& workingDirectory) {
-	process.setWorkingDirectory(workingDirectory);
+	process->setWorkingDirectory(workingDirectory);
 }
 
 void Process::setOutput(std::unique_ptr<Process::Output> output, bool stdOut, bool stdErr) {
@@ -68,16 +52,16 @@ void Process::setOutput(std::unique_ptr<Process::Output> output, bool stdOut, bo
 	Interface::Process::Output* outputBasePtr = nullptr;
 
 	if(output) {
-		outputBasePtr = output->basePtr.get();
+		outputBasePtr = output->output.get();
 		outputPtr = output.get();
 		output.release();
 	}
 
 	if(stdOut) {
-		process.setStdOut(outputBasePtr);
+		process->setStdOut(outputBasePtr);
 	}
 	if(stdErr) {
-		process.setStdErr(outputBasePtr);
+		process->setStdErr(outputBasePtr);
 	}
 
 
@@ -114,31 +98,31 @@ Process::Output* Process::getStdErr() const {
 }
 
 bool Process::execute(const std::string& executable, const std::list<std::string>& arguments) {
-	return process.execute(executable, arguments);
+	return process->execute(executable, arguments);
 }
 
 int Process::wait() {
-	return process.wait();
+	return process->wait();
 }
 
 bool Process::isRunning() {
-	return process.isRunning();
+	return process->isRunning();
 }
 
 bool Process::isFailed() {
-	return process.isFailed();
+	return process->isFailed();
 }
 
 unsigned int Process::getTimeRealMS() const {
-	return process.getTimeRealMS();
+	return process->getTimeRealMS();
 }
 
 unsigned int Process::getTimeUserMS() const {
-	return process.getTimeUserMS();
+	return process->getTimeUserMS();
 }
 
 unsigned int Process::getTimeSysMS() const {
-	return process.getTimeSysMS();
+	return process->getTimeSysMS();
 }
 
 } /* namespace system */

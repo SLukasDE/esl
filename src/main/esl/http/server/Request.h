@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,16 +34,24 @@ public:
 	Request() = default;
 	virtual ~Request() = default;
 
-	virtual const std::string& getVersion() const noexcept = 0;
+	virtual bool isHTTPS() const noexcept = 0;
+	virtual const std::string& getHTTPVersion() const noexcept = 0;
+	virtual const std::string& getUsername() const noexcept = 0;
+	virtual const std::string& getPassword() const noexcept = 0;
+	virtual const std::string& getDomain() const noexcept = 0;
+	virtual unsigned int getPort() const noexcept = 0;
+	virtual const std::string& getPath() const noexcept = 0;
+//	const std::string& getSubPath() const;
+//	void getSubPath(std::string subPath);
 	virtual const std::string& getMethod() const noexcept = 0;
-	virtual const std::string& getUrl() const noexcept = 0;
 	virtual bool hasArgument(const std::string& key) const noexcept = 0;
 	virtual const std::string& getArgument(const std::string& key) const = 0;
 
 	virtual const std::string& getClientAddress() const noexcept = 0;
 
-	virtual const std::string& getUsername() const noexcept = 0;
-	virtual const std::string& getPassword() const noexcept = 0;
+//private:
+//	bool isSetToSubPath = false;
+//	std::string subPath;
 };
 
 } /* namespace server */

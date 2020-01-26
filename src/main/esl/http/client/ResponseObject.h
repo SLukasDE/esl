@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -40,12 +40,12 @@ class Connection;
 template<typename DT>
 class ResponseObject: public Response {
 public:
-	ResponseObject(const ::std::string& aOuterTagName, const sergut::ValueType aValueType)
+	ResponseObject(const std::string& aOuterTagName, const sergut::ValueType aValueType)
 	: outerTagName(aOuterTagName)
 	, valueType(aValueType)
 	{ }
 
-	ResponseObject(const ::std::string& aOuterTagName, const ::std::string& aInnerTagName)
+	ResponseObject(const std::string& aOuterTagName, const std::string& aInnerTagName)
 	: outerTagName(aOuterTagName)
 	, innerTagName(aInnerTagName)
 	{ }
@@ -54,7 +54,7 @@ public:
 
 
 	DT getObject() const {
-		::std::string contentType;
+		std::string contentType;
 		contentType = getHeader("Content-Type");
 		if(!contentType.empty() && contentType != "application/xml") {
 	        esl::Stacktrace::rethrow(std::runtime_error("unsupported content type: '" + contentType + "'"));
@@ -76,10 +76,10 @@ protected:
 	}
 
 private:
-	::std::string outerTagName;
+	std::string outerTagName;
 	sergut::ValueType valueType = sergut::ValueType::Attribute;
-	::std::string innerTagName;
-	::std::string data;
+	std::string innerTagName;
+	std::string data;
 };
 
 } /* namespace client */

@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,101 +25,43 @@ SOFTWARE.
 
 #include <esl/logging/Config.h>
 #include <esl/logging/Level.h>
-#include <esl/logging/Id.h>
-#include <esl/logging/StreamEmpty.h>
-#include <esl/logging/StreamReal.h>
-//#include <esl/utility/StreamBuffer.h>
-#include <iostream>
-#include <ostream>
-#include <sstream>
+#include <esl/logging/Streams.h>
+
 #include <vector>
-#include <mutex>
 #include <string>
-#include <memory>
 #include <functional> // std::reference_wrapper<>
-#include <thread>
 
 namespace esl {
 namespace logging {
 
 class Appender;
 
-template<Level level = Level::INFO>
-struct LoggerStreams { };
+// NOT thread save - call it at the beginning if needed. Default is already "true"
+// unblocked behavior makes other threads not waiting on logging, while current thread is writing to logger already.
+// If logger is used already by current thread, other threads will write to a temporary buffer.
+// - Temporary buffer is flushed to real logger, if other thread is done using the logger.
+// - If logger is still used by current thread, buffer is queued.
+// - If current thread is done using the logger, it flushes queued buffers.
+void setUnblocked(bool isUnblocked);
 
-template<>
-struct LoggerStreams<Level::TRACE> {
-	using TraceStream = StreamReal;
-	using DebugStream = StreamReal;
-	using InfoStream = StreamReal;
-	using WarnStream = StreamReal;
-	using ErrorStream = StreamReal;
-};
+// thread safe, quaranteed by configMutex
+void setLevel(Level logLevel, const std::string& typeName);
 
-template<>
-struct LoggerStreams<Level::DEBUG> {
-	using TraceStream = StreamEmpty;
-	using DebugStream = StreamReal;
-	using InfoStream = StreamReal;
-	using WarnStream = StreamReal;
-	using ErrorStream = StreamReal;
-};
+// thread safe, quaranteed by loggerMutex
+void addAppender(Appender& appender);
+std::vector<std::reference_wrapper<Appender>> getAppenders();
 
-template<>
-struct LoggerStreams<Level::INFO> {
-	using TraceStream = StreamEmpty;
-	using DebugStream = StreamEmpty;
-	using InfoStream = StreamReal;
-	using WarnStream = StreamReal;
-	using ErrorStream = StreamReal;
-};
-
-template<>
-struct LoggerStreams<Level::WARN> {
-	using TraceStream = StreamEmpty;
-	using DebugStream = StreamEmpty;
-	using InfoStream = StreamEmpty;
-	using WarnStream = StreamReal;
-	using ErrorStream = StreamReal;
-};
-
-template<>
-struct LoggerStreams<Level::ERROR> {
-	using TraceStream = StreamEmpty;
-	using DebugStream = StreamEmpty;
-	using InfoStream = StreamEmpty;
-	using WarnStream = StreamEmpty;
-	using ErrorStream = StreamReal;
-};
-
-template<>
-struct LoggerStreams<Level::SILENT> {
-	using TraceStream = StreamEmpty;
-	using DebugStream = StreamEmpty;
-	using InfoStream = StreamEmpty;
-	using WarnStream = StreamEmpty;
-	using ErrorStream = StreamEmpty;
-};
-
-#if ESL_LOGGING_LEVEL == ESL_LOGGING_LEVEL_SILENT
-using TLoggerStreams = LoggerStreams<Level::SILENT>;
-#elif ESL_LOGGING_LEVEL == ESL_LOGGING_LEVEL_ERROR
-using TLoggerStreams = LoggerStreams<Level::ERROR>;
-#elif ESL_LOGGING_LEVEL == ESL_LOGGING_LEVEL_WARN
-using TLoggerStreams = LoggerStreams<Level::WARN>;
-#elif ESL_LOGGING_LEVEL == ESL_LOGGING_LEVEL_INFO
-using TLoggerStreams = LoggerStreams<Level::INFO>;
-#elif ESL_LOGGING_LEVEL == ESL_LOGGING_LEVEL_DEBUG
-using TLoggerStreams = LoggerStreams<Level::DEBUG>;
-#elif ESL_LOGGING_LEVEL == ESL_LOGGING_LEVEL_TRACE
-using TLoggerStreams = LoggerStreams<Level::TRACE>;
-#else
-using TLoggerStreams = LoggerStreams<>;
-#endif
-
+template<Level level = defaultLevel>
 class Logger {
 public:
-	Logger(const char* typeName = "");
+	Logger(const char* aTypeName = "")
+	: trace(aTypeName, Level::TRACE),
+	  debug(aTypeName, Level::DEBUG),
+	  info(aTypeName, Level::INFO),
+	  warn(aTypeName, Level::WARN),
+	  error(aTypeName, Level::ERROR),
+	  typeName(aTypeName)
+	{ }
 
 	// NOT thread save - call it at the beginning if needed. Default is already "true"
 	// unblocked behavior makes other threads not waiting on logging, while current thread is writing to logger already.
@@ -127,21 +69,30 @@ public:
 	// - Temporary buffer is flushed to real logger, if other thread is done using the logger.
 	// - If logger is still used by current thread, buffer is queued.
 	// - If current thread is done using the logger, it flushes queued buffers.
-	static void setUnblocked(bool isUnblocked);
+//	static void setUnblocked(bool isUnblocked);
 
 	// thread safe, quaranteed by configMutex
+//	static void setLevel(Level logLevel, const std::string& typeName);
 	void setLevel(Level logLevel);
-	static void setLevel(Level logLevel, const std::string& typeName);
 
 	// thread safe, quaranteed by loggerMutex
-	static void addAppender(Appender& appender);
-	static std::vector<std::reference_wrapper<Appender>> getAppenders();
+//	static void addAppender(Appender& appender);
+//	static std::vector<std::reference_wrapper<Appender>> getAppenders();
 
-	TLoggerStreams::TraceStream trace;
-	TLoggerStreams::DebugStream debug;
-	TLoggerStreams::InfoStream info;
-	TLoggerStreams::WarnStream warn;
-	TLoggerStreams::ErrorStream error;
+    template<typename... Args>
+	static inline void write(StreamReal& streamReal, const void* object, const char* function, const char* file, unsigned int lineNo, Args... args) {
+    	streamReal(object, function, file, lineNo).write(args...);
+    }
+
+    template<typename... Args>
+	static inline void write(StreamEmpty& streamEmpty, const void* object, const char* function, const char* file, unsigned int lineNo, Args... args) { }
+
+
+	typename Streams<level>::Trace trace;
+	typename Streams<level>::Debug debug;
+	typename Streams<level>::Info info;
+	typename Streams<level>::Warn warn;
+	typename Streams<level>::Error error;
 
 private:
 	const char* typeName;
@@ -149,10 +100,28 @@ private:
 
 } /* namespace logging */
 
-extern esl::logging::Logger logger;
+extern esl::logging::Logger<> logger;
 
 } /* namespace esl */
 
-#define ESL__LOGGER(STREAM) logger.STREAM(__func__, __FILE__, __LINE__)
+#define ESL__LOGGER_ERROR_OBJ(OBJ, ...) logger.write(logger.error, OBJ, __func__, __FILE__, __LINE__, __VA_ARGS__);
+#define ESL__LOGGER_ERROR_THIS(...)     logger.write(logger.error, this, __func__, __FILE__, __LINE__, __VA_ARGS__);
+#define ESL__LOGGER_ERROR(...)          logger.write(logger.error, nullptr, __func__, __FILE__, __LINE__, __VA_ARGS__);
+
+#define ESL__LOGGER_WARN_OBJ(OBJ, ...) logger.write(logger.warn, OBJ, __func__, __FILE__, __LINE__, __VA_ARGS__);
+#define ESL__LOGGER_WARN_THIS(...)     logger.write(logger.warn, this, __func__, __FILE__, __LINE__, __VA_ARGS__);
+#define ESL__LOGGER_WARN(...)          logger.write(logger.warn, nullptr, __func__, __FILE__, __LINE__, __VA_ARGS__);
+
+#define ESL__LOGGER_INFO_OBJ(OBJ, ...) logger.write(logger.info, OBJ, __func__, __FILE__, __LINE__, __VA_ARGS__);
+#define ESL__LOGGER_INFO_THIS(...)     logger.write(logger.info, this, __func__, __FILE__, __LINE__, __VA_ARGS__);
+#define ESL__LOGGER_INFO(...)          logger.write(logger.info, nullptr, __func__, __FILE__, __LINE__, __VA_ARGS__);
+
+#define ESL__LOGGER_DEBUG_OBJ(OBJ, ...) logger.write(logger.debug, OBJ, __func__, __FILE__, __LINE__, __VA_ARGS__);
+#define ESL__LOGGER_DEBUG_THIS(...)     logger.write(logger.debug, this, __func__, __FILE__, __LINE__, __VA_ARGS__);
+#define ESL__LOGGER_DEBUG(...)          logger.write(logger.debug, nullptr, __func__, __FILE__, __LINE__, __VA_ARGS__);
+
+#define ESL__LOGGER_TRACE_OBJ(OBJ, ...) logger.write(logger.trace, OBJ, __func__, __FILE__, __LINE__, __VA_ARGS__);
+#define ESL__LOGGER_TRACE_THIS(...)     logger.write(logger.trace, this, __func__, __FILE__, __LINE__, __VA_ARGS__);
+#define ESL__LOGGER_TRACE(...)          logger.write(logger.trace, nullptr, __func__, __FILE__, __LINE__, __VA_ARGS__);
 
 #endif /* ESL_LOGGING_LOGGER_H_ */

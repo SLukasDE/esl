@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,8 @@ SOFTWARE.
 #ifndef ESL_LOGGING_LEVEL_H_
 #define ESL_LOGGING_LEVEL_H_
 
+#include <esl/logging/Config.h>
+
 namespace esl {
 namespace logging {
 
@@ -34,6 +36,20 @@ enum class Level {
 	ERROR,
 	SILENT
 };
+
+#if ESL_LOGGING_LEVEL_BUILD == ESL_LOGGING_LEVEL_SILENT
+constexpr Level defaultLevel = Level::SILENT;
+#elif ESL_LOGGING_LEVEL_BUILD == ESL_LOGGING_LEVEL_ERROR
+constexpr Level defaultLevel = Level::ERROR;
+#elif ESL_LOGGING_LEVEL_BUILD == ESL_LOGGING_LEVEL_WARN
+constexpr Level defaultLevel = Level::WARN;
+#elif ESL_LOGGING_LEVEL_BUILD == ESL_LOGGING_LEVEL_INFO
+constexpr Level defaultLevel = Level::INFO;
+#elif ESL_LOGGING_LEVEL_BUILD == ESL_LOGGING_LEVEL_DEBUG
+constexpr Level defaultLevel = Level::DEBUG;
+#else // ESL_LOGGING_LEVEL_BUILD == ESL_LOGGING_LEVEL_TRACE
+constexpr Level defaultLevel = Level::TRACE;
+#endif
 
 } /* namespace logging */
 } /* namespace esl */

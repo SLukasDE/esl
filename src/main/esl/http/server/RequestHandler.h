@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,22 +24,25 @@ SOFTWARE.
 #define ESL_HTTP_SERVER_REQUESTHANDLER_H_
 
 #include <string>
+#include <memory>
 
 namespace esl {
 namespace http {
 namespace server {
 
-class Connection;
-class Request;
+class RequestContext;
 
 class RequestHandler {
 public:
+	using Factory = std::unique_ptr<RequestHandler> (*)(RequestContext&);
+
 	RequestHandler() = default;
 	virtual ~RequestHandler() = default;
 
 	// return true for every kind of success and get called again for more content data
 	// return false for failure and/or get not called again for more content data
-	virtual bool addContent(Connection& connection, const Request& request, const char* contentData, std::size_t contentDataSize) = 0;
+	// virtual bool process(Connection& connection, const char* contentData, std::size_t contentDataSize) = 0;
+	virtual bool process(const char* contentData, std::size_t contentDataSize) = 0;
 };
 
 } /* namespace server */

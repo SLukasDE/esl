@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,7 @@ public:
 	Connection() = default;
 	virtual ~Connection() = default;
 
-	virtual const Request& getRequest() const noexcept = 0;
+//	virtual const Request& getRequest() const noexcept = 0;
 
 	virtual bool sendResponse(std::unique_ptr<ResponseBasicAuth> response) noexcept = 0;
 	virtual bool sendResponse(std::unique_ptr<ResponseDynamic> response) noexcept = 0;

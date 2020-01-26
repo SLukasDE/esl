@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,8 +23,7 @@ SOFTWARE.
 #ifndef ESL_HTTP_CLIENT_INTERFACE_H_
 #define ESL_HTTP_CLIENT_INTERFACE_H_
 
-#include <esl/bootstrap/Interface.h>
-//#include <esl/bootstrap/Module.h>
+#include <esl/module/Interface.h>
 #include <esl/Module.h>
 #include <string>
 
@@ -37,14 +36,11 @@ class RequestStatic;
 class RequestFile;
 class Response;
 
-struct Interface : esl::bootstrap::Interface {
+struct Interface : esl::module::Interface {
 	/* *************************************** *
 	 * definitions required for this interface *
 	 * *************************************** */
 	class Connection {
-	// friend class RequestDynamic;
-	// friend class RequestStatic;
-	// friend class RequestFile;
 	public:
 		Connection() = default;
 		virtual ~Connection() = default;
@@ -80,17 +76,30 @@ struct Interface : esl::bootstrap::Interface {
             const std::string& proxyPassword,
             const std::string& userAgent);
 
+	/* ************************************ *
+	 * standard API definition of interface *
+	 * ************************************ */
+
 	static inline const char* getId() {
 		return "esl-http-client";
 	}
+
 	static inline const std::string& getApiVersion() {
 		return esl::getModule().getApiVersion();
 	}
 
+
+	/* ************************************ *
+	 * extended API definition of interface *
+	 * ************************************ */
+
+	Interface(std::string module, std::string implementation,
+			CreateConnection aCreateConnection)
+	: esl::module::Interface(std::move(module), getId(), std::move(implementation), getApiVersion()),
+	  createConnection(aCreateConnection)
+	{ }
+
 	static inline void initialize(Interface& interface, CreateConnection createConnection) {
-		interface.next = nullptr;
-		interface.id = getId();
-		interface.apiVersion = getApiVersion();
 		interface.createConnection = createConnection;
 	}
 

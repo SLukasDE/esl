@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -101,7 +101,7 @@ size_t Response::readHeader(void *data, size_t size) noexcept {
 */
 size_t Response::writeCallback(void *data, size_t size, size_t nmemb, void *userdata)
 {
-	Response* r = reinterpret_cast<Response*>(userdata);
+	Response* r = static_cast<Response*>(userdata);
 	return r->read(data, size*nmemb);
 }
 
@@ -115,7 +115,7 @@ size_t Response::writeCallback(void *data, size_t size, size_t nmemb, void *user
 * @return size * nmemb;
 */
 size_t Response::headerCallback(void *data, size_t size, size_t nmemb, void *userdata) {
-	Response* r = reinterpret_cast<Response*>(userdata);
+	Response* r = static_cast<Response*>(userdata);
 	return r->readHeader(data, size*nmemb);
 }
 

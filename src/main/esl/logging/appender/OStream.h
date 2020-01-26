@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ SOFTWARE.
 
 #include <esl/logging/Appender.h>
 #include <esl/logging/Level.h>
+#include <esl/logging/Location.h>
 #include <string>
 #include <ostream>
 
@@ -41,8 +42,8 @@ public:
 	std::ostream& oStreamError);
 
 protected:
-	void flushNewLine(const Id& id, bool enabled) override;
-	void write(const Id& id, bool enabled, const char* ptr, std::size_t size) override;
+	void flushNewLine(const Location& location, bool enabled) override;
+	void write(const Location& location, bool enabled, const char* ptr, std::size_t size) override;
 
 private:
 	std::ostream& getOStream(Level level);

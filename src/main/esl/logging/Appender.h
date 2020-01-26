@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,18 +24,16 @@ SOFTWARE.
 #define ESL_LOGGING_APPENDER_H_
 
 #include <esl/logging/Logger.h>
-#include <esl/logging/Id.h>
+#include <esl/logging/Location.h>
 #include <esl/logging/Layout.h>
 #include <cstddef>
 
 namespace esl {
 namespace logging {
 
-class Logger;
 class Interface;
 
 class Appender {
-friend class Logger;
 friend class Interface;
 public:
 	enum class RecordLevel {
@@ -55,13 +53,13 @@ public:
 	}
 
 	/* method is NOT thread-safe */
-	inline void setRecordLevel(RecordLevel recordLevel = RecordLevel::SELECTED) {
-		this->recordLevel = recordLevel;
+	inline void setRecordLevel(RecordLevel aRecordLevel = RecordLevel::SELECTED) {
+		recordLevel = aRecordLevel;
 	}
 
 protected:
-	virtual void flushNewLine(const Id& id, bool enabled) = 0;
-	virtual void write(const Id& id, bool enabled, const char* ptr, std::size_t size) = 0;
+	virtual void flushNewLine(const Location& location, bool enabled) = 0;
+	virtual void write(const Location& location, bool enabled, const char* ptr, std::size_t size) = 0;
 
 private:
 	Layout layout;

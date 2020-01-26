@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -36,23 +36,21 @@ public:
     class Output/* : public Interface::ProcessOutput*/ {
     	friend class Process;
     public:
-    	Output(Interface::Process::Output& aBase)
+    	Output(std::unique_ptr<Interface::Process::Output> aOutput)
         : /*Interface::ProcessOutput(), */
-		  base(aBase),
-		  basePtr(&aBase)
+        	output(std::move(aOutput))
     	{ }
     	~Output() = default;
 
     	std::size_t read(void* buffer, std::size_t s) /*override*/ {
-    		return base.read(buffer, s);
+    		return output->read(buffer, s);
     	}
     	bool setBlocking(bool blocking) /*override*/ {
-    		return base.setBlocking(blocking);
+    		return output->setBlocking(blocking);
     	}
 
     private:
-    	Interface::Process::Output& base;
-    	std::unique_ptr<Interface::Process::Output> basePtr;
+    	std::unique_ptr<Interface::Process::Output> output;
     };
 
     Process();
@@ -76,7 +74,7 @@ public:
     unsigned int getTimeSysMS() const; // override;
 
 private:
-    Interface::Process& process;
+	std::unique_ptr<Interface::Process> process;
     std::unique_ptr<Output> outErr;
     std::unique_ptr<Output> err;
 

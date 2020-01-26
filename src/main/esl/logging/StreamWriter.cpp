@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,39 +21,15 @@ SOFTWARE.
 */
 
 #include <esl/logging/StreamWriter.h>
-//#include <esl/logging/Logger.h>
-
 #include <esl/logging/Interface.h>
-#include <esl/bootstrap/Interface.h>
 #include <esl/Module.h>
-#include <esl/Stacktrace.h>
-
-//#include <mutex>
 
 namespace esl {
 namespace logging {
 
-namespace {
-
-void removeWriter(std::ostream& ostream, void* data) {
-	esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion());
-	const Interface* interface = static_cast<const Interface*>(esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion()));
-
-	if(interface == nullptr) {
-		throw esl::addStacktrace(std::runtime_error("no implementation available for \"esl-logging\""));
-	}
-
-	interface->removeWriter(ostream, data);
-}
-
-}
-
-StreamWriter::StreamWriter(Id aId, std::ostream& aOStream, void* aData)
-//StreamWriter::StreamWriter(std::pair<Id*, std::ostream*> idAndOStream)
+StreamWriter::StreamWriter(Location aLocation, std::ostream* aOStream, void* aData)
 : doUnlock(true),
-//  id(idAndOStream.first),
-  id(std::move(aId)),
-//  oStream(*idAndOStream.second)
+  location(std::move(aLocation)),
   oStream(aOStream),
   data(aData)
 {
@@ -61,7 +37,7 @@ StreamWriter::StreamWriter(Id aId, std::ostream& aOStream, void* aData)
 
 StreamWriter::StreamWriter(StreamWriter&& streamWriter)
 : doUnlock(streamWriter.doUnlock),
-  id(std::move(streamWriter.id)),
+  location(std::move(streamWriter.location)),
   oStream(streamWriter.oStream),
   data(streamWriter.data)
 {
@@ -69,15 +45,17 @@ StreamWriter::StreamWriter(StreamWriter&& streamWriter)
 }
 
 StreamWriter::~StreamWriter() {
-    if(doUnlock) {
-    	oStream.flush();
+    if(doUnlock && oStream) {
+    	oStream->flush();
 
-		removeWriter(oStream, data);
+    	esl::getModule().getInterface<Interface>().removeWriter(*oStream, data);
     }
 }
 
 StreamWriter& StreamWriter::operator<<(std::ostream& (*pf)(std::ostream&)) {
-	oStream << pf;
+    if(oStream) {
+    	(*oStream) << pf;
+    }
     return *this;
 }
 

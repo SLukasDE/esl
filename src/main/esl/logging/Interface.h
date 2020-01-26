@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,9 +23,10 @@ SOFTWARE.
 #ifndef ESL_LOGGING_INTERFACE_H_
 #define ESL_LOGGING_INTERFACE_H_
 
-#include <esl/bootstrap/Interface.h>
+#include <esl/module/Interface.h>
 #include <esl/Module.h>
-#include <esl/logging/Id.h>
+#include <esl/logging/Location.h>
+#include <esl/logging/Level.h>
 #include <esl/logging/Appender.h>
 #include <ostream>
 #include <vector>
@@ -38,7 +39,8 @@ namespace logging {
 class StreamReal;
 class Appender;
 
-struct Interface : esl::bootstrap::Interface {
+struct Interface : esl::module::Interface {
+
 	/* ******************************************** *
 	 * type definitions required for this interface *
 	 * ******************************************** */
@@ -47,7 +49,8 @@ struct Interface : esl::bootstrap::Interface {
 	using SetLevel = void (*)(Level logLevel, const std::string& typeName);
 	using AddAppender = void(*)(Appender& appender);
 	using GetAppenders = std::vector<std::reference_wrapper<Appender>>(*)();
-	using AddWriter = std::pair<std::reference_wrapper<std::ostream>, void*> (*)(Id id, bool** enabled);
+	using IsEnabled = bool& (*)(const char* typeName, Level level);
+	using AddWriter = std::pair<std::reference_wrapper<std::ostream>, void*> (*)(const Location& location, bool** enabled);
 	using RemoveWriter = void (*)(std::ostream& ostream, void* data);
 	using GetThreadNo = unsigned int (*)(std::thread::id threadId);
 
@@ -58,6 +61,7 @@ struct Interface : esl::bootstrap::Interface {
 	static inline const char* getId() {
 		return "esl-logging";
 	}
+
 	static inline const std::string& getApiVersion() {
 		return esl::getModule().getApiVersion();
 	}
@@ -66,32 +70,33 @@ struct Interface : esl::bootstrap::Interface {
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	static inline void initialize(Interface& interface, SetUnblocked setUnblocked, SetLevel setLevel, AddAppender addAppender, GetAppenders getAppenders, AddWriter addWriter, RemoveWriter removeWriter, GetThreadNo getThreadNo) {
-		interface.next = nullptr;
-		interface.id = getId();
-		interface.apiVersion = getApiVersion();
-		interface.setUnblocked = setUnblocked;
-		interface.setLevel = setLevel;
-		interface.addAppender = addAppender;
-		interface.getAppenders = getAppenders;
-		interface.addWriter = addWriter;
-		interface.removeWriter = removeWriter;
-		interface.getThreadNo = getThreadNo;
+	Interface(std::string module, std::string implementation,
+			SetUnblocked aSetUnblocked, SetLevel aSetLevel, AddAppender aAddAppender, GetAppenders aGetAppenders,
+			IsEnabled aIsEnabled, AddWriter aAddWriter, RemoveWriter aRemoveWriter, GetThreadNo aGetThreadNo)
+	: esl::module::Interface(std::move(module), getId(), std::move(implementation), getApiVersion()),
+	  setUnblocked(aSetUnblocked),
+	  setLevel(aSetLevel),
+	  addAppender(aAddAppender),
+	  getAppenders(aGetAppenders),
+	  isEnabled(aIsEnabled),
+	  addWriter(aAddWriter),
+	  removeWriter(aRemoveWriter),
+	  getThreadNo(aGetThreadNo)
+	{ }
+
+	static void appenderFlushNewLine(Appender& appender, const Location& location, bool enabled) {
+		appender.flushNewLine(location, enabled);
 	}
 
-	static void appenderFlushNewLine(Appender& appender, const Id& id, bool enabled) {
-		appender.flushNewLine(id, enabled);
-	}
-	static void appenderWrite(Appender& appender, const Id& id, bool enabled, const char* ptr, std::size_t size) {
-		appender.write(id, enabled, ptr, size);
+	static void appenderWrite(Appender& appender, const Location& location, bool enabled, const char* ptr, std::size_t size) {
+		appender.write(location, enabled, ptr, size);
 	}
 
 	SetUnblocked setUnblocked;
 	SetLevel setLevel;
-//	AppenderFlushNewLine appenderFlushNewLine;
-//	AppenderWrite appenderWrite;
 	AddAppender addAppender;
 	GetAppenders getAppenders;
+	IsEnabled isEnabled;
 	AddWriter addWriter;
 	RemoveWriter removeWriter;
 	GetThreadNo getThreadNo;

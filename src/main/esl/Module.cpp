@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,73 +21,39 @@ SOFTWARE.
 */
 
 #include <esl/Module.h>
-#include <esl/bootstrap/Interface.h>
+#include <esl/module/Interface.h>
 #include <new>         // placement new
 #include <type_traits> // aligned_storage
 
 namespace esl {
 
 namespace {
-class Module : public esl::bootstrap::Module {
-public:
-	Module() = default;
-	~Module() = default;
 
-	void addModule(const esl::bootstrap::Module& foreignModule);
+class Module : public esl::module::Module {
+public:
+	Module()
+    : esl::module::Module()
+	{
+		esl::module::Module::initialize(*this);
+	}
 };
 
 typename std::aligned_storage<sizeof(Module), alignof(Module)>::type moduleBuffer; // memory for the object;
-Module& module = reinterpret_cast<Module&> (moduleBuffer);
+Module* modulePtr = nullptr;
 
-void Module::addModule(const esl::bootstrap::Module& foreignModule) {
-	esl::bootstrap::Interface* interfacePtr = nullptr;
+}  /* anonymous namespace */
 
-	/* ***************************************************** *
-	 * Calling "install" of each interface of the new module *
-	 * This might be necessary, if an Module needs some API  *
-	 * by itself.                                            *
-	 * ***************************************************** */
-#if 0
-	interfacePtr = const_cast<esl::bootstrap::Interface*>(&foreignModule.getInterfacesProvided());
-	while(interfacePtr->next != nullptr) {
-		if(interfacePtr->install != nullptr) {
-			interfacePtr->install(interfacesProvided);
-		}
-		interfacePtr = interfacePtr->next;
-	}
-#endif
-	/* ***************************************************** *
-	 * Now install new interfaces to own module              *
-	 * ***************************************************** */
-	/* go to last interface */
-	interfacePtr = &interfacesProvided;
-	while(interfacePtr->next != nullptr) {
-		interfacePtr = interfacePtr->next;
+esl::module::Module& getModule() {
+	if(modulePtr == nullptr) {
+		/* ***************** *
+		 * initialize module *
+		 * ***************** */
+
+		modulePtr = reinterpret_cast<Module*> (&moduleBuffer);
+		new (modulePtr) Module(); // placement new
 	}
 
-	/* install new interfaces */
-	interfacePtr->next = const_cast<esl::bootstrap::Interface*>(&foreignModule.getInterfacesProvided());
-}
-
-void initialize() {
-	static bool isInitialized = false;
-
-	if(isInitialized == false) {
-		isInitialized = true;
-		new (&module) Module(); // placement new
-		esl::bootstrap::Module::initialize(module);
-	}
-}
-}
-
-const esl::bootstrap::Module& getModule() {
-	initialize();
-	return module;
-}
-
-void addModule(const esl::bootstrap::Module& aModule) {
-	initialize();
-	module.addModule(aModule);
+	return *modulePtr;
 }
 
 } /* namespace esl */

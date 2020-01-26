@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@ SOFTWARE.
 #ifndef ESL_SYSTEM_INTERFACE_H_
 #define ESL_SYSTEM_INTERFACE_H_
 
-#include <esl/bootstrap/Interface.h>
+#include <esl/module/Interface.h>
 #include <esl/Module.h>
 #include <memory>
 #include <list>
@@ -32,7 +32,11 @@ SOFTWARE.
 namespace esl {
 namespace system {
 
-struct Interface : esl::bootstrap::Interface {
+struct Interface : esl::module::Interface {
+	/* ******************************************** *
+	 * type definitions required for this interface *
+	 * ******************************************** */
+
 	class Process {
 	public:
 	    class Output {
@@ -97,32 +101,38 @@ struct Interface : esl::bootstrap::Interface {
 	using InstallSignalHandler = void (*)(SignalType signalType, std::function<void()> handler);
 	using RemoveSignalHandler = void (*)(SignalType signalType, std::function<void()> handler);
 
+	/* ************************************ *
+	 * standard API definition of interface *
+	 * ************************************ */
+
 	static inline const char* getId() {
 		return "esl-system";
 	}
+
 	static inline const std::string& getApiVersion() {
 		return esl::getModule().getApiVersion();
 	}
 
-	static inline void initialize(Interface& interface,
-			CreateProcess createProcess, CreateProcessOutputDefault createProcessOutputDefault, CreateProcessOutputPipe createProcessOutputPipe, CreateProcessOutputFile createProcessOutputFile,
-			InstallSignalHandler installSignalHandler, RemoveSignalHandler removeSignalHandler) {
-		interface.next = nullptr;
-		interface.id = getId();
-		interface.apiVersion = getApiVersion();
+	/* ************************************ *
+	 * extended API definition of interface *
+	 * ************************************ */
 
-		interface.createProcess = createProcess;
-		interface.createProcessOutputDefault = createProcessOutputDefault;
-		interface.createProcessOutputPipe = createProcessOutputPipe;
-		interface.createProcessOutputFile = createProcessOutputFile;
+	Interface(std::string module, std::string implementation,
+			CreateProcess aCreateProcess,
+			CreateProcessOutputDefault aCreateProcessOutputDefault,
+			CreateProcessOutputPipe aCreateProcessOutputPipe,
+			CreateProcessOutputFile aCreateProcessOutputFile,
+			InstallSignalHandler aInstallSignalHandler,
+			RemoveSignalHandler aRemoveSignalHandler)
+	: esl::module::Interface(std::move(module), getId(), std::move(implementation), getApiVersion()),
+	  createProcess(aCreateProcess),
+	  createProcessOutputDefault(aCreateProcessOutputDefault),
+	  createProcessOutputPipe(aCreateProcessOutputPipe),
+	  createProcessOutputFile(aCreateProcessOutputFile),
+	  installSignalHandler(aInstallSignalHandler),
+	  removeSignalHandler(aRemoveSignalHandler)
+	{ }
 
-		interface.installSignalHandler = installSignalHandler;
-		interface.removeSignalHandler = removeSignalHandler;
-	}
-
-	/* **************************** *
-	 * start extension of interface *
-	 * **************************** */
 	CreateProcess createProcess;
 	CreateProcessOutputDefault createProcessOutputDefault;
 	CreateProcessOutputPipe createProcessOutputPipe;

@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,9 +34,9 @@ public:
 	StreamReal(const char* typeName, Level ll);
 	~StreamReal() = default;
 
-    StreamWriter operator()(void* object);
+    StreamWriter operator()(const void* object);
     StreamWriter operator()(const char* function, const char* file, unsigned int lineNo);
-    StreamWriter operator()(void* object, const char* function, const char* file, unsigned int lineNo);
+    StreamWriter operator()(const void* object, const char* function, const char* file, unsigned int lineNo);
 
 	template<typename T>
 	inline StreamWriter operator<<(const T& t) {
@@ -47,10 +47,20 @@ public:
 
     StreamWriter operator<<(std::ostream& (*pf)(std::ostream&));
 
-private:
-    StreamWriter getStreamWriter(void* object, const char* function, const char* file, unsigned int lineNo);
+    const char* getTypeName() const {
+    	return typeName;
+    }
 
-    bool* enabled = nullptr;
+	Level getLevel() const {
+		return level;
+	}
+
+	bool isEnabled() const;
+
+private:
+    StreamWriter getStreamWriter(const void* object, const char* function, const char* file, unsigned int lineNo);
+
+    mutable bool* enabled = nullptr;
     const char* typeName;
 	Level level;
 };

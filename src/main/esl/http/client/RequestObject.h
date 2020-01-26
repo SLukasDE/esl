@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -36,44 +36,44 @@ namespace client {
 template<typename DT>
 class RequestObject : public RequestStatic {
 public:
-	RequestObject(const ::std::string& servicePath, const ::std::string& contentType,
-	              const ::std::string& outerTagName, const DT& data);
+	RequestObject(const std::string& servicePath, const std::string& contentType,
+	              const std::string& outerTagName, const DT& data);
 
-	RequestObject(const ::std::string& servicePath, const ::std::string& contentType,
-	              const ::std::string& outerTagName, const ::std::string& innerTagName,
+	RequestObject(const std::string& servicePath, const std::string& contentType,
+	              const std::string& outerTagName, const std::string& innerTagName,
 	              const DT& data);
 
 private:
-	static ::std::string serialize(const ::std::string& contentType,
-	                               const ::std::string& outerTagName,
+	static ::std::string serialize(const std::string& contentType,
+	                               const std::string& outerTagName,
 	                               const DT& data);
 
-	static ::std::string serialize(const ::std::string& contentType,
-	                               const ::std::string& outerTagName,
-	                               const ::std::string& innerTagName,
+	static ::std::string serialize(const std::string& contentType,
+	                               const std::string& outerTagName,
+	                               const std::string& innerTagName,
 	                               const DT& data);
 };
 
 template<typename DT>
-RequestObject<DT>::RequestObject(const ::std::string& servicePath,
-                                 const ::std::string& contentType,
-                                 const ::std::string& outerTagName,
+RequestObject<DT>::RequestObject(const std::string& servicePath,
+                                 const std::string& contentType,
+                                 const std::string& outerTagName,
                                  const DT& data)
 	: RequestStatic(servicePath, contentType, serialize(contentType, outerTagName, data))
 { }
 
 template<typename DT>
-RequestObject<DT>::RequestObject(const ::std::string& servicePath,
-                                 const ::std::string& contentType,
-                                 const ::std::string& outerTagName,
-                                 const ::std::string& innerTagName,
+RequestObject<DT>::RequestObject(const std::string& servicePath,
+                                 const std::string& contentType,
+                                 const std::string& outerTagName,
+                                 const std::string& innerTagName,
                                  const DT& data)
 	: RequestStatic(servicePath, contentType, serialize(contentType, outerTagName, innerTagName, data))
 { }
 
 template<typename DT>
-::std::string RequestObject<DT>::serialize(const ::std::string& contentType,
-                                           const ::std::string& outerTagName,
+std::string RequestObject<DT>::serialize(const std::string& contentType,
+                                           const std::string& outerTagName,
                                            const DT& data)
 {
 	if(contentType != "application/xml") {
@@ -85,9 +85,9 @@ template<typename DT>
 }
 
 template<typename DT>
-::std::string RequestObject<DT>::serialize(const ::std::string& contentType,
-                                           const ::std::string& outerTagName,
-                                           const ::std::string& innerTagName,
+std::string RequestObject<DT>::serialize(const std::string& contentType,
+                                           const std::string& outerTagName,
+                                           const std::string& innerTagName,
                                            const DT& data)
 {
 	if(contentType != "application/xml") {

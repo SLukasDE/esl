@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,35 +21,19 @@ SOFTWARE.
 */
 
 #include <esl/system/SignalHandler.h>
-#include <esl/bootstrap/Interface.h>
+//#include <esl/module/Interface.h>
 #include <esl/Module.h>
-#include <esl/Stacktrace.h>
 
 
 namespace esl {
 namespace system {
 
-
 void signalHandlerInstall(SignalType signalType, std::function<void()> handler) {
-	esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion());
-	const Interface* interface = static_cast<const Interface*>(esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion()));
-
-	if(interface == nullptr) {
-		throw esl::addStacktrace(std::runtime_error("no implementation available for \"esl::system\""));
-	}
-
-	return interface->installSignalHandler(signalType, handler);
+	esl::getModule().getInterface<Interface>().installSignalHandler(signalType, handler);
 }
 
 void signalHandlerRemove(SignalType signalType, std::function<void()> handler) {
-	esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion());
-	const Interface* interface = static_cast<const Interface*>(esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion()));
-
-	if(interface == nullptr) {
-		throw esl::addStacktrace(std::runtime_error("no implementation available for \"esl::system\""));
-	}
-
-	return interface->removeSignalHandler(signalType, handler);
+	esl::getModule().getInterface<Interface>().removeSignalHandler(signalType, handler);
 }
 
 } /* namespace system */

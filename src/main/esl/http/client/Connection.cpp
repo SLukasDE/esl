@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019 Sven Lukas
+Copyright (c) 2019, 2020 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,47 +21,12 @@ SOFTWARE.
 */
 
 #include <esl/http/client/Connection.h>
-#include <esl/http/server/Socket.h>
-#include <esl/bootstrap/Interface.h>
+#include <esl/http/client/Interface.h>
 #include <esl/Module.h>
-#include <esl/Stacktrace.h>
-/*
-#include <esl/http/client/HttpException.h>
-#include <esl/http/client/NetworkException.h>
-#include <esl/Stacktrace.h>
-#include <curl/curl.h>
-#include <esl/logging/Logger.h>
-#include <set>
-#include <sstream>
-#include <string>
-#include <stdexcept>
-*/
+
 namespace esl {
 namespace http {
 namespace client {
-
-namespace {
-
-Interface::Connection* createConnection(
-		const std::string& hostUrl,
-        const long timeout,
-        const std::string& username,
-        const std::string& password,
-        const std::string& proxy,
-        const std::string& proxyUser,
-        const std::string& proxyPassword,
-        const std::string& userAgent) {
-	esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion());
-	const Interface* interface = static_cast<const Interface*>(esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion()));
-
-	if(interface == nullptr) {
-		throw esl::addStacktrace(std::runtime_error("no implementation available for \"esl::http::client::Connection\""));
-	}
-
-	return interface->createConnection(hostUrl, timeout, username, password, proxy, proxyUser, proxyPassword, userAgent);
-}
-
-}
 
 Connection::Connection(const std::string& hostUrl, const long timeout,
         const std::string& username,
@@ -71,7 +36,7 @@ Connection::Connection(const std::string& hostUrl, const long timeout,
         const std::string& proxyPassword,
         const std::string& userAgent)
 : Interface::Connection(),
-  connection(createConnection(hostUrl, timeout, username, password, proxy, proxyUser, proxyPassword, userAgent))
+  connection(esl::getModule().getInterface<Interface>().createConnection(hostUrl, timeout, username, password, proxy, proxyUser, proxyPassword, userAgent))
 {
 }
 
