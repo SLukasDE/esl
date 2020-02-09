@@ -33,6 +33,7 @@ SOFTWARE.
 #include <functional>
 #include <cstdint>
 #include <vector>
+#include <memory>
 
 namespace esl {
 namespace http {
@@ -56,7 +57,7 @@ struct Interface : esl::module::Interface {
 		virtual void release() = 0;
 	};
 
-	using CreateSocket = Socket* (*)(uint16_t port, uint16_t numThreads, RequestHandler::Factory requestHandlerFactory);
+	using CreateSocket = std::unique_ptr<Socket> (*)(uint16_t port, uint16_t numThreads, RequestHandler::Factory requestHandlerFactory);
 
 	/* ************************************ *
 	 * standard API definition of interface *

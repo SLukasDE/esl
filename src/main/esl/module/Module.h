@@ -146,7 +146,7 @@ const T& Module::getInterface(const std::string& implementationName) {
 	const T* interface = getInterfacePointer<T>(implementationName);
 
 	if(interface == nullptr) {
-		throw std::runtime_error("no implementation available for \"" + std::string(T::getType()) + "\" in module \"" + getName() + "\"");
+		throw std::runtime_error("no implementation available for type \"" + std::string(T::getType()) + "\" in module \"" + getName() + "\"");
 	}
 
 	return *interface;
