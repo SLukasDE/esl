@@ -25,7 +25,7 @@ SOFTWARE.
 
 #include <esl/logging/Logger.h>
 #include <esl/logging/Location.h>
-#include <esl/logging/Layout.h>
+#include <esl/logging/layout/Interface.h>
 #include <cstddef>
 
 namespace esl {
@@ -35,34 +35,28 @@ class Interface;
 
 class Appender {
 friend class Interface;
+friend void addAppender(Appender& appender);
 public:
 	enum class RecordLevel {
 		ALL, SELECTED, OFF
 	};
 
-	Appender() = default;
-	virtual ~Appender() = default;
+	virtual ~Appender();
 
-	inline Layout& getLayout() {
-		return layout;
-	}
+	void setLayout(const layout::Interface::Layout* aLayout);
+	const layout::Interface::Layout* getLayout() const;
 
-	/* method is NOT thread-safe */
-	inline RecordLevel getRecordLevel() const {
-		return recordLevel;
-	}
-
-	/* method is NOT thread-safe */
-	inline void setRecordLevel(RecordLevel aRecordLevel = RecordLevel::SELECTED) {
-		recordLevel = aRecordLevel;
-	}
+	/* both methods are NOT thread-safe */
+	RecordLevel getRecordLevel() const;
+	void setRecordLevel(RecordLevel aRecordLevel = RecordLevel::SELECTED);
 
 protected:
-	virtual void flushNewLine(const Location& location, bool enabled) = 0;
-	virtual void write(const Location& location, bool enabled, const char* ptr, std::size_t size) = 0;
+	virtual void flush() = 0;
+	virtual void write(const Location& location, const char* ptr, std::size_t size) = 0;
 
 private:
-	Layout layout;
+	void* handle = nullptr;
+	const layout::Interface::Layout* layout = nullptr;
 	RecordLevel recordLevel = RecordLevel::SELECTED;
 };
 

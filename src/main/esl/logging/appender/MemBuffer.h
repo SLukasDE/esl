@@ -42,19 +42,21 @@ public:
 	std::vector<std::tuple<Location, std::string>> getBuffer() const;
 
 protected:
-	void flushNewLine(const Location& location, bool enabled) override;
-	void write(const Location& location, bool enabled, const char* ptr, std::size_t size) override;
+	void flush() override;
+	void write(const Location& location, const char* ptr, std::size_t size) override;
 
 private:
     using LineBuffer = std::vector<char>;
+    struct Entry {
+    	Entry(std::size_t maxColumns)
+    	: lineStaticSize((maxColumns > 0 ? maxColumns+1 : 0), 0)
+    	{ }
+    	Location location;
+    	LineBuffer lineStaticSize;
+    	std::string lineDynamicSize;
+    };
 
-    // this is the static buffer, used if maxColumns>0
-    std::vector<LineBuffer> rows;
-
-    // this is the dynamic buffer, used if maxColumns=0
-    std::vector<std::string> lines;
-
-    std::vector<Location> locations;
+    std::vector<Entry> entries;
 
 	const std::size_t maxRows;
 	const std::size_t maxColumns;
@@ -62,6 +64,9 @@ private:
 	std::size_t rowProducer = 0;
 	std::size_t rowConsumer = 0;
 	std::size_t columnsProducer = 0;
+
+	void write(const char* ptr, std::size_t size);
+	void newline();
 };
 
 } /* namespace appender */

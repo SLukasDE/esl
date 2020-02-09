@@ -38,7 +38,7 @@ struct Interface : esl::module::Interface {
 	 * standard API definition of interface *
 	 * ************************************ */
 
-	static inline const char* getId() {
+	static inline const char* getType() {
 		return "esl-http-server-requesthandler";
 	}
 
@@ -52,7 +52,7 @@ struct Interface : esl::module::Interface {
 
 	Interface(std::string module, std::string implementation,
 			RequestHandler::Factory aCreateRequestHandler)
-	: esl::module::Interface(std::move(module), getId(), std::move(implementation), getApiVersion()),
+	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
 	  createRequestHandler(aCreateRequestHandler)
 	{ }
 

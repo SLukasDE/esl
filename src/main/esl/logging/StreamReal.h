@@ -60,7 +60,6 @@ public:
 private:
     StreamWriter getStreamWriter(const void* object, const char* function, const char* file, unsigned int lineNo);
 
-    mutable bool* enabled = nullptr;
     const char* typeName;
 	Level level;
 };

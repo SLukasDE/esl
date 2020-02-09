@@ -20,42 +20,39 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_STACKTRACE_INTERFACE_H_
-#define ESL_STACKTRACE_INTERFACE_H_
+#ifndef ESL_LOGGING_LAYOUT_INTERFACE_H_
+#define ESL_LOGGING_LAYOUT_INTERFACE_H_
 
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
+#include <esl/object/parameter/Interface.h>
 #include <esl/logging/Location.h>
-#include <esl/logging/StreamReal.h>
-#include <ostream>
+#include <string>
 #include <memory>
 
 namespace esl {
-namespace stacktrace {
+namespace logging {
+namespace layout {
 
 struct Interface : esl::module::Interface {
+
 	/* ******************************************** *
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class Stacktrace {
+	class Layout : public object::parameter::Interface::Object {
 	public:
-		Stacktrace() = default;
-		virtual ~Stacktrace() = default;
-
-		virtual void dump(std::ostream& stream) const = 0;
-		virtual void dump(esl::logging::StreamReal& stream, esl::logging::Location location) const = 0;
-		virtual std::unique_ptr<Stacktrace> clone() const = 0;
+		virtual std::string toString(const Location& location) const = 0;
 	};
 
-	using CreateStacktrace = Stacktrace* (*)();
+	using CreateLayout = std::unique_ptr<Layout> (*)();
 
 	/* ************************************ *
 	 * standard API definition of interface *
 	 * ************************************ */
 
 	static inline const char* getType() {
-		return "esl-stacktrace";
+		return "esl-logging-layout";
 	}
 
 	static inline const std::string& getApiVersion() {
@@ -66,15 +63,16 @@ struct Interface : esl::module::Interface {
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	Interface(std::string module, std::string implementation, CreateStacktrace aCreateStacktrace)
+	Interface(std::string module, std::string implementation, CreateLayout aCreateLayout)
 	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
-	  createStacktrace(aCreateStacktrace)
+	  createLayout(aCreateLayout)
 	{ }
 
-	CreateStacktrace createStacktrace;
+	CreateLayout createLayout;
 };
 
-} /* namespace stacktrace */
+} /* namespace layout */
+} /* namespace logging */
 } /* namespace esl */
 
-#endif /* ESL_STACKTRACE_INTERFACE_H_ */
+#endif /* ESL_LOGGING_LAYOUT_INTERFACE_H_ */

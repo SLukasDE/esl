@@ -105,7 +105,7 @@ struct Interface : esl::module::Interface {
 	 * standard API definition of interface *
 	 * ************************************ */
 
-	static inline const char* getId() {
+	static inline const char* getType() {
 		return "esl-system";
 	}
 
@@ -124,7 +124,7 @@ struct Interface : esl::module::Interface {
 			CreateProcessOutputFile aCreateProcessOutputFile,
 			InstallSignalHandler aInstallSignalHandler,
 			RemoveSignalHandler aRemoveSignalHandler)
-	: esl::module::Interface(std::move(module), getId(), std::move(implementation), getApiVersion()),
+	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
 	  createProcess(aCreateProcess),
 	  createProcessOutputDefault(aCreateProcessOutputDefault),
 	  createProcessOutputPipe(aCreateProcessOutputPipe),

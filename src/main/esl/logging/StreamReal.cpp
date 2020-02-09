@@ -26,6 +26,8 @@ SOFTWARE.
 #include <esl/logging/Interface.h>
 #include <esl/Module.h>
 
+#include <iostream>
+
 namespace esl {
 namespace logging {
 
@@ -58,11 +60,7 @@ bool StreamReal::isEnabled() const {
 	if(interface == nullptr) {
 		return false;
 	}
-	if(enabled == nullptr) {
-		enabled = &interface->isEnabled(typeName, level);
-	}
-
-	return *enabled;
+	return interface->isEnabled(typeName, level);
 }
 
 StreamWriter StreamReal::getStreamWriter(const void* object, const char* function, const char* file, unsigned int lineNo) {
@@ -70,10 +68,9 @@ StreamWriter StreamReal::getStreamWriter(const void* object, const char* functio
 	const Interface* interface = esl::getModule().getInterfacePointer<Interface>();
 
 	if(interface) {
-		std::pair<std::ostream&, void*> oStreamAndData = interface->addWriter(location, &enabled);
-		return StreamWriter(location, &oStreamAndData.first, oStreamAndData.second);
+		return StreamWriter(interface->createOStream(location));
 	}
-	return StreamWriter(location, nullptr, nullptr);
+	return StreamWriter(nullptr);
 }
 
 } /* namespace logging */

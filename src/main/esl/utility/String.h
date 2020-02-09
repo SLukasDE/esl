@@ -36,6 +36,9 @@ public:
     static std::string ltrim(std::string str, char trimCharacter = ' ');
     static std::string rtrim(std::string str, char trimCharacter = ' ');
     static std::string trim(std::string str, char trimCharacter = ' ');
+
+    static std::string toUpper(std::string str);
+    static std::string toLower(std::string str);
 };
 
 } /* namespace utility */

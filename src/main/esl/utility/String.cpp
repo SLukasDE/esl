@@ -64,5 +64,19 @@ std::string String::trim(std::string str, char trimCharacter) {
     return rtrim(ltrim(str, trimCharacter), trimCharacter);
 }
 
+std::string String::toUpper(std::string str) {
+	std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c) {
+		return std::toupper(c);
+	});
+	return str;
+}
+
+std::string String::toLower(std::string str) {
+	std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c) {
+		return std::tolower(c);
+	});
+	return str;
+}
+
 } /* namespace utility */
 } /* namespace esl */

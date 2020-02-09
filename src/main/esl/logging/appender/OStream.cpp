@@ -44,46 +44,58 @@ OStream::OStream(std::ostream& oStreamTrace,
 {
 }
 
-void OStream::flushNewLine(const Location& location, bool enabled) {
+void OStream::flush() {
 	switch(getRecordLevel()) {
 	case RecordLevel::OFF:
 		return;
 	case RecordLevel::ALL:
 		break;
 	default: /* RecordLevel::SELECTED */
-		if(!enabled) {
+		if(!lastLocation.enabled) {
 			return;
 		}
 		break;
 	}
 
-	std::ostream& oStream = getOStream(location.level);
-	if(!isFirstCharacterInLine) {
-		oStream << "\n";
-		isFirstCharacterInLine = true;
-	}
-	oStream.flush();
+	getOStream(lastLocation.level).flush();
 }
 
-void OStream::write(const Location& location, bool enabled, const char* ptr, std::size_t size) {
+void OStream::write(const Location& aLocation, const char* ptr, std::size_t size) {
 	switch(getRecordLevel()) {
 	case RecordLevel::OFF:
 		return;
 	case RecordLevel::ALL:
 		break;
 	default: /* RecordLevel::SELECTED */
-		if(!enabled) {
+		if(!aLocation.enabled) {
 			return;
 		}
 		break;
 	}
 
-	std::ostream& oStream = getOStream(location.level);
+	std::ostream& oStream = getOStream(aLocation.level);
+
+	if(lastLocation != aLocation) {
+		if(!isFirstCharacterInLine) {
+			std::ostream& lastOStream = getOStream(lastLocation.level);
+
+			lastOStream << "\n";
+			if(&lastOStream != &oStream) {
+				lastOStream.flush();
+			}
+
+			isFirstCharacterInLine = true;
+		}
+		lastLocation = aLocation;
+	}
+
 	const char* begin = ptr;
 
 	for(auto iter = ptr; iter != &ptr[size]; ++iter) {
 		if(isFirstCharacterInLine) {
-			oStream << getLayout().makePrefix(location);
+			if(getLayout()) {
+				oStream << getLayout()->toString(aLocation);
+			}
 			isFirstCharacterInLine = false;
 		}
 

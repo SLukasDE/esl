@@ -45,7 +45,6 @@ struct Interface : esl::module::Interface {
 	public:
 		virtual ~Object() = default;
 		virtual void setParameter(const std::string& key, const std::string& value) = 0;
-		// virtual std::vector<std::pair<std::string, std::string>> getParameters() = 0;
 	};
 
 
@@ -55,7 +54,7 @@ struct Interface : esl::module::Interface {
 	 * standard API definition of interface *
 	 * ************************************ */
 
-	static inline const char* getId() {
+	static inline const char* getType() {
 		return "esl-object-parameter";
 	}
 
@@ -69,7 +68,7 @@ struct Interface : esl::module::Interface {
 
 	Interface(std::string module, std::string implementation,
 			CreateObject aCreateObject)
-	: esl::module::Interface(std::move(module), getId(), std::move(implementation), getApiVersion()),
+	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
 	  createObject(aCreateObject)
 	{ }
 

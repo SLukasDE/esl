@@ -44,15 +44,15 @@ void setLevel(Level logLevel, const std::string& typeName) {
 }
 
 void addAppender(Appender& appender) {
+	/* we are done if appender has been already added */
+	if(appender.handle != nullptr) {
+		return;
+	}
+
 	const Interface* interface = esl::getModule().getInterfacePointer<Interface>();
 	if(interface) {
-		interface->addAppender(appender);
+		appender.handle = interface->addAppender(appender);
 	}
-}
-
-std::vector<std::reference_wrapper<Appender>> getAppenders() {
-	const Interface* interface = esl::getModule().getInterfacePointer<Interface>();
-	return interface ? interface->getAppenders() : std::vector<std::reference_wrapper<Appender>>{};
 }
 
 #if 0

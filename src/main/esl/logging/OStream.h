@@ -20,29 +20,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_LOGGING_LAYOUT_H_
-#define ESL_LOGGING_LAYOUT_H_
+#ifndef ESL_LOGGING_OSTREAM_H_
+#define ESL_LOGGING_OSTREAM_H_
 
-#include <esl/logging/layout/Interface.h>
-#include <string>
-#include <memory>
+#include <ostream>
 
 namespace esl {
 namespace logging {
 
-class Layout : public layout::Interface::Layout {
+class OStream {
 public:
-	Layout(const std::string& implementation = "");
-
-	std::string toString(const Location& location) const override;
-	void setParameter(const std::string& key, const std::string& value) override;
-
-private:
-	const std::string implementation;
-	mutable std::unique_ptr<layout::Interface::Layout> layout;
+    virtual ~OStream() { }
+    virtual std::ostream* getOStream() = 0;
 };
 
 } /* namespace logging */
 } /* namespace esl */
 
-#endif /* ESL_LOGGING_LAYOUT_H_ */
+#endif /* ESL_LOGGING_OSTREAM_H_ */

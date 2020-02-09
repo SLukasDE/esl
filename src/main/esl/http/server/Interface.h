@@ -27,7 +27,6 @@ SOFTWARE.
 #include <esl/Object.h>
 #include <esl/Module.h>
 
-//#include <esl/http/server/RequestHandlerFactory.h>
 #include <esl/http/server/RequestHandler.h>
 #include <esl/http/server/RequestContext.h>
 #include <string>
@@ -63,7 +62,7 @@ struct Interface : esl::module::Interface {
 	 * standard API definition of interface *
 	 * ************************************ */
 
-	static inline const char* getId() {
+	static inline const char* getType() {
 		return "esl-http-server";
 	}
 
@@ -77,7 +76,7 @@ struct Interface : esl::module::Interface {
 
 	Interface(std::string module, std::string implementation,
 			CreateSocket aCreateSocket)
-	: esl::module::Interface(std::move(module), getId(), std::move(implementation), getApiVersion()),
+	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
 	  createSocket(aCreateSocket)
 	{ }
 

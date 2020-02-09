@@ -28,10 +28,11 @@ SOFTWARE.
 #include <esl/logging/Location.h>
 #include <esl/logging/Level.h>
 #include <esl/logging/Appender.h>
+#include <esl/logging/OStream.h>
 #include <ostream>
 #include <vector>
 #include <functional>
-
+#include <memory>
 
 namespace esl {
 namespace logging {
@@ -47,18 +48,17 @@ struct Interface : esl::module::Interface {
 
 	using SetUnblocked = void (*)(bool isUnblocked);
 	using SetLevel = void (*)(Level logLevel, const std::string& typeName);
-	using AddAppender = void(*)(Appender& appender);
-	using GetAppenders = std::vector<std::reference_wrapper<Appender>>(*)();
-	using IsEnabled = bool& (*)(const char* typeName, Level level);
-	using AddWriter = std::pair<std::reference_wrapper<std::ostream>, void*> (*)(const Location& location, bool** enabled);
-	using RemoveWriter = void (*)(std::ostream& ostream, void* data);
+	using AddAppender = void*(*)(Appender& appender);
+	using RemoveAppender = void(*)(void* handle);
+	using IsEnabled = bool (*)(const char* typeName, Level level);
+	using CreateOStream = std::unique_ptr<OStream> (*)(const Location& location/*, bool** enabled*/);
 	using GetThreadNo = unsigned int (*)(std::thread::id threadId);
 
 	/* ************************************ *
 	 * standard API definition of interface *
 	 * ************************************ */
 
-	static inline const char* getId() {
+	static inline const char* getType() {
 		return "esl-logging";
 	}
 
@@ -71,34 +71,32 @@ struct Interface : esl::module::Interface {
 	 * ************************************ */
 
 	Interface(std::string module, std::string implementation,
-			SetUnblocked aSetUnblocked, SetLevel aSetLevel, AddAppender aAddAppender, GetAppenders aGetAppenders,
-			IsEnabled aIsEnabled, AddWriter aAddWriter, RemoveWriter aRemoveWriter, GetThreadNo aGetThreadNo)
-	: esl::module::Interface(std::move(module), getId(), std::move(implementation), getApiVersion()),
+			SetUnblocked aSetUnblocked, SetLevel aSetLevel, AddAppender aAddAppender, RemoveAppender aRemoveAppender,// GetAppenders aGetAppenders,
+			IsEnabled aIsEnabled, CreateOStream aCreateOStream, GetThreadNo aGetThreadNo)
+	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
 	  setUnblocked(aSetUnblocked),
 	  setLevel(aSetLevel),
 	  addAppender(aAddAppender),
-	  getAppenders(aGetAppenders),
+	  removeAppender(aRemoveAppender),
 	  isEnabled(aIsEnabled),
-	  addWriter(aAddWriter),
-	  removeWriter(aRemoveWriter),
+	  createOStream(aCreateOStream),
 	  getThreadNo(aGetThreadNo)
 	{ }
 
-	static void appenderFlushNewLine(Appender& appender, const Location& location, bool enabled) {
-		appender.flushNewLine(location, enabled);
+	static void appenderFlush(Appender& appender) {
+		appender.flush();
 	}
 
-	static void appenderWrite(Appender& appender, const Location& location, bool enabled, const char* ptr, std::size_t size) {
-		appender.write(location, enabled, ptr, size);
+	static void appenderWrite(Appender& appender, const Location& location, const char* ptr, std::size_t size) {
+		appender.write(location, ptr, size);
 	}
 
 	SetUnblocked setUnblocked;
 	SetLevel setLevel;
 	AddAppender addAppender;
-	GetAppenders getAppenders;
+	RemoveAppender removeAppender;
 	IsEnabled isEnabled;
-	AddWriter addWriter;
-	RemoveWriter removeWriter;
+	CreateOStream createOStream;
 	GetThreadNo getThreadNo;
 };
 

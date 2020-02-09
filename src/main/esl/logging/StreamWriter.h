@@ -23,8 +23,9 @@ SOFTWARE.
 #ifndef ESL_LOGGING_STREAMWRITER_H_
 #define ESL_LOGGING_STREAMWRITER_H_
 
-#include <esl/logging/Location.h>
-#include <ostream>
+//#include <ostream>
+#include <esl/logging/OStream.h>
+#include <memory>
 
 namespace esl {
 namespace logging {
@@ -33,15 +34,14 @@ class StreamWriter {
 friend class StreamReal;
 public:
 	StreamWriter(const StreamWriter&) = delete;
-	~StreamWriter();
 
 	StreamWriter& operator=(const StreamWriter&) = delete;
 	StreamWriter& operator=(StreamWriter&&) = delete;
 
 	template<typename T>
 	inline StreamWriter& operator<<(const T& t) {
-		if(oStream) {
-			(*oStream) << t;
+		if(oStream && oStream->getOStream()) {
+			*oStream->getOStream() << t;
 		}
 		return *this;
 	}
@@ -50,16 +50,16 @@ public:
 
     template<typename T>
 	inline StreamWriter& write(const T& t) {
-		if(oStream) {
-			(*oStream) << t;
+		if(oStream && oStream->getOStream()) {
+			*oStream->getOStream() << t;
 		}
 		return *this;
 	}
 
     template<typename T, typename... Args>
 	inline StreamWriter& write(const T& t, Args... args) {
-		if(oStream) {
-			(*oStream) << t;
+		if(oStream && oStream->getOStream()) {
+			*oStream->getOStream() << t;
 			return write(args...);
 		}
 		return *this;
@@ -67,13 +67,10 @@ public:
 
 
 private:
-	StreamWriter(Location location, std::ostream* oStream, void* data);
+	StreamWriter(std::unique_ptr<OStream> oStream);
 	StreamWriter(StreamWriter&& streamWriter);
 
-    bool doUnlock;
-    Location location;
-    std::ostream* oStream;
-    void* data;
+    std::unique_ptr<OStream> oStream;
 };
 
 } /* namespace logging */

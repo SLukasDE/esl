@@ -20,29 +20,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_LOGGING_LAYOUT_H_
-#define ESL_LOGGING_LAYOUT_H_
+#include <esl/logging/Appender.h>
 
-#include <esl/logging/layout/Interface.h>
-#include <string>
-#include <memory>
+#include <esl/logging/Interface.h>
+#include <esl/Module.h>
 
 namespace esl {
 namespace logging {
 
-class Layout : public layout::Interface::Layout {
-public:
-	Layout(const std::string& implementation = "");
+Appender::~Appender() {
+	const Interface* interface = esl::getModule().getInterfacePointer<Interface>();
+	if(interface) {
+		interface->removeAppender(handle);
+	}
+}
 
-	std::string toString(const Location& location) const override;
-	void setParameter(const std::string& key, const std::string& value) override;
+void Appender::setLayout(const layout::Interface::Layout* aLayout) {
+	layout = aLayout;
+}
 
-private:
-	const std::string implementation;
-	mutable std::unique_ptr<layout::Interface::Layout> layout;
-};
+const layout::Interface::Layout* Appender::getLayout() const {
+	return layout;
+}
+
+/* method is NOT thread-safe */
+Appender::RecordLevel Appender::getRecordLevel() const {
+	return recordLevel;
+}
+
+/* method is NOT thread-safe */
+void Appender::setRecordLevel(RecordLevel aRecordLevel) {
+	recordLevel = aRecordLevel;
+}
 
 } /* namespace logging */
 } /* namespace esl */
-
-#endif /* ESL_LOGGING_LAYOUT_H_ */

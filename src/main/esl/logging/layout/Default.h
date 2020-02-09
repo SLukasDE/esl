@@ -20,29 +20,61 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_LOGGING_LAYOUT_H_
-#define ESL_LOGGING_LAYOUT_H_
+#ifndef ESL_LOGGING_LAYOUT_DEFAULT_H_
+#define ESL_LOGGING_LAYOUT_DEFAULT_H_
 
 #include <esl/logging/layout/Interface.h>
-#include <string>
-#include <memory>
 
 namespace esl {
 namespace logging {
+namespace layout {
 
-class Layout : public layout::Interface::Layout {
+class Default : public Interface::Layout {
 public:
-	Layout(const std::string& implementation = "");
+	static inline const char* getImplementation() {
+		return "default";
+	}
 
 	std::string toString(const Location& location) const override;
 	void setParameter(const std::string& key, const std::string& value) override;
 
+	bool getShowTimestamp() const;
+	void setShowTimestamp(bool showTimestamp = true);
+
+	bool getShowLevel() const;
+	void setShowLevel(bool showLevel = true);
+
+	bool getShowTypeName() const;
+	void setShowTypeName(bool showTypeName = true);
+
+	bool getShowAddress() const;
+	void setShowAddress(bool showAddress = true);
+
+	bool getShowFile() const;
+	void setShowFile(bool showFile = true);
+
+	bool getShowFunction() const;
+	void setShowFunction(bool showFunction = true);
+
+	bool getShowLineNo() const;
+	void setShowLineNo(bool showLineNo = true);
+
+	bool getShowThreadNo() const;
+	void setShowThreadNo(bool showThreadNo = true);
+
 private:
-	const std::string implementation;
-	mutable std::unique_ptr<layout::Interface::Layout> layout;
+	bool showTimestamp = true;
+	bool showLevel = true;
+	bool showTypeName = true;
+	bool showAddress = true;
+	bool showFile = false;
+	bool showFunction = false;
+	bool showLineNo = false;
+	bool showThreadNo = true;
 };
 
+} /* namespace layout */
 } /* namespace logging */
 } /* namespace esl */
 
-#endif /* ESL_LOGGING_LAYOUT_H_ */
+#endif /* ESL_LOGGING_LAYOUT_DEFAULT_H_ */

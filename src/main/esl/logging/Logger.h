@@ -49,7 +49,6 @@ void setLevel(Level logLevel, const std::string& typeName);
 
 // thread safe, quaranteed by loggerMutex
 void addAppender(Appender& appender);
-std::vector<std::reference_wrapper<Appender>> getAppenders();
 
 template<Level level = defaultLevel>
 class Logger {

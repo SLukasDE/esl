@@ -35,7 +35,6 @@ public:
 	Object(const std::string& implementation);
 
 	void setParameter(const std::string& key, const std::string& value) override;
-	// std::vector<std::pair<std::string, std::string>> getParameters() override;
 
 private:
 	std::unique_ptr<Interface::Object> object;

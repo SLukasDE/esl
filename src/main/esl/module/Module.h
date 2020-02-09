@@ -135,7 +135,7 @@ const T* Module::getInterfacePointer(const std::string& implementationName) {
 
 	if(implementationEntry.first == false) {
 		implementationEntry.first = true;
-		implementationEntry.second = static_cast<const T*>(getInterface(Interface("", T::getId(), implementationName, T::getApiVersion())));
+		implementationEntry.second = static_cast<const T*>(getInterface(Interface("", T::getType(), implementationName, T::getApiVersion())));
 	}
 
 	return implementationEntry.second;
@@ -146,7 +146,7 @@ const T& Module::getInterface(const std::string& implementationName) {
 	const T* interface = getInterfacePointer<T>(implementationName);
 
 	if(interface == nullptr) {
-		throw std::runtime_error("no implementation available for \"" + std::string(T::getId()) + "\" in module \"" + getName() + "\"");
+		throw std::runtime_error("no implementation available for \"" + std::string(T::getType()) + "\" in module \"" + getName() + "\"");
 	}
 
 	return *interface;

@@ -27,34 +27,19 @@ SOFTWARE.
 namespace esl {
 namespace logging {
 
-StreamWriter::StreamWriter(Location aLocation, std::ostream* aOStream, void* aData)
-: doUnlock(true),
-  location(std::move(aLocation)),
-  oStream(aOStream),
-  data(aData)
+StreamWriter::StreamWriter(std::unique_ptr<OStream> aOStream)
+: oStream(std::move(aOStream))
 {
 }
 
 StreamWriter::StreamWriter(StreamWriter&& streamWriter)
-: doUnlock(streamWriter.doUnlock),
-  location(std::move(streamWriter.location)),
-  oStream(streamWriter.oStream),
-  data(streamWriter.data)
+: oStream(std::move(streamWriter.oStream))
 {
-	streamWriter.doUnlock = false;
-}
-
-StreamWriter::~StreamWriter() {
-    if(doUnlock && oStream) {
-    	oStream->flush();
-
-    	esl::getModule().getInterface<Interface>().removeWriter(*oStream, data);
-    }
 }
 
 StreamWriter& StreamWriter::operator<<(std::ostream& (*pf)(std::ostream&)) {
-    if(oStream) {
-    	(*oStream) << pf;
+    if(oStream && oStream->getOStream()) {
+    	*oStream->getOStream() << pf;
     }
     return *this;
 }
