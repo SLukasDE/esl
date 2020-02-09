@@ -31,15 +31,18 @@ namespace module {
 
 class Library {
 public:
-	using GetModule = esl::module::Module&(*)();
+	using GetModule = Module&(*)();
 
 	Library(const std::string& path);
-	~Library() = default;
+	~Library();
 
-	esl::module::Module& getModule();
+	Module& getModule();
 
 private:
-	GetModule libGetModule;
+#ifdef linux
+	void* libHandle = nullptr;
+#endif
+	GetModule libGetModule = nullptr;
 };
 
 } /* namespace module */

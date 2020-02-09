@@ -21,6 +21,11 @@ SOFTWARE.
 */
 
 #include <esl/module/Library.h>
+#include <stdexcept>
+
+#ifdef linux
+#include <dlfcn.h>
+#endif
 
 namespace esl {
 namespace module {
@@ -28,7 +33,33 @@ namespace module {
 Library::Library(const std::string& path)
 : libGetModule(nullptr)
 {
+#ifdef linux
+	libHandle = dlopen(path.c_str(), RTLD_NOW | RTLD_LOCAL );
+    if(libHandle == nullptr) {
+    	throw std::runtime_error(std::string("Exception 1: ") + dlerror());
+    }
+
+    libGetModule = *static_cast<GetModule*>(dlsym(libHandle, "esl__module__Library__getModule"));
+    if(libGetModule == nullptr) {
+        if(dlclose(libHandle) != 0) {
+        }
+        libHandle = nullptr;
+    	throw std::runtime_error("Cannot find symbol \"esl__module__Library__getModule\" in library \"" + path + "\"");
+    }
+#else
    	throw std::runtime_error("Library loader not implemented so far");
+#endif
+}
+
+Library::~Library() {
+#ifdef linux
+	if(libHandle != nullptr) {
+        if(dlclose(libHandle) != 0) {
+        	// cannot close library
+        }
+        libHandle = nullptr;
+	}
+#endif
 }
 
 esl::module::Module& Library::getModule() {
