@@ -21,7 +21,6 @@ SOFTWARE.
 */
 
 #include <esl/http/server/Response.h>
-#include <esl/logging/Logger.h>
 #include <iostream>
 
 namespace esl {
@@ -32,11 +31,6 @@ Response::Response(unsigned short httpStatus, const ::std::string& contentType) 
 : httpStatus(httpStatus)
 {
 	headers["Content-Type"] = contentType;
-	esl::logger.debug << __FUNCTION__ << " this=" << this << std::endl;
-}
-
-Response::~Response() noexcept {
-	esl::logger.debug << __FUNCTION__ << " this=" << this << std::endl;
 }
 
 bool Response::isValid() const noexcept {

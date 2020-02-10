@@ -33,7 +33,7 @@ namespace server {
 class Response {
 public:
 	Response(unsigned short httpStatus, const std::string& contentType) noexcept;
-	virtual ~Response() = 0;
+	virtual ~Response() = default;
 
 	bool isValid() const noexcept;
 
