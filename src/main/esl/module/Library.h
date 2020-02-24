@@ -26,6 +26,8 @@ SOFTWARE.
 #include <esl/module/Module.h>
 #include <string>
 
+#define linux
+
 namespace esl {
 namespace module {
 
@@ -43,6 +45,7 @@ private:
 	void* libHandle = nullptr;
 #endif
 	GetModule libGetModule = nullptr;
+	Module* libModule = nullptr;
 };
 
 } /* namespace module */
