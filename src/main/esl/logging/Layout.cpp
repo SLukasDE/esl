@@ -28,7 +28,7 @@ namespace logging {
 
 namespace {
 std::unique_ptr<layout::Interface::Layout> createLayout(const std::string& implementation) {
-	const layout::Interface* interface = esl::getModule().getInterfacePointer<layout::Interface>();
+	const layout::Interface* interface = esl::getModule().getInterfacePointer<layout::Interface>(implementation);
 	return interface ? interface->createLayout() : nullptr;
 }
 }
