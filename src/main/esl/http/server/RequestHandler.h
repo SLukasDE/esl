@@ -42,7 +42,9 @@ public:
 	// return true for every kind of success and get called again for more content data
 	// return false for failure and/or get not called again for more content data
 	// virtual bool process(Connection& connection, const char* contentData, std::size_t contentDataSize) = 0;
-	virtual bool process(const char* contentData, std::size_t contentDataSize) = 0;
+	virtual bool process(const char* contentData, std::size_t contentDataSize) {
+		return false;
+	}
 };
 
 } /* namespace server */
