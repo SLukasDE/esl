@@ -69,6 +69,7 @@ namespace esl {
 namespace module {
 
 class Module {
+	friend class Library;
 public:
 	Module() = default;
 	virtual ~Module() = default;
@@ -91,8 +92,8 @@ public:
 		module.license = QUOTE(TRANSFORMER_ARTEFACT_LICENSE);
 	}
 
-	const std::vector<Interface>& getDescriptorsProvided() const;
-	const std::vector<Interface>& getDescriptorsRequired() const;
+	const std::vector<Interface>& getInterfaces() const;
+	/* const std::vector<Interface>& getInterfacesRequired() const; */
 	const Interface* getInterface(const Interface& descriptor) const;
 
 	template <class T>
@@ -104,11 +105,10 @@ public:
 	void addModule(const Module& foreignModule, const std::string& type = "", const std::string& implementation = "");
 
 protected:
+	/* std::vector<Interface> required; */
+
 	void addInterface(std::unique_ptr<const Interface> interface);
 	void addForeignInterface(const Interface& interface);
-
-	std::vector<Interface> required;
-
 
 private:
 	std::vector<Interface> provided;
@@ -124,6 +124,8 @@ private:
 	std::string apiVersion;
 	std::string architecture;
 	std::string license;
+
+	void setEslModule(Module& foreignModule);
 };
 
 template <class T>
@@ -146,7 +148,12 @@ const T& Module::getInterface(const std::string& implementationName) {
 	const T* interface = getInterfacePointer<T>(implementationName);
 
 	if(interface == nullptr) {
-		throw std::runtime_error("no implementation available for type \"" + std::string(T::getType()) + "\" in module \"" + getName() + "\"");
+		if(implementationName.empty()) {
+			throw std::runtime_error("no implementation available for type \"" + std::string(T::getType()) + "\" in module \"" + getName() + "\"");
+		}
+		else {
+			throw std::runtime_error("no implementation available for type \"" + std::string(T::getType()) + "\" and implementation \"" + implementationName + "\" in module \"" + getName() + "\"");
+		}
 	}
 
 	return *interface;
