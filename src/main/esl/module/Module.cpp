@@ -21,8 +21,11 @@ SOFTWARE.
 */
 
 #include <esl/module/Module.h>
+#include <esl/Module.h>
+#include <utility>
 
 namespace esl {
+void setModule(esl::module::Module* aForeignModulePtr);
 namespace module {
 
 const std::string& Module::getId() const {
@@ -52,48 +55,15 @@ const std::string& Module::getArchitecture() const {
 const std::string& Module::getLicense() const {
 	return license;
 }
-/*
-const std::vector<Descriptor>& Module::getDescriptorsProvided() const {
+
+const std::vector<Interface>& Module::getInterfaces() const {
 	return provided;
 }
-
-const std::vector<Descriptor>& Module::getDescriptorsRequired() const {
+/*
+const std::vector<Interface>& Module::getInterfacesRequired() const {
 	return required;
-}
-
-const Interface* Module::getInterface(const Descriptor& descriptor) const {
-	for(const auto& interface : interfaces) {
-		if(descriptor.type != interface->descriptor.type) {
-			continue;
-		}
-
-		if(!descriptor.implementation.empty() && descriptor.implementation != interface->descriptor.implementation) {
-			continue;
-		}
-
-		if(!descriptor.apiVersion.empty() && descriptor.apiVersion != interface->descriptor.apiVersion) {
-			continue;
-		}
-
-		if(!descriptor.module.empty() && descriptor.module != interface->descriptor.module) {
-			continue;
-		}
-
-		return interface;
-	}
-
-	return nullptr;
 }
 */
-
-const std::vector<Interface>& Module::getDescriptorsProvided() const {
-	return provided;
-}
-
-const std::vector<Interface>& Module::getDescriptorsRequired() const {
-	return required;
-}
-
 const Interface* Module::getInterface(const Interface& descriptor) const {
 
 	/* ******************** *
@@ -170,6 +140,10 @@ void Module::addModule(const Module& foreignModule, const std::string& type, con
 
 		addForeignInterface(*interface);
 	}
+}
+
+void Module::setEslModule(Module& foreignModule) {
+	esl::setModule(&foreignModule);
 }
 
 void Module::addInterface(std::unique_ptr<const Interface> interface) {
