@@ -21,6 +21,7 @@ SOFTWARE.
 */
 
 #include <esl/module/Library.h>
+#include <esl/Module.h>
 #include <stdexcept>
 
 #ifdef linux
@@ -36,15 +37,25 @@ Library::Library(const std::string& path)
 #ifdef linux
 	libHandle = dlopen(path.c_str(), RTLD_NOW | RTLD_LOCAL );
     if(libHandle == nullptr) {
-    	throw std::runtime_error(std::string("Exception 1: ") + dlerror());
+    	throw std::runtime_error(dlerror());
     }
 
-    libGetModule = *static_cast<GetModule*>(dlsym(libHandle, "esl__module__Library__getModule"));
+    void* symbolAddressEslGetModule = dlsym(libHandle, "esl__module__library__getModule");
+    if(symbolAddressEslGetModule == nullptr) {
+        if(dlclose(libHandle) != 0) {
+        }
+        libHandle = nullptr;
+    	throw std::runtime_error("Cannot find symbol \"esl__module__library__getModule\" in library \"" + path + "\"");
+    }
+
+    if(symbolAddressEslGetModule != nullptr) {
+        libGetModule = *static_cast<GetModule*>(symbolAddressEslGetModule);
+    }
     if(libGetModule == nullptr) {
         if(dlclose(libHandle) != 0) {
         }
         libHandle = nullptr;
-    	throw std::runtime_error("Cannot find symbol \"esl__module__Library__getModule\" in library \"" + path + "\"");
+    	throw std::runtime_error("Symbol \"esl__module__library__getModule\" in library \"" + path + "\" is null");
     }
 #else
    	throw std::runtime_error("Library loader not implemented so far");
@@ -63,7 +74,11 @@ Library::~Library() {
 }
 
 esl::module::Module& Library::getModule() {
-	return libGetModule();
+	if(libModule == nullptr) {
+		libModule = &libGetModule();
+		libModule->setEslModule(esl::getModule());
+	}
+	return *libModule;
 }
 
 } /* namespace module */
