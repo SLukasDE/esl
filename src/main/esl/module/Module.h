@@ -93,7 +93,6 @@ public:
 	}
 
 	const std::vector<Interface>& getInterfaces() const;
-	/* const std::vector<Interface>& getInterfacesRequired() const; */
 	const Interface* getInterface(const Interface& descriptor) const;
 
 	template <class T>
@@ -102,20 +101,25 @@ public:
 	template <class T>
 	const T& getInterface(const std::string& implementationName = "");
 
+	virtual Module* getModule(const std::string& module);
 	void addModule(const Module& foreignModule, const std::string& type = "", const std::string& implementation = "");
+	void replaceModule(const Module& foreignModule, const std::string& type = "", const std::string& implementation = "");
 
 protected:
-	/* std::vector<Interface> required; */
-
 	void addInterface(std::unique_ptr<const Interface> interface);
-	void addForeignInterface(const Interface& interface);
 
 private:
+	/* contains descriptors of all interfaces provided by this module, independent if it is a mainInterfaces or external added interface.
+	 * This container is used for method getInterfaces()
+	 */
 	std::vector<Interface> provided;
-	std::vector<std::unique_ptr<const Interface>> interfaces;
 
-	std::set<const Module*> foreignModules;
-	std::set<const Interface*> foreignInterfaces;
+	/* contains only main interfaces added by addMainInterface() */
+	std::vector<std::unique_ptr<const Interface>> mainInterfaces;
+
+	/* contains all interfaces added by addInterface() [e.g. indirectly by addMainInterface()] */
+	std::set<const Interface*> allInterfacesByAddress;
+	std::vector<const Interface*> allInterfaces;
 
 	std::string id;
 	std::string name;
@@ -125,7 +129,10 @@ private:
 	std::string architecture;
 	std::string license;
 
-	void setEslModule(Module& foreignModule);
+	Interface* getProvidedInterface(const std::string& type, const std::string& implementation);
+	void addOrReplaceModule(const Module& foreignModule, const std::string& type, const std::string& implementation, bool replace);
+	bool addInterfaceIntern(const Interface& interface);
+	void replaceInterfaceIntern(const Interface& interface);
 };
 
 template <class T>
