@@ -25,7 +25,6 @@ SOFTWARE.
 #include <utility>
 
 namespace esl {
-void setModule(esl::module::Module* aForeignModulePtr);
 namespace module {
 
 const std::string& Module::getId() const {
@@ -59,42 +58,13 @@ const std::string& Module::getLicense() const {
 const std::vector<Interface>& Module::getInterfaces() const {
 	return provided;
 }
-/*
-const std::vector<Interface>& Module::getInterfacesRequired() const {
-	return required;
-}
-*/
+
 const Interface* Module::getInterface(const Interface& descriptor) const {
-
-	/* ******************** *
-	 * check own interfaces *
-	 * ******************** */
-
-	for(const auto& interface : interfaces) {
-		if(descriptor.type != interface->type) {
+	for(auto interface : allInterfaces) {
+		if(!interface) {
 			continue;
 		}
 
-		if(!descriptor.implementation.empty() && descriptor.implementation != interface->implementation) {
-			continue;
-		}
-
-		if(!descriptor.apiVersion.empty() && descriptor.apiVersion != interface->apiVersion) {
-			continue;
-		}
-
-		if(!descriptor.module.empty() && descriptor.module != interface->module) {
-			continue;
-		}
-
-		return interface.get();
-	}
-
-	/* ************************ *
-	 * check foreign interfaces *
-	 * ************************ */
-
-	for(const auto& interface : foreignInterfaces) {
 		if(descriptor.type != interface->type) {
 			continue;
 		}
@@ -117,48 +87,128 @@ const Interface* Module::getInterface(const Interface& descriptor) const {
 	return nullptr;
 }
 
-void Module::addModule(const Module& foreignModule, const std::string& type, const std::string& implementation) {
-	if(&foreignModule == this) {
-		throw std::runtime_error("Cannot add module \"" + getName() + "\" to itself.");
+Module* Module::getModule(const std::string& module) {
+	if(module == "esl") {
+		return &esl::getModule();
 	}
-	foreignModules.insert(&foreignModule);
-
-	for(auto& interfaceProvided : foreignModule.interfaces) {
-		if(!type.empty() && type != interfaceProvided->type) {
-			continue;
-		}
-
-		if(!implementation.empty() && implementation != interfaceProvided->implementation) {
-			continue;
-		}
-
-		const Interface* interface = interfaceProvided.get();
-		if(interface == nullptr) {
-			// ERROR, interfaces must not have null pointers
-			continue;
-		}
-
-		addForeignInterface(*interface);
-	}
+	return false;
 }
 
-void Module::setEslModule(Module& foreignModule) {
-	esl::setModule(&foreignModule);
+void Module::addModule(const Module& foreignModule, const std::string& type, const std::string& implementation) {
+	addOrReplaceModule(foreignModule, type, implementation, false);
+}
+
+void Module::replaceModule(const Module& foreignModule, const std::string& type, const std::string& implementation) {
+	addOrReplaceModule(foreignModule, type, implementation, true);
 }
 
 void Module::addInterface(std::unique_ptr<const Interface> interface) {
 	if(!interface) {
 		throw std::runtime_error("Cannot add empty interface to module \"" + getName() + "\".");
 	}
-	provided.push_back(*interface);
-	interfaces.push_back(std::move(interface));
+
+	if(addInterfaceIntern(*interface.get())) {
+		mainInterfaces.push_back(std::move(interface));
+	}
 }
 
-void Module::addForeignInterface(const Interface& interface) {
-	if(foreignInterfaces.insert(&interface).second) {
-		/* add interface to 'provided' only if it is does not exists already */
-		provided.push_back(interface);
+Interface* Module::getProvidedInterface(const std::string& type, const std::string& implementation) {
+	for(auto& providedInterface : provided) {
+		if(type != providedInterface.type) {
+			continue;
+		}
+
+		if(implementation != providedInterface.implementation) {
+			continue;
+		}
+
+		return &providedInterface;
 	}
+	return nullptr;
+}
+
+void Module::addOrReplaceModule(const Module& foreignModule, const std::string& type, const std::string& implementation, bool replace) {
+	if(&foreignModule == this) {
+		throw std::runtime_error("Cannot add module \"" + getName() + "\" to itself.");
+	}
+
+	for(auto foreignInterface : foreignModule.allInterfaces) {
+		if(foreignInterface == nullptr) {
+			// ERROR, interfaces must not have null pointers
+			continue;
+		}
+
+		if(!type.empty() && type != foreignInterface->type) {
+			continue;
+		}
+
+		if(!implementation.empty() && implementation != foreignInterface->implementation) {
+			continue;
+		}
+
+		if(replace) {
+			replaceInterfaceIntern(*foreignInterface);
+		}
+		else {
+			addInterfaceIntern(*foreignInterface);
+		}
+	}
+}
+
+bool Module::addInterfaceIntern(const Interface& newInterface) {
+	if(allInterfacesByAddress.insert(&newInterface).second == false) {
+		return false;
+	}
+
+	if(getProvidedInterface(newInterface.type, newInterface.implementation)) {
+		return false;
+	}
+
+	provided.push_back(newInterface);
+	allInterfaces.push_back(&newInterface);
+
+	return true;
+}
+
+void Module::replaceInterfaceIntern(const Interface& newInterface) {
+	if(allInterfacesByAddress.insert(&newInterface).second == false) {
+		return;
+	}
+
+	Interface* providedInterface = getProvidedInterface(newInterface.type, newInterface.implementation);
+	if(providedInterface) {
+		*providedInterface = newInterface;
+
+		for(auto& interface : allInterfaces) {
+			if(!interface) {
+				continue;
+			}
+
+			if(interface->type != newInterface.type) {
+				continue;
+			}
+
+			if(!interface->implementation.empty() && interface->implementation != newInterface.implementation) {
+				continue;
+			}
+
+			if(!interface->apiVersion.empty() && interface->apiVersion != newInterface.apiVersion) {
+				continue;
+			}
+
+			if(!interface->module.empty() && interface->module != newInterface.module) {
+				continue;
+			}
+
+			allInterfacesByAddress.erase(interface);
+			interface = &newInterface;
+		}
+	}
+	else {
+		provided.push_back(newInterface);
+		allInterfaces.push_back(&newInterface);
+	}
+
 }
 
 } /* namespace module */
