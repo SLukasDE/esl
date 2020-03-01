@@ -76,7 +76,6 @@ Library::~Library() {
 esl::module::Module& Library::getModule() {
 	if(libModule == nullptr) {
 		libModule = &libGetModule();
-		libModule->setEslModule(esl::getModule());
 	}
 	return *libModule;
 }
