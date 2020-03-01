@@ -38,7 +38,6 @@ public:
 
 typename std::aligned_storage<sizeof(Module), alignof(Module)>::type moduleBuffer; // memory for the object;
 Module* modulePtr = nullptr;
-esl::module::Module* foreignModulePtr = nullptr;
 
 std::unique_ptr<esl::logging::layout::Interface::Layout> createDefaultLayout() {
 	return std::unique_ptr<esl::logging::layout::Interface::Layout>(new esl::logging::layout::Default());
@@ -56,10 +55,6 @@ Module::Module()
 }  /* anonymous namespace */
 
 esl::module::Module& getModule() {
-	if(foreignModulePtr != nullptr) {
-		return *foreignModulePtr;
-	}
-
 	if(modulePtr == nullptr) {
 		/* ***************** *
 		 * initialize module *
@@ -70,13 +65,6 @@ esl::module::Module& getModule() {
 	}
 
 	return *modulePtr;
-}
-
-void setModule(esl::module::Module* aForeignModulePtr) {
-	if(aForeignModulePtr == nullptr
-	|| aForeignModulePtr != modulePtr) {
-		foreignModulePtr = aForeignModulePtr;
-	}
 }
 
 } /* namespace esl */
