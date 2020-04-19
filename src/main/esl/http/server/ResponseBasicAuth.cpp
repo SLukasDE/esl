@@ -26,11 +26,10 @@ namespace esl {
 namespace http {
 namespace server {
 
-ResponseBasicAuth::ResponseBasicAuth(std::string realmId, const std::string& contentType, const char* contentData, size_t contentDataSize)
+ResponseBasicAuth::ResponseBasicAuth(std::string aRealmId, const std::string& contentType, const char* contentData, size_t contentDataSize)
 : ResponseStatic(401, contentType, contentData, contentDataSize),
-  realmId(std::move(realmId))
-{
-}
+  realmId(std::move(aRealmId))
+{ }
 
 const std::string& ResponseBasicAuth::getRealmId() const noexcept {
 	return realmId;

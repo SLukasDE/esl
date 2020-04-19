@@ -86,14 +86,14 @@ const Interface* Module::getInterface(const Interface& descriptor) const {
 
 	return nullptr;
 }
-
+/*
 Module* Module::getModule(const std::string& module) {
 	if(module == "esl") {
 		return &esl::getModule();
 	}
-	return false;
+	return nullptr;
 }
-
+*/
 void Module::addModule(const Module& foreignModule, const std::string& type, const std::string& implementation) {
 	addOrReplaceModule(foreignModule, type, implementation, false);
 }

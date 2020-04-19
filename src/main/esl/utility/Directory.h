@@ -20,27 +20,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/server/ObjectContext.h>
-#include <esl/http/server/Connection.h>
-#include <esl/http/server/Request.h>
-#include <string>
+#ifndef ESL_UTILITY_DIRECTORY_H_
+#define ESL_UTILITY_DIRECTORY_H_
 
-#ifndef ESL_HTTP_SERVER_REQUESTCONTEXT_H_
-#define ESL_HTTP_SERVER_REQUESTCONTEXT_H_
+#include <string>
+#include <vector>
+#include <esl/utility/Time.h>
 
 namespace esl {
-namespace http {
-namespace server {
+namespace utility {
 
-class RequestContext : public ObjectContext {
+class Directory {
 public:
-	virtual Connection& getConnection() const = 0;
-	virtual const Request& getRequest() const = 0;
-	virtual const std::string& getPath() const = 0;
+	struct Entry {
+	    std::string name;
+	    std::string path;
+	    std::size_t size = 0;
+
+	    Time ts;
+	    bool isExecutable = false;
+	    bool isDirectory = false;
+	};
+
+	Directory(std::string path);
+
+    Entry getEntry() const;
+    std::vector<Entry> scan(bool recursive = true) const;
+
+private:
+    std::string path;
 };
 
-} /* namespace server */
-} /* namespace http */
+} /* namespace utility */
 } /* namespace esl */
 
-#endif /* ESL_HTTP_SERVER_REQUESTCONTEXT_H_ */
+#endif /* ESL_UTILITY_DIRECTORY_H_ */

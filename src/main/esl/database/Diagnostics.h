@@ -20,27 +20,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/server/ObjectContext.h>
-#include <esl/http/server/Connection.h>
-#include <esl/http/server/Request.h>
-#include <string>
+#ifndef ESL_DATABASE_DIAGNOSTICS_H_
+#define ESL_DATABASE_DIAGNOSTICS_H_
 
-#ifndef ESL_HTTP_SERVER_REQUESTCONTEXT_H_
-#define ESL_HTTP_SERVER_REQUESTCONTEXT_H_
+#include <esl/database/Diagnostic.h>
+#include <esl/logging/Location.h>
+#include <esl/logging/StreamReal.h>
+#include <esl/logging/StreamEmpty.h>
+#include <vector>
+#include <ostream>
 
 namespace esl {
-namespace http {
-namespace server {
+namespace database {
 
-class RequestContext : public ObjectContext {
+class Diagnostics {
 public:
-	virtual Connection& getConnection() const = 0;
-	virtual const Request& getRequest() const = 0;
-	virtual const std::string& getPath() const = 0;
+//	Diagnostics() = default;
+//	virtual ~Diagnostics() = default;
+
+	const Diagnostic* getSQLCode() const;
+
+	void dump(std::ostream& stream) const;
+	void dump(esl::logging::StreamReal& stream, esl::logging::Location location = esl::logging::Location{}) const;
+	inline void dump(esl::logging::StreamEmpty& stream, esl::logging::Location location = esl::logging::Location{}) const { };
+
+protected:
+	std::vector<Diagnostic> diagnostics;
 };
 
-} /* namespace server */
-} /* namespace http */
+} /* namespace database */
 } /* namespace esl */
 
-#endif /* ESL_HTTP_SERVER_REQUESTCONTEXT_H_ */
+#endif /* ESL_DATABASE_DIAGNOSTICS_H_ */

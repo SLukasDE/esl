@@ -20,27 +20,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/server/ObjectContext.h>
-#include <esl/http/server/Connection.h>
-#include <esl/http/server/Request.h>
-#include <string>
+#ifndef ESL_HTTP_SERVER_OBJECTCONTEXT_H_
+#define ESL_HTTP_SERVER_OBJECTCONTEXT_H_
 
-#ifndef ESL_HTTP_SERVER_REQUESTCONTEXT_H_
-#define ESL_HTTP_SERVER_REQUESTCONTEXT_H_
+#include <esl/object/Interface.h>
+#include <string>
 
 namespace esl {
 namespace http {
 namespace server {
 
-class RequestContext : public ObjectContext {
+class ObjectContext : public virtual esl::object::Interface::Object {
 public:
-	virtual Connection& getConnection() const = 0;
-	virtual const Request& getRequest() const = 0;
-	virtual const std::string& getPath() const = 0;
+	virtual esl::object::Interface::Object* getObject(const std::string& id) const = 0;
 };
 
 } /* namespace server */
 } /* namespace http */
 } /* namespace esl */
 
-#endif /* ESL_HTTP_SERVER_REQUESTCONTEXT_H_ */
+#endif /* ESL_HTTP_SERVER_OBJECTCONTEXT_H_ */

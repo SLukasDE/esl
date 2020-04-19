@@ -20,39 +20,46 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_LOGGING_LAYOUT_INTERFACE_H_
-#define ESL_LOGGING_LAYOUT_INTERFACE_H_
+#ifndef ESL_HTTP_SERVER_REQUESTHANDLER_INTERFACE_H_
+#define ESL_HTTP_SERVER_REQUESTHANDLER_INTERFACE_H_
 
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
-#include <esl/object/Settings.h>
-#include <esl/logging/Location.h>
+#include <esl/http/server/RequestContext.h>
 #include <string>
 #include <memory>
 
 namespace esl {
-namespace logging {
-namespace layout {
+namespace http {
+namespace server {
+namespace requesthandler {
 
 struct Interface : esl::module::Interface {
-
 	/* ******************************************** *
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class Layout : public esl::object::Settings {
+	class RequestHandler {
 	public:
-		virtual std::string toString(const Location& location) const = 0;
+		RequestHandler() = default;
+		virtual ~RequestHandler() = default;
+
+		// return true for every kind of success and get called again for more content data
+		// return false for failure and/or get not called again for more content data
+		// virtual bool process(Connection& connection, const char* contentData, std::size_t contentDataSize) = 0;
+		virtual bool process(const char* contentData, std::size_t contentDataSize) {
+			return false;
+		}
 	};
 
-	using CreateLayout = std::unique_ptr<Layout> (*)();
+	using CreateRequestHandler = std::unique_ptr<RequestHandler> (*)(RequestContext&);
 
 	/* ************************************ *
 	 * standard API definition of interface *
 	 * ************************************ */
 
 	static inline const char* getType() {
-		return "esl-logging-layout";
+		return "esl-http-server-requesthandler";
 	}
 
 	static inline const std::string& getApiVersion() {
@@ -63,16 +70,18 @@ struct Interface : esl::module::Interface {
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	Interface(std::string module, std::string implementation, CreateLayout aCreateLayout)
+	Interface(std::string module, std::string implementation,
+			CreateRequestHandler aCreateRequestHandler)
 	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
-	  createLayout(aCreateLayout)
+	  createRequestHandler(aCreateRequestHandler)
 	{ }
 
-	CreateLayout createLayout;
+	CreateRequestHandler createRequestHandler;
 };
 
-} /* namespace layout */
-} /* namespace logging */
+} /* namespace requesthandler */
+} /* namespace server */
+} /* namespace http */
 } /* namespace esl */
 
-#endif /* ESL_LOGGING_LAYOUT_INTERFACE_H_ */
+#endif /* ESL_HTTP_SERVER_REQUESTHANDLER_INTERFACE_H_ */

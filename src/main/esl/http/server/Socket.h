@@ -24,8 +24,7 @@ SOFTWARE.
 #define ESL_HTTP_SERVER_SOCKET_H_
 
 #include <esl/http/server/Interface.h>
-#include <esl/http/server/RequestHandler.h>
-
+#include <esl/http/server/requesthandler/Interface.h>
 
 #include <cstdint>
 #include <memory>
@@ -36,7 +35,7 @@ namespace server {
 
 class Socket final : public Interface::Socket {
 public:
-	Socket(uint16_t port, uint16_t numThreads, RequestHandler::Factory requestHandlerFactory);
+	Socket(uint16_t port, uint16_t numThreads, requesthandler::Interface::CreateRequestHandler createRequestHandler);
 
 	void addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) override;
 	void setObject(const std::string& id, GetObject getObject) override;

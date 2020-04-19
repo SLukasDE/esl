@@ -101,7 +101,7 @@ public:
 	template <class T>
 	const T& getInterface(const std::string& implementationName = "");
 
-	virtual Module* getModule(const std::string& module);
+	//virtual Module* getModule(const std::string& module);
 	void addModule(const Module& foreignModule, const std::string& type = "", const std::string& implementation = "");
 	void replaceModule(const Module& foreignModule, const std::string& type = "", const std::string& implementation = "");
 

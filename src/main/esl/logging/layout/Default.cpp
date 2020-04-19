@@ -159,7 +159,7 @@ std::string Default::toString(const Location& location) const {
 	return rv;
 }
 
-void Default::setParameter(const std::string& key, const std::string& value) {
+void Default::addSetting(const std::string& key, const std::string& value) {
 	if(key == "showTimestamp") {
 		setShowTimestamp(convertValueToBool(value));
 	}

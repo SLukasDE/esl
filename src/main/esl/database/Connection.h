@@ -20,27 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/server/ObjectContext.h>
-#include <esl/http/server/Connection.h>
-#include <esl/http/server/Request.h>
+#ifndef ESL_DATABASE_CONNECTION_H_
+#define ESL_DATABASE_CONNECTION_H_
+
+#include <esl/database/PreparedStatement.h>
+#include <memory>
 #include <string>
 
-#ifndef ESL_HTTP_SERVER_REQUESTCONTEXT_H_
-#define ESL_HTTP_SERVER_REQUESTCONTEXT_H_
-
 namespace esl {
-namespace http {
-namespace server {
+namespace database {
 
-class RequestContext : public ObjectContext {
+class Connection {
 public:
-	virtual Connection& getConnection() const = 0;
-	virtual const Request& getRequest() const = 0;
-	virtual const std::string& getPath() const = 0;
+	Connection() = default;
+	virtual ~Connection() = default;
+
+	virtual PreparedStatement prepare(const std::string& sql) const = 0;
+
+	virtual void commit() const = 0;
+	virtual void rollback() const = 0;
+
+//    virtual void close() = 0;
+	virtual bool isClosed() const = 0;
+
 };
 
-} /* namespace server */
-} /* namespace http */
+} /* namespace database */
 } /* namespace esl */
 
-#endif /* ESL_HTTP_SERVER_REQUESTCONTEXT_H_ */
+#endif /* ESL_DATABASE_CONNECTION_H_ */
+

@@ -27,9 +27,9 @@ namespace esl {
 namespace http {
 namespace server {
 
-Socket::Socket(uint16_t port, uint16_t numThreads, RequestHandler::Factory requestHandlerFactory)
+Socket::Socket(uint16_t port, uint16_t numThreads, requesthandler::Interface::CreateRequestHandler createRequestHandler)
 : Interface::Socket(),
-  socket(esl::getModule().getInterface<Interface>().createSocket(port, numThreads, requestHandlerFactory))
+  socket(esl::getModule().getInterface<Interface>().createSocket(port, numThreads, createRequestHandler))
 {
 }
 

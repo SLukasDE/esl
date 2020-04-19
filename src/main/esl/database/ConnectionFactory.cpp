@@ -20,27 +20,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/server/ObjectContext.h>
-#include <esl/http/server/Connection.h>
-#include <esl/http/server/Request.h>
-#include <string>
-
-#ifndef ESL_HTTP_SERVER_REQUESTCONTEXT_H_
-#define ESL_HTTP_SERVER_REQUESTCONTEXT_H_
+#include <esl/database/ConnectionFactory.h>
+#include <esl/Module.h>
 
 namespace esl {
-namespace http {
-namespace server {
+namespace database {
 
-class RequestContext : public ObjectContext {
-public:
-	virtual Connection& getConnection() const = 0;
-	virtual const Request& getRequest() const = 0;
-	virtual const std::string& getPath() const = 0;
-};
+ConnectionFactory::ConnectionFactory(std::string implementation)
+: Interface::ConnectionFactory(),
+  connectionFactory(esl::getModule().getInterface<Interface>(implementation).createConnectionFactory())
+{
+	if(!connectionFactory) {
+		throw std::runtime_error(std::string("Connection-Factory not found for implementation \"") + implementation + "\"");
+	}
+}
 
-} /* namespace server */
-} /* namespace http */
+std::unique_ptr<Connection> ConnectionFactory::createConnection() {
+	return connectionFactory->createConnection();
+}
+
+void ConnectionFactory::addSetting(const std::string& key, const std::string& value) {
+	return connectionFactory->addSetting(key, value);
+}
+
+} /* namespace database */
 } /* namespace esl */
-
-#endif /* ESL_HTTP_SERVER_REQUESTCONTEXT_H_ */

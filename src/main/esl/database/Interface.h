@@ -20,39 +20,41 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_LOGGING_LAYOUT_INTERFACE_H_
-#define ESL_LOGGING_LAYOUT_INTERFACE_H_
+#ifndef ESL_DATABASE_INTERFACE_H_
+#define ESL_DATABASE_INTERFACE_H_
 
 #include <esl/module/Interface.h>
-#include <esl/Module.h>
 #include <esl/object/Settings.h>
-#include <esl/logging/Location.h>
+#include <esl/Module.h>
+#include <esl/database/Connection.h>
 #include <string>
+#include <functional>
+#include <cstdint>
+#include <vector>
 #include <memory>
 
 namespace esl {
-namespace logging {
-namespace layout {
+namespace database {
 
 struct Interface : esl::module::Interface {
-
 	/* ******************************************** *
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class Layout : public esl::object::Settings {
+	class ConnectionFactory : public esl::object::Settings {
 	public:
-		virtual std::string toString(const Location& location) const = 0;
+		virtual ~ConnectionFactory() = default;
+	    virtual std::unique_ptr<Connection> createConnection() = 0;
 	};
 
-	using CreateLayout = std::unique_ptr<Layout> (*)();
+	using CreateConnectionFactory = std::unique_ptr<ConnectionFactory>(*)();
 
 	/* ************************************ *
 	 * standard API definition of interface *
 	 * ************************************ */
 
 	static inline const char* getType() {
-		return "esl-logging-layout";
+		return "esl-database";
 	}
 
 	static inline const std::string& getApiVersion() {
@@ -63,16 +65,16 @@ struct Interface : esl::module::Interface {
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	Interface(std::string module, std::string implementation, CreateLayout aCreateLayout)
+	Interface(std::string module, std::string implementation,
+			CreateConnectionFactory aCreateConnectionFactory)
 	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
-	  createLayout(aCreateLayout)
+	  createConnectionFactory(aCreateConnectionFactory)
 	{ }
 
-	CreateLayout createLayout;
+	CreateConnectionFactory createConnectionFactory;
 };
 
-} /* namespace layout */
-} /* namespace logging */
+} /* namespace database */
 } /* namespace esl */
 
-#endif /* ESL_LOGGING_LAYOUT_INTERFACE_H_ */
+#endif /* ESL_DATABASE_INTERFACE_H_ */

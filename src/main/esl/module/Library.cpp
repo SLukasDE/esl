@@ -22,6 +22,7 @@ SOFTWARE.
 
 #include <esl/module/Library.h>
 #include <esl/Module.h>
+#include <esl/Stacktrace.h>
 #include <stdexcept>
 
 #ifdef linux
@@ -40,7 +41,10 @@ Library::Library(const std::string& path)
     	throw std::runtime_error(dlerror());
     }
 
+    libGetModule = reinterpret_cast<GetModule>(dlsym(libHandle, "esl__module__library__getModule"));
+    /*
     void* symbolAddressEslGetModule = dlsym(libHandle, "esl__module__library__getModule");
+
     if(symbolAddressEslGetModule == nullptr) {
         if(dlclose(libHandle) != 0) {
         }
@@ -51,6 +55,7 @@ Library::Library(const std::string& path)
     if(symbolAddressEslGetModule != nullptr) {
         libGetModule = *static_cast<GetModule*>(symbolAddressEslGetModule);
     }
+    */
     if(libGetModule == nullptr) {
         if(dlclose(libHandle) != 0) {
         }
@@ -73,9 +78,15 @@ Library::~Library() {
 #endif
 }
 
-esl::module::Module& Library::getModule() {
+esl::module::Module* Library::getModulePointer(const std::string& moduleName) {
+	return libGetModule(moduleName);
+}
+
+esl::module::Module& Library::getModule(const std::string& moduleName) {
+	Module* libModule =  getModulePointer(moduleName);
+
 	if(libModule == nullptr) {
-		libModule = &libGetModule();
+		throw esl::addStacktrace(std::runtime_error("request for unknown module \"" + moduleName + "\""));
 	}
 	return *libModule;
 }

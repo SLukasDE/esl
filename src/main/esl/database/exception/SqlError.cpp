@@ -20,27 +20,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/server/ObjectContext.h>
-#include <esl/http/server/Connection.h>
-#include <esl/http/server/Request.h>
-#include <string>
-
-#ifndef ESL_HTTP_SERVER_REQUESTCONTEXT_H_
-#define ESL_HTTP_SERVER_REQUESTCONTEXT_H_
+#include <esl/database/exception/SqlError.h>
 
 namespace esl {
-namespace http {
-namespace server {
+namespace database {
+namespace exception {
 
-class RequestContext : public ObjectContext {
-public:
-	virtual Connection& getConnection() const = 0;
-	virtual const Request& getRequest() const = 0;
-	virtual const std::string& getPath() const = 0;
-};
+namespace {
+static constexpr const char* defaultMessage = "sql error";
+}
 
-} /* namespace server */
-} /* namespace http */
+SqlError::SqlError(database::Diagnostics aDiagnostics, short int aSqlReturnCode)
+: Exception(defaultMessage),
+  diagnostics(std::move(aDiagnostics)),
+  sqlReturnCode(aSqlReturnCode)
+{ }
+
+SqlError::SqlError(database::Diagnostics aDiagnostics, short int aSqlReturnCode, const char* message)
+: Exception(message),
+  diagnostics(std::move(aDiagnostics)),
+  sqlReturnCode(aSqlReturnCode)
+{ }
+
+SqlError::SqlError(database::Diagnostics aDiagnostics, short int aSqlReturnCode, const std::string& message)
+: Exception(message),
+  diagnostics(std::move(aDiagnostics)),
+  sqlReturnCode(aSqlReturnCode)
+{ }
+
+const database::Diagnostics& SqlError::getDiagnostics() const noexcept {
+	return diagnostics;
+}
+
+short int SqlError::getSqlReturnCode() const noexcept {
+	return sqlReturnCode;
+}
+
+} /* namespace exception */
+} /* namespace database */
 } /* namespace esl */
-
-#endif /* ESL_HTTP_SERVER_REQUESTCONTEXT_H_ */

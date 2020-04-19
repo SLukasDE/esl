@@ -20,39 +20,36 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_LOGGING_LAYOUT_INTERFACE_H_
-#define ESL_LOGGING_LAYOUT_INTERFACE_H_
+#ifndef ESL_OBJECT_INTERFACE_H_
+#define ESL_OBJECT_INTERFACE_H_
 
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
-#include <esl/object/Settings.h>
-#include <esl/logging/Location.h>
+
 #include <string>
 #include <memory>
 
 namespace esl {
-namespace logging {
-namespace layout {
+namespace object {
 
 struct Interface : esl::module::Interface {
-
 	/* ******************************************** *
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class Layout : public esl::object::Settings {
+	class Object {
 	public:
-		virtual std::string toString(const Location& location) const = 0;
+		virtual ~Object() = default;
 	};
 
-	using CreateLayout = std::unique_ptr<Layout> (*)();
+	using CreateObject = std::unique_ptr<Object>(*)();
 
 	/* ************************************ *
 	 * standard API definition of interface *
 	 * ************************************ */
 
 	static inline const char* getType() {
-		return "esl-logging-layout";
+		return "esl-object";
 	}
 
 	static inline const std::string& getApiVersion() {
@@ -63,16 +60,15 @@ struct Interface : esl::module::Interface {
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	Interface(std::string module, std::string implementation, CreateLayout aCreateLayout)
+	Interface(std::string module, std::string implementation, CreateObject aCreateObject)
 	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
-	  createLayout(aCreateLayout)
+	  createObject(aCreateObject)
 	{ }
 
-	CreateLayout createLayout;
+	CreateObject createObject;
 };
 
-} /* namespace layout */
-} /* namespace logging */
+} /* namespace object */
 } /* namespace esl */
 
-#endif /* ESL_LOGGING_LAYOUT_INTERFACE_H_ */
+#endif /* ESL_OBJECT_INTERFACE_H_ */

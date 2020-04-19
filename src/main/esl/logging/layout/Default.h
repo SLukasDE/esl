@@ -36,7 +36,7 @@ public:
 	}
 
 	std::string toString(const Location& location) const override;
-	void setParameter(const std::string& key, const std::string& value) override;
+	void addSetting(const std::string& key, const std::string& value) override;
 
 	bool getShowTimestamp() const;
 	void setShowTimestamp(bool showTimestamp = true);

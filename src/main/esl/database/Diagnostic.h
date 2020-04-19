@@ -20,27 +20,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/server/ObjectContext.h>
-#include <esl/http/server/Connection.h>
-#include <esl/http/server/Request.h>
+#ifndef ESL_DATABASE_DIAGNOSTIC_H_
+#define ESL_DATABASE_DIAGNOSTIC_H_
+
 #include <string>
 
-#ifndef ESL_HTTP_SERVER_REQUESTCONTEXT_H_
-#define ESL_HTTP_SERVER_REQUESTCONTEXT_H_
-
 namespace esl {
-namespace http {
-namespace server {
+namespace database {
 
-class RequestContext : public ObjectContext {
-public:
-	virtual Connection& getConnection() const = 0;
-	virtual const Request& getRequest() const = 0;
-	virtual const std::string& getPath() const = 0;
+struct Diagnostic {
+	int code = 0;
+	std::string state;
+	std::string message;
 };
 
-} /* namespace server */
-} /* namespace http */
+} /* namespace database */
 } /* namespace esl */
 
-#endif /* ESL_HTTP_SERVER_REQUESTCONTEXT_H_ */
+#endif /* ESL_DATABASE_DIAGNOSTIC_H_ */

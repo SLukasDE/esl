@@ -24,6 +24,8 @@ SOFTWARE.
 #include <esl/module/Interface.h>
 #include <esl/logging/layout/Interface.h>
 #include <esl/logging/layout/Default.h>
+#include <esl/Stacktrace.h>
+#include <stdexcept>
 #include <new>         // placement new
 #include <type_traits> // aligned_storage
 
@@ -54,7 +56,7 @@ Module::Module()
 
 }  /* anonymous namespace */
 
-esl::module::Module& getModule() {
+esl::module::Module* getModulePointer(const std::string& moduleName) {
 	if(modulePtr == nullptr) {
 		/* ***************** *
 		 * initialize module *
@@ -64,7 +66,21 @@ esl::module::Module& getModule() {
 		new (modulePtr) Module; // placement new
 	}
 
-	return *modulePtr;
+	if(!moduleName.empty() && moduleName != "esl") {
+		return nullptr;
+	}
+
+	return modulePtr;
+}
+
+esl::module::Module& getModule(const std::string& moduleName) {
+	esl::module::Module* modulePointer = getModulePointer(moduleName);
+
+	if(modulePointer == nullptr) {
+		throw esl::addStacktrace(std::runtime_error("request for unknown module \"" + moduleName + "\""));
+	}
+
+	return *modulePointer;
 }
 
 } /* namespace esl */

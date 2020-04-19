@@ -20,27 +20,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/server/ObjectContext.h>
-#include <esl/http/server/Connection.h>
-#include <esl/http/server/Request.h>
-#include <string>
+#ifndef ESL_DATABASE_CONNECTIONFACTORY_H_
+#define ESL_DATABASE_CONNECTIONFACTORY_H_
 
-#ifndef ESL_HTTP_SERVER_REQUESTCONTEXT_H_
-#define ESL_HTTP_SERVER_REQUESTCONTEXT_H_
+#include <esl/database/Interface.h>
+#include <string>
+#include <memory>
 
 namespace esl {
-namespace http {
-namespace server {
+namespace database {
 
-class RequestContext : public ObjectContext {
+class ConnectionFactory : public Interface::ConnectionFactory {
 public:
-	virtual Connection& getConnection() const = 0;
-	virtual const Request& getRequest() const = 0;
-	virtual const std::string& getPath() const = 0;
+	ConnectionFactory(std::string implementation);
+
+	std::unique_ptr<Connection> createConnection() override;
+	void addSetting(const std::string& key, const std::string& value) override;
+
+private:
+	std::unique_ptr<Interface::ConnectionFactory> connectionFactory;
 };
 
-} /* namespace server */
-} /* namespace http */
+} /* namespace database */
 } /* namespace esl */
 
-#endif /* ESL_HTTP_SERVER_REQUESTCONTEXT_H_ */
+#endif /* ESL_DATABASE_CONNECTIONFACTORY_H_ */

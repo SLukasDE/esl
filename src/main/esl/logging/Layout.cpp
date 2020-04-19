@@ -48,12 +48,12 @@ std::string Layout::toString(const Location& location) const {
 	return "";
 }
 
-void Layout::setParameter(const std::string& key, const std::string& value) {
+void Layout::addSetting(const std::string& key, const std::string& value) {
 	if(!layout) {
 		layout = createLayout(implementation);
 	}
 	if(layout) {
-		layout->setParameter(key, value);
+		layout->addSetting(key, value);
 	}
 }
 

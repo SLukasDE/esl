@@ -33,19 +33,20 @@ namespace module {
 
 class Library {
 public:
-	using GetModule = Module&(*)();
+	using GetModule = Module*(*)(const std::string&);
 
 	Library(const std::string& path);
 	~Library();
 
-	Module& getModule();
+	Module* getModulePointer(const std::string& moduleName = "");
+	Module& getModule(const std::string& moduleName = "");
 
 private:
 #ifdef linux
 	void* libHandle = nullptr;
 #endif
 	GetModule libGetModule = nullptr;
-	Module* libModule = nullptr;
+//	Module* libModule = nullptr;
 };
 
 } /* namespace module */

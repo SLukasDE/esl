@@ -20,27 +20,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/server/ObjectContext.h>
-#include <esl/http/server/Connection.h>
-#include <esl/http/server/Request.h>
-#include <string>
-
-#ifndef ESL_HTTP_SERVER_REQUESTCONTEXT_H_
-#define ESL_HTTP_SERVER_REQUESTCONTEXT_H_
+#include <esl/http/server/Exception.h>
 
 namespace esl {
 namespace http {
 namespace server {
 
-class RequestContext : public ObjectContext {
-public:
-	virtual Connection& getConnection() const = 0;
-	virtual const Request& getRequest() const = 0;
-	virtual const std::string& getPath() const = 0;
-};
+namespace {
+static constexpr const char* defaultMessage = "http server error";
+}
+
+Exception::Exception()
+: http::Exception(defaultMessage)
+{ }
+
+Exception::Exception(const std::string& message)
+: http::Exception(message)
+{ }
+
+Exception::Exception(const char* message)
+: http::Exception(message)
+{ }
 
 } /* namespace server */
 } /* namespace http */
 } /* namespace esl */
-
-#endif /* ESL_HTTP_SERVER_REQUESTCONTEXT_H_ */

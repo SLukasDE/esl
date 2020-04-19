@@ -20,27 +20,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/server/ObjectContext.h>
-#include <esl/http/server/Connection.h>
-#include <esl/http/server/Request.h>
-#include <string>
-
-#ifndef ESL_HTTP_SERVER_REQUESTCONTEXT_H_
-#define ESL_HTTP_SERVER_REQUESTCONTEXT_H_
+#include <esl/database/exception/RuntimeError.h>
 
 namespace esl {
-namespace http {
-namespace server {
+namespace database {
+namespace exception {
 
-class RequestContext : public ObjectContext {
-public:
-	virtual Connection& getConnection() const = 0;
-	virtual const Request& getRequest() const = 0;
-	virtual const std::string& getPath() const = 0;
-};
+namespace {
+static constexpr const char* defaultMessage = "database runtime error";
+}
 
-} /* namespace server */
-} /* namespace http */
+RuntimeError::RuntimeError()
+: Exception(defaultMessage)
+{ }
+
+RuntimeError::RuntimeError(const std::string& message)
+: Exception(message)
+{ }
+
+RuntimeError::RuntimeError(const char* message)
+: Exception(message)
+{ }
+
+} /* namespace exception */
+} /* namespace database */
 } /* namespace esl */
-
-#endif /* ESL_HTTP_SERVER_REQUESTCONTEXT_H_ */

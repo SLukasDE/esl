@@ -26,10 +26,10 @@ namespace esl {
 namespace http {
 namespace server {
 
-ResponseStatic::ResponseStatic(int httpStatus, const ::std::string& contentType, const char* contentData, size_t contentDataSize)
+ResponseStatic::ResponseStatic(int httpStatus, const std::string& contentType, const char* aContentData, size_t aContentDataSize)
 : Response(httpStatus, contentType),
-  contentData(contentData),
-  contentDataSize(contentDataSize)
+  contentData(aContentData),
+  contentDataSize(aContentDataSize)
 {
 }
 

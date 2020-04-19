@@ -20,27 +20,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/server/ObjectContext.h>
-#include <esl/http/server/Connection.h>
-#include <esl/http/server/Request.h>
+#ifndef ESL_UTILITY_MIME_H_
+#define ESL_UTILITY_MIME_H_
+
 #include <string>
 
-#ifndef ESL_HTTP_SERVER_REQUESTCONTEXT_H_
-#define ESL_HTTP_SERVER_REQUESTCONTEXT_H_
-
 namespace esl {
-namespace http {
-namespace server {
+namespace utility {
 
-class RequestContext : public ObjectContext {
-public:
-	virtual Connection& getConnection() const = 0;
-	virtual const Request& getRequest() const = 0;
-	virtual const std::string& getPath() const = 0;
+struct MIME {
+	MIME() = default;
+	MIME(std::string mediaType, std::string subType) noexcept;
+
+	std::string getContentType() noexcept;
+
+	static MIME byFilename(const std::string& filename);
+
+	// e.g. - application
+	//      - audio
+	//      - example
+	//      - image
+	//      - message
+	//      - model
+	//      - multipart
+	//      - text
+	//      - video
+	std::string mediaType;
+
+	// e.g. - jpeg
+	std::string subType;
 };
 
-} /* namespace server */
-} /* namespace http */
+} /* namespace utility */
 } /* namespace esl */
 
-#endif /* ESL_HTTP_SERVER_REQUESTCONTEXT_H_ */
+#endif /* ESL_UTILITY_MIME_H_ */

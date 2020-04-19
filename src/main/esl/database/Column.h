@@ -20,27 +20,68 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/server/ObjectContext.h>
-#include <esl/http/server/Connection.h>
-#include <esl/http/server/Request.h>
+#ifndef ESL_DATABASE_COLUMN_H_
+#define ESL_DATABASE_COLUMN_H_
+
 #include <string>
 
-#ifndef ESL_HTTP_SERVER_REQUESTCONTEXT_H_
-#define ESL_HTTP_SERVER_REQUESTCONTEXT_H_
-
 namespace esl {
-namespace http {
-namespace server {
+namespace database {
 
-class RequestContext : public ObjectContext {
+class Column {
 public:
-	virtual Connection& getConnection() const = 0;
-	virtual const Request& getRequest() const = 0;
-	virtual const std::string& getPath() const = 0;
+	enum class Type {
+		sqlBoolean,
+
+		sqlInteger,
+		sqlSmallInt,
+
+		sqlDouble,
+		sqlNumeric,
+		sqlDecimal,
+		sqlFloat,
+		sqlReal,
+
+		sqlVarChar,
+		sqlChar,
+
+		sqlDateTime,
+		sqlDate,
+		sqlTime,
+		sqlTimestamp,
+		sqlTimestampWithTimezone,
+
+		sqlRow,
+		sqlWChar,
+		sqlWVarChar,
+		sqlWLongVarChar,
+		sqlDecFloat,
+
+		sqlUnknown
+	};
+
+	Column(std::string name, Type type, unsigned int characterLength, unsigned int decimalDigits, bool nullable, unsigned int displayLength);
+
+	const std::string& getName() const;
+	Type getType() const;
+
+	const std::string& getTypeName() const;
+	bool isNullable() const;
+	unsigned int getCharacterLength() const;
+	unsigned int getDecimalDigits() const;
+	unsigned int getDisplayLength() const;
+
+private:
+	std::string name;
+	Type type = Type::sqlUnknown;
+
+	unsigned int characterLength;
+	unsigned int decimalDigits;
+	bool nullable;
+	unsigned int displayLength;
 };
 
-} /* namespace server */
-} /* namespace http */
+} /* namespace database */
 } /* namespace esl */
 
-#endif /* ESL_HTTP_SERVER_REQUESTCONTEXT_H_ */
+#endif /* ESL_DATABASE_COLUMN_H_ */

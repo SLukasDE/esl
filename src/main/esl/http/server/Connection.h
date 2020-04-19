@@ -39,8 +39,6 @@ public:
 	Connection() = default;
 	virtual ~Connection() = default;
 
-//	virtual const Request& getRequest() const noexcept = 0;
-
 	virtual bool sendResponse(std::unique_ptr<ResponseBasicAuth> response) noexcept = 0;
 	virtual bool sendResponse(std::unique_ptr<ResponseDynamic> response) noexcept = 0;
 	virtual bool sendResponse(std::unique_ptr<ResponseStatic> response) noexcept = 0;

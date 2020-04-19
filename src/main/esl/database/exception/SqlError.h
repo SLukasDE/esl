@@ -20,27 +20,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/server/ObjectContext.h>
-#include <esl/http/server/Connection.h>
-#include <esl/http/server/Request.h>
-#include <string>
+#ifndef ESL_DATABASE_EXCEPTION_SQLERROR_H_
+#define ESL_DATABASE_EXCEPTION_SQLERROR_H_
 
-#ifndef ESL_HTTP_SERVER_REQUESTCONTEXT_H_
-#define ESL_HTTP_SERVER_REQUESTCONTEXT_H_
+#include <esl/database/Exception.h>
+#include <esl/database/Diagnostics.h>
 
 namespace esl {
-namespace http {
-namespace server {
+namespace database {
+namespace exception {
 
-class RequestContext : public ObjectContext {
+class SqlError : public Exception {
 public:
-	virtual Connection& getConnection() const = 0;
-	virtual const Request& getRequest() const = 0;
-	virtual const std::string& getPath() const = 0;
+	explicit SqlError(database::Diagnostics diagnostics, short int sqlReturnCode);
+	explicit SqlError(database::Diagnostics diagnostics, short int sqlReturnCode, const char* message);
+	explicit SqlError(database::Diagnostics diagnostics, short int sqlReturnCode, const std::string& message);
+
+	const Diagnostics& getDiagnostics() const noexcept;
+	short int getSqlReturnCode() const noexcept;
+
+private:
+	Diagnostics diagnostics;
+	short int sqlReturnCode;
 };
 
-} /* namespace server */
-} /* namespace http */
+} /* namespace exception */
+} /* namespace database */
 } /* namespace esl */
 
-#endif /* ESL_HTTP_SERVER_REQUESTCONTEXT_H_ */
+#endif /* ESL_DATABASE_EXCEPTION_SQLERROR_H_ */
