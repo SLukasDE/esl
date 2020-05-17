@@ -20,15 +20,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_MODULE_H_
-#define ESL_MODULE_H_
-
-#include <esl/module/Module.h>
+#include <esl/http/server/ResponseFile.h>
 
 namespace esl {
+namespace http {
+namespace server {
 
-esl::module::Module& getModule();
+ResponseFile::ResponseFile(int httpStatus, const std::string& contentType, std::string aPath)
+: Response(httpStatus, contentType),
+  path(std::move(aPath))
+{
+}
 
+const std::string& ResponseFile::getPath() const noexcept {
+	return path;
+}
+
+} /* namespace server */
+} /* namespace http */
 } /* namespace esl */
-
-#endif /* ESL_MODULE_H_ */

@@ -35,18 +35,19 @@ class Library {
 public:
 	using GetModule = Module*(*)(const std::string&);
 
-	Library(const std::string& path);
+	Library(std::string path);
 	~Library();
 
+	const std::string& getPath() const;
 	Module* getModulePointer(const std::string& moduleName = "");
 	Module& getModule(const std::string& moduleName = "");
 
 private:
+	const std::string path;
 #ifdef linux
 	void* libHandle = nullptr;
 #endif
 	GetModule libGetModule = nullptr;
-//	Module* libModule = nullptr;
 };
 
 } /* namespace module */

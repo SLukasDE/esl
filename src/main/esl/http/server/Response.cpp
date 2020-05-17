@@ -27,7 +27,7 @@ namespace esl {
 namespace http {
 namespace server {
 
-Response::Response(unsigned short httpStatus, const ::std::string& contentType) noexcept
+Response::Response(unsigned short httpStatus, const std::string& contentType) noexcept
 : httpStatus(httpStatus)
 {
 	headers["Content-Type"] = contentType;

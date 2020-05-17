@@ -26,7 +26,7 @@ namespace esl {
 namespace http {
 namespace server {
 
-ResponseDynamic::ResponseDynamic(int httpStatus, const ::std::string& contentType, std::function<int(char*, std::size_t)> getDataFunction)
+ResponseDynamic::ResponseDynamic(int httpStatus, const std::string& contentType, std::function<int(char*, std::size_t)> getDataFunction)
 : Response(httpStatus, contentType),
   getDataFunction(getDataFunction)
 {

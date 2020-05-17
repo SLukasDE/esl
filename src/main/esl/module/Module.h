@@ -92,35 +92,24 @@ public:
 		module.license = QUOTE(TRANSFORMER_ARTEFACT_LICENSE);
 	}
 
-	const std::vector<Interface>& getInterfaces() const;
-	const Interface* getInterface(const Interface& descriptor) const;
+	const std::vector<Interface>& getMetaInterfaces() const;
+
+	const Interface* findInterface(const Interface& descriptor) const;
 
 	template <class T>
-	const T* getInterfacePointer(const std::string& implementationName = "");
+	const T* findInterface(const std::string& implementationName = "");
 
 	template <class T>
 	const T& getInterface(const std::string& implementationName = "");
 
 	//virtual Module* getModule(const std::string& module);
-	void addModule(const Module& foreignModule, const std::string& type = "", const std::string& implementation = "");
-	void replaceModule(const Module& foreignModule, const std::string& type = "", const std::string& implementation = "");
+	void addInterfaces(const Module& foreignModule, const std::string& type = "", const std::string& implementation = "");
+	void replaceInterfaces(const Module& foreignModule, const std::string& type = "", const std::string& implementation = "");
 
 protected:
 	void addInterface(std::unique_ptr<const Interface> interface);
 
 private:
-	/* contains descriptors of all interfaces provided by this module, independent if it is a mainInterfaces or external added interface.
-	 * This container is used for method getInterfaces()
-	 */
-	std::vector<Interface> provided;
-
-	/* contains only main interfaces added by addMainInterface() */
-	std::vector<std::unique_ptr<const Interface>> mainInterfaces;
-
-	/* contains all interfaces added by addInterface() [e.g. indirectly by addMainInterface()] */
-	std::set<const Interface*> allInterfacesByAddress;
-	std::vector<const Interface*> allInterfaces;
-
 	std::string id;
 	std::string name;
 	std::string variant;
@@ -129,14 +118,58 @@ private:
 	std::string architecture;
 	std::string license;
 
-	Interface* getProvidedInterface(const std::string& type, const std::string& implementation);
-	void addOrReplaceModule(const Module& foreignModule, const std::string& type, const std::string& implementation, bool replace);
-	bool addInterfaceIntern(const Interface& interface);
-	void replaceInterfaceIntern(const Interface& interface);
+	/* Only contains interfaces owned by this module */
+	std::vector<std::unique_ptr<const Interface>> ownInterfaces;
+
+	/* ******************************************************** *
+	 * ALL following containers store ALL interfaces:           *
+	 * - owned interfaces (stored in interfaces) and            *
+	 * - foreign interfaces (linked in e.g. my addModule(...)). *
+	 * ******************************************************** */
+
+	/* Contains meta interfaces by descending order.
+	 * This container is used for quick execution of method getMetaInterfaces().
+	 */
+	std::vector<Interface> metaInterfaces;
+
+	/* Contains addresses of interfaces by descending order.
+	 * Method "addOrReplaceModule(...)" uses this container of the foreign module to insert interfaces into this module by the right order.
+	 */
+	std::vector<const Interface*> allInterfaces;
+
+	/* Contains addresses.
+	 * This container is used to make a quick check if address exists already.
+	 */
+	std::set<const Interface*> interfacesByAddress;
+
+	/* used by addInterface(const Interface& newInterface, bool doReplace) to check if compatible interface exists already. */
+	Interface* findMetaInterface(const std::string& type, const std::string& implementation);
+
+	/* Used by addInterfaces(...) and replaceInterfaces(...) */
+	void addOrReplaceInterfaces(const Module& foreignModule, const std::string& type, const std::string& implementation, bool doReplace);
+
+	/* Insert or replace interface address and metaInterface.
+	 * To replace an potential existing interface with the new one you have to set doReplace to true.
+	 *
+	 * If interface address does not exists already
+	 * and interface type and interface implementation does not exist already there is no different if you set doReplace to false or true.
+	 *
+	 * If address exists already nothing will be changed in the module and false is returned.
+	 *
+	 * If interface type and interface implementation exist already behavior depends on doReplace.
+	 * If doReplace is set to false then nothing will be changed in the object and false is returned.
+	 * If doReplace is set to true then following containers (or elements in containers) will be updated:
+	 * - metaInterfaces (matching metaInterface is updated to new metaInterface)
+	 * - allInterfaces (matching element is updated to new address)
+	 * - interfacesByAddress (old matching address is removed and new address is inserted)
+	 *
+	 * If insertion was successful true is returned.
+	 */
+	bool addInterface(const Interface& interface, bool doReplace);
 };
 
 template <class T>
-const T* Module::getInterfacePointer(const std::string& implementationName) {
+const T* Module::findInterface(const std::string& implementationName) {
 	static std::map<std::string, std::pair<bool, const T*>> implementations;
 	static std::pair<bool, const T*> implementation{false, nullptr};
 
@@ -144,7 +177,7 @@ const T* Module::getInterfacePointer(const std::string& implementationName) {
 
 	if(implementationEntry.first == false) {
 		implementationEntry.first = true;
-		implementationEntry.second = static_cast<const T*>(getInterface(Interface("", T::getType(), implementationName, T::getApiVersion())));
+		implementationEntry.second = static_cast<const T*>(findInterface(Interface("", T::getType(), implementationName, T::getApiVersion())));
 	}
 
 	return implementationEntry.second;
@@ -152,7 +185,7 @@ const T* Module::getInterfacePointer(const std::string& implementationName) {
 
 template <class T>
 const T& Module::getInterface(const std::string& implementationName) {
-	const T* interface = getInterfacePointer<T>(implementationName);
+	const T* interface = findInterface<T>(implementationName);
 
 	if(interface == nullptr) {
 		if(implementationName.empty()) {

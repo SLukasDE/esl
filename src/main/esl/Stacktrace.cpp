@@ -31,7 +31,7 @@ namespace {
 const char* dummyMessage = "no implementation available for \"esl::Stacktrace\"";
 
 stacktrace::Interface::Stacktrace* createStacktrace() {
-	const stacktrace::Interface* interface = esl::getModule().getInterfacePointer<stacktrace::Interface>();
+	const stacktrace::Interface* interface = esl::getModule().findInterface<stacktrace::Interface>();
 	return interface ? interface->createStacktrace() : nullptr;
 }
 

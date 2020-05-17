@@ -22,6 +22,8 @@ SOFTWARE.
 
 #include <esl/database/Column.h>
 
+#include <limits>
+
 namespace esl {
 namespace database {
 
@@ -110,12 +112,14 @@ const std::string& columnType2String(Column::Type columnType) {
 
 } /* anonymous namespace */
 
-Column::Column(std::string aName, Column::Type aType, unsigned int aCharacterLength, unsigned int aDecimalDigits, bool aNullable, unsigned int aDisplayLength)
+Column::Column(std::string aName, Column::Type aType, bool aNullable, std::size_t aDefaultBufferSize, std::size_t aMaximumBufferSize, std::size_t aDecimalDigits, std::size_t aCharacterLength, std::size_t aDisplayLength)
 : name(std::move(aName)),
   type(aType),
+  nullable(aNullable),
+  defaultBufferSize(aDefaultBufferSize),
+  maximumBufferSize((aMaximumBufferSize > 0 && aMaximumBufferSize < aDefaultBufferSize) ? aDefaultBufferSize : aMaximumBufferSize),
   characterLength(aCharacterLength),
   decimalDigits(aDecimalDigits),
-  nullable(aNullable),
   displayLength(aDisplayLength)
 { }
 
@@ -135,15 +139,33 @@ bool Column::isNullable() const {
 	return nullable;
 }
 
-unsigned int Column::getCharacterLength() const {
+std::size_t Column::getBufferSize() const {
+	std::size_t valueBufferSize = std::max(getCharacterLength(), getDisplayLength());
+
+	if(valueBufferSize >= std::numeric_limits<std::size_t>::max()) {
+		valueBufferSize = defaultBufferSize;
+	}
+
+	if(maximumBufferSize > 0 && maximumBufferSize < valueBufferSize) {
+		valueBufferSize = defaultBufferSize;
+	}
+
+	return valueBufferSize;
+}
+
+std::size_t Column::getDefaultBufferSize() const {
+	return defaultBufferSize;
+}
+
+std::size_t Column::getCharacterLength() const {
 	return characterLength;
 }
 
-unsigned int Column::getDecimalDigits() const {
+std::size_t Column::getDecimalDigits() const {
 	return decimalDigits;
 }
 
-unsigned int Column::getDisplayLength() const {
+std::size_t Column::getDisplayLength() const {
 	return displayLength;
 }
 

@@ -56,7 +56,7 @@ Module::Module()
 
 }  /* anonymous namespace */
 
-esl::module::Module* getModulePointer(const std::string& moduleName) {
+esl::module::Module& getModule() {
 	if(modulePtr == nullptr) {
 		/* ***************** *
 		 * initialize module *
@@ -66,21 +66,7 @@ esl::module::Module* getModulePointer(const std::string& moduleName) {
 		new (modulePtr) Module; // placement new
 	}
 
-	if(!moduleName.empty() && moduleName != "esl") {
-		return nullptr;
-	}
-
-	return modulePtr;
-}
-
-esl::module::Module& getModule(const std::string& moduleName) {
-	esl::module::Module* modulePointer = getModulePointer(moduleName);
-
-	if(modulePointer == nullptr) {
-		throw esl::addStacktrace(std::runtime_error("request for unknown module \"" + moduleName + "\""));
-	}
-
-	return *modulePointer;
+	return *modulePtr;
 }
 
 } /* namespace esl */

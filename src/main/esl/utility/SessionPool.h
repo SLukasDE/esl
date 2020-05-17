@@ -20,12 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_UTILITY_OBJECTPOOL_H_
-#define ESL_UTILITY_OBJECTPOOL_H_
+#ifndef ESL_UTILITY_SESSIONPOOL_H_
+#define ESL_UTILITY_SESSIONPOOL_H_
 
 #include <esl/logging/Logger.h>
 #include <chrono>
-#include <list>
+#include <map>
 #include <memory>
 #include <mutex>
 #include <condition_variable>
@@ -34,17 +34,23 @@ SOFTWARE.
 namespace esl {
 namespace utility {
 
-template<class Object>
-class ObjectPool {
+template<class Object, class Key, class CreateArgs>
+class SessionPool {
 	static esl::logging::Logger<> logger;
 
 private:
+	struct StoredObject {
+		std::unique_ptr<Object> object;
+		std::size_t circulating;
+		std::chrono::steady_clock::time_point timePointBegin;
+	};
+
 	struct Deleter {
 		static esl::logging::Logger<> logger;
 
-		Deleter(ObjectPool& aObjectPool, std::chrono::steady_clock::time_point aTimePointBegin)
-		: objectPool(&aObjectPool),
-		  timePointBegin(aTimePointBegin)
+		Deleter(SessionPool& aSessionPool, const Key& aKey)
+		: sessionPool(&aSessionPool),
+		  key(std::move(aKey))
 		{ }
 		Deleter() = default;
 
@@ -54,26 +60,24 @@ private:
 				return;
 			}
 
-			std::unique_ptr<Object> objectPtr(object);
+			//std::unique_ptr<Object> objectPtr(object);
 			ESL__LOGGER_DEBUG_THIS("object == ", object, "\n");
 
-			if(objectPool) {
-				objectPool->release(std::move(objectPtr), timePointBegin);
+			if(sessionPool) {
+				sessionPool->release(key);
+				//sessionPool->release(std::move(objectPtr), timePointBegin);
 			}
 			else {
 				ESL__LOGGER_DEBUG_THIS("objectPool has been detached\n");
 			}
 		}
 
-		ObjectPool* objectPool = nullptr;
-		mutable std::chrono::steady_clock::time_point timePointBegin;
+		SessionPool* sessionPool = nullptr;
+		const Key key;
 	};
 
 public:
-	enum class Strategy {
-		lifo, fifo
-	};
-	using CreateObject = std::function<std::unique_ptr<Object>()>;
+	using CreateObject = std::function<std::unique_ptr<Object>(const CreateArgs& createArgs)>;
 	using unique_ptr = std::unique_ptr<Object, Deleter>;
 
 	/**
@@ -91,8 +95,8 @@ public:
 	 *                                   If this value is set to false the objects lifetime will not be touched when taking it back to the pool.
 	 *                                   If this value is set to true the objects lifetime will be reseted to its original lifetime when taking it back to the pool.
 	 */
-	ObjectPool(CreateObject createObject, size_t objectsMax, std::chrono::nanoseconds objectLifetime, bool resetLifetimeOnGet, bool resetLifetimeOnRelease);
-	~ObjectPool();
+	SessionPool(CreateObject createObject, size_t objectsMax, std::chrono::nanoseconds objectLifetime, bool resetLifetimeOnGet, bool resetLifetimeOnRelease);
+	~SessionPool();
 
 	/**
 	 * Returns a object from object pool. If maximum number of objects are circulating already outside this pool, then this function will wait.
@@ -105,13 +109,13 @@ public:
 	 *                     If strategy is set to Strategy::lifo, then the object that has been latest released back to the pool is returned.
 	 *                     If stratefy is set to Strategy::lifo, then the object will be returned that is remaining longest time in the pool.
 	 */
-	unique_ptr get(std::chrono::nanoseconds timeout, Strategy strategy = Strategy::fifo);
-	unique_ptr get(Strategy strategy = Strategy::fifo);
-	//std::unique_ptr<Object> getObject();
+	unique_ptr get(const Key& key, const CreateArgs& createArgs, std::chrono::nanoseconds timeout);
+	unique_ptr get(const Key& key, const CreateArgs& createArgs);
 
 private:
     void timeoutHandler();
-	void release(std::unique_ptr<Object> object, std::chrono::steady_clock::time_point timePointBegin/*, bool destroy*/);
+	void release(const Key& key);
+//	void release(std::unique_ptr<Object> object, std::chrono::steady_clock::time_point timePointBegin);
 	bool checkGetObject() const;
 	bool isTimeoutOrDirty(const Object& object, std::chrono::steady_clock::time_point timePointBegin, std::chrono::steady_clock::time_point timePointNow) const;
     static bool isDirty(const Object& object);
@@ -130,7 +134,9 @@ private:
     mutable std::mutex objectsMutex;
     std::condition_variable objectsCv;
     std::condition_variable objectsTimeoutHandlerCv;
-    std::list<unique_ptr> objects;
+    //std::list<unique_ptr> objects;
+    std::map<Key, StoredObject> objects;
+
     /* number of objects that are retrieved by calling get()
      * and not put back to the pool so far.
      */
@@ -140,14 +146,14 @@ private:
     std::thread timeoutHandlerThread;
 };
 
-template<class Object>
-esl::logging::Logger<> ObjectPool<Object>::logger("esl::utility::ObjectPool<>");
+template<class Object, class Key, class CreateArgs>
+esl::logging::Logger<> SessionPool<Object, Key, CreateArgs>::logger("esl::utility::SessionPool<>");
 
-template<class Object>
-esl::logging::Logger<> ObjectPool<Object>::Deleter::logger("esl::utility::ObjectPool<>::Deleter");
+template<class Object, class Key, class CreateArgs>
+esl::logging::Logger<> SessionPool<Object, Key, CreateArgs>::Deleter::logger("esl::utility::SessionPool<>::Deleter");
 
-template<class Object>
-ObjectPool<Object>::ObjectPool(CreateObject aCreateObject, size_t aObjectsMax, std::chrono::nanoseconds aObjectLifetime, bool aResetLifetimeOnGet, bool aResetLifetimeOnRelease)
+template<class Object, class Key, class CreateArgs>
+SessionPool<Object, Key, CreateArgs>::SessionPool(CreateObject aCreateObject, size_t aObjectsMax, std::chrono::nanoseconds aObjectLifetime, bool aResetLifetimeOnGet, bool aResetLifetimeOnRelease)
 : createObject(aCreateObject),
   objectsMax(aObjectsMax),
   objectLifetime(aObjectLifetime),
@@ -156,12 +162,12 @@ ObjectPool<Object>::ObjectPool(CreateObject aCreateObject, size_t aObjectsMax, s
 {
 	/* if objectLifetime is zero, then objects have infinity lifetime and we don't need a thread to delete expired objects */
 	if(objectLifetime != std::chrono::nanoseconds(0)) {
-		  timeoutHandlerThread = std::thread(&ObjectPool::timeoutHandler, this);
+		  timeoutHandlerThread = std::thread(&SessionPool::timeoutHandler, this);
 	}
 }
 
-template<class Object>
-ObjectPool<Object>::~ObjectPool() {
+template<class Object, class Key, class CreateArgs>
+SessionPool<Object, Key, CreateArgs>::~SessionPool() {
 	{
     	std::lock_guard<std::mutex> objectsMutexLock(objectsMutex);
     	descructorCalled = true;
@@ -188,13 +194,13 @@ ObjectPool<Object>::~ObjectPool() {
 	}
 }
 
-template<class Object>
-typename ObjectPool<Object>::unique_ptr ObjectPool<Object>::get(Strategy strategy) {
-	return get(std::chrono::nanoseconds(0), strategy);
+template<class Object, class Key, class CreateArgs>
+typename SessionPool<Object, Key, CreateArgs>::unique_ptr SessionPool<Object, Key, CreateArgs>::get(const Key& key, const CreateArgs& createArgs) {
+	return get(key, createArgs, std::chrono::nanoseconds(0));
 }
 
-template<class Object>
-typename ObjectPool<Object>::unique_ptr ObjectPool<Object>::get(std::chrono::nanoseconds timeout, Strategy strategy) {
+template<class Object, class Key, class CreateArgs>
+typename SessionPool<Object, Key, CreateArgs>::unique_ptr SessionPool<Object, Key, CreateArgs>::get(const Key& key, const CreateArgs& createArgs, std::chrono::nanoseconds timeout) {
 	ESL__LOGGER_TRACE_THIS("before lock\n");
 	std::unique_lock<std::mutex> objectsMutexLock(objectsMutex);
 	ESL__LOGGER_TRACE_THIS("after lock\n");
@@ -202,9 +208,9 @@ typename ObjectPool<Object>::unique_ptr ObjectPool<Object>::get(std::chrono::nan
 	// objectsMax == 0 means infinity number of objects, so we don't need to wait
 	if(objectsMax > 0) {
     	if(timeout == std::chrono::nanoseconds(0)) {
-    		objectsCv.wait(objectsMutexLock, std::bind(&ObjectPool::checkGetObject, this));
+    		objectsCv.wait(objectsMutexLock, std::bind(&SessionPool::checkGetObject, this));
     	}
-    	else if(!objectsCv.wait_for(objectsMutexLock, timeout, std::bind(&ObjectPool::checkGetObject, this))) {
+    	else if(!objectsCv.wait_for(objectsMutexLock, timeout, std::bind(&SessionPool::checkGetObject, this))) {
     		ESL__LOGGER_DEBUG_THIS("timeout\n");
 			return unique_ptr(nullptr, Deleter(*this, std::chrono::steady_clock::time_point{}));
     	}
@@ -218,14 +224,28 @@ typename ObjectPool<Object>::unique_ptr ObjectPool<Object>::get(std::chrono::nan
 	ESL__LOGGER_TRACE_THIS("++objectsCirculating\n");
     ++objectsCirculating;
 
-	if(objects.empty()) {
+	//if(objects.empty()) {
+	auto iter = objects.find(key);
+	if(iter == objects.end()) {
 		ESL__LOGGER_TRACE_THIS("createObject()\n");
-        // create new object
-    	std::unique_ptr<Object> object = createObject();
-		return unique_ptr(object.release(), Deleter(*this, std::chrono::steady_clock::now()));
+
+		// create new object
+		//std::unique_ptr<Object> object = createObject();
+		//return unique_ptr(object.release(), Deleter(*this, std::chrono::steady_clock::now()));
+		StoredObject storedObject;
+		storedObject.object = createObject(createArgs);
+		storedObject.circulating = 1;
+		storedObject.timePointBegin = std::chrono::steady_clock::now();
+
+		Object* objectPtr = storedObject.object.get();
+
+		objects.insert(std::make_pair(key, storedObject));
+		return unique_ptr(objectPtr, Deleter(*this, key));
 	}
 
 
+	++iter->second.circulating;
+	/*
 	unique_ptr object;
 	if(strategy == Strategy::lifo) {
 		ESL__LOGGER_TRACE_THIS("LIFO\n");
@@ -242,14 +262,17 @@ typename ObjectPool<Object>::unique_ptr ObjectPool<Object>::get(std::chrono::nan
     // use existing object
 	if(resetLifetimeOnGet) {
 		ESL__LOGGER_TRACE_THIS("resetLifetimeOnGet\n");
-		object.get_deleter().timePointBegin = std::chrono::steady_clock::now();
+		//object.get_deleter().timePointBegin = std::chrono::steady_clock::now();
+		iter->second.timePointBegin = std::chrono::steady_clock::now();
 	}
 
 	return object;
+	*/
+	return unique_ptr(iter->second.object.get(), Deleter(*this, key));
 }
 
-template<class Object>
-void ObjectPool<Object>::timeoutHandler() {
+template<class Object, class Key, class CreateArgs>
+void SessionPool<Object, Key, CreateArgs>::timeoutHandler() {
 	std::unique_lock<std::mutex> objectsMutexLock(objectsMutex);
 	std::chrono::steady_clock::time_point timePointNow = std::chrono::steady_clock::now();
 
@@ -257,11 +280,11 @@ void ObjectPool<Object>::timeoutHandler() {
 		ESL__LOGGER_TRACE_THIS("calculate timeoutHandlerWakeup\n");
 		std::chrono::nanoseconds timeoutHandlerWakeup{0};
 		for(const auto& object : objects) {
-    		if(object.get_deleter().timePointBegin + objectLifetime <= timePointNow) {
+    		if(object->second.timePointBegin + objectLifetime <= timePointNow) {
     			continue;
     		}
 			std::chrono::nanoseconds remainingLifetime;
-			remainingLifetime = std::chrono::duration_cast<std::chrono::nanoseconds>(object.get_deleter().timePointBegin + objectLifetime - timePointNow);
+			remainingLifetime = std::chrono::duration_cast<std::chrono::nanoseconds>(object->second.timePointBegin + objectLifetime - timePointNow);
 			if(timeoutHandlerWakeup > remainingLifetime || timeoutHandlerWakeup == std::chrono::nanoseconds(0)) {
 				timeoutHandlerWakeup = remainingLifetime;
 			}
@@ -280,8 +303,8 @@ void ObjectPool<Object>::timeoutHandler() {
 		ESL__LOGGER_TRACE_THIS("delete elapsed objects\n");
     	timePointNow = std::chrono::steady_clock::now();
         for(auto iter = objects.begin(); iter != objects.end();) {
-        	if(descructorCalled || isTimeoutOrDirty(*iter->get(), iter->get_deleter().timePointBegin, timePointNow)) {
-        		// prevent Deleter to call "ObjectPool::release"
+        	if(descructorCalled || isTimeoutOrDirty(*iter->second.object, iter->second.timePointBegin, timePointNow)) {
+        		// prevent Deleter to call "SessionPool::release"
         		iter->get_deleter().objectPool = nullptr;
 
         		ESL__LOGGER_DEBUG_THIS("erase object = ", iter->get(), "\n");
@@ -296,35 +319,48 @@ void ObjectPool<Object>::timeoutHandler() {
 	ESL__LOGGER_TRACE_THIS("RETURN\n");
 }
 
-template<class Object>
-void ObjectPool<Object>::release(std::unique_ptr<Object> object, std::chrono::steady_clock::time_point timePointBegin) {
+template<class Object, class Key, class CreateArgs>
+void SessionPool<Object, Key, CreateArgs>::release(const Key& key) {
+//void SessionPool<Object, Key, CreateArgs>::release(std::unique_ptr<Object> object, std::chrono::steady_clock::time_point timePointBegin) {
+	/*
 	if(!object) {
 		ESL__LOGGER_ERROR_THIS("called with nullptr object\n");
 		return;
 	}
+	*/
 
 	ESL__LOGGER_TRACE_THIS("before lock\n");
 	std::lock_guard<std::mutex> objectsMutexLock(objectsMutex);
 	ESL__LOGGER_TRACE_THIS("after lock\n");
 
+	auto iter = objects.find(key);
+	if(iter == objects.end()) {
+		ESL__LOGGER_ERROR_THIS("called with nullptr object\n");
+		return;
+	}
+
+	--iter->second.circulating;
+
 	if(descructorCalled) {
     	ESL__LOGGER_DEBUG_THIS("Destroy object because ~ObjectPool() has been called.\n");
 	}
-	else {
+	else if(iter->second.circulating == 0) {
+//	else {
 		std::chrono::steady_clock::time_point timePointNow = std::chrono::steady_clock::now();
 
-		if(isTimeoutOrDirty(*object.get(), timePointBegin, timePointNow)) {
+		if(!iter->second.object || isTimeoutOrDirty(*iter->second.object, iter->second.timePointBegin, timePointNow)) {
 	    	ESL__LOGGER_DEBUG_THIS("Destroy object because timeout occurred or object is dirty.\n");
+	    	objects.erase(iter);
 	    }
 	    else {
     	    // renew Object
     		if(resetLifetimeOnRelease) {
     			ESL__LOGGER_TRACE_THIS("resetLifetimeOnRelease\n");
-    			timePointBegin = timePointNow;
+    			iter->second.timePointBegin = timePointNow;
     		}
 
-	    	ESL__LOGGER_DEBUG_THIS("objects.emplace_back(...) with object=", object.get(), "\n");
-    		objects.emplace_back(unique_ptr(object.release(), Deleter(*this, timePointBegin)));
+	    	//ESL__LOGGER_DEBUG_THIS("objects.emplace_back(...) with object=", object.get(), "\n");
+    		//objects.emplace_back(unique_ptr(object.release(), Deleter(*this, timePointBegin)));
         }
 	}
 
@@ -338,22 +374,22 @@ void ObjectPool<Object>::release(std::unique_ptr<Object> object, std::chrono::st
 	}
 }
 
-template<class Object>
-bool ObjectPool<Object>::checkGetObject() const {
+template<class Object, class Key, class CreateArgs>
+bool SessionPool<Object, Key, CreateArgs>::checkGetObject() const {
 	return descructorCalled || objectsMax == 0 || objectsMax > objectsCirculating;
 }
 
-template<class Object>
-bool ObjectPool<Object>::isTimeoutOrDirty(const Object& object, std::chrono::steady_clock::time_point timePointBegin, std::chrono::steady_clock::time_point timePointNow) const {
+template<class Object, class Key, class CreateArgs>
+bool SessionPool<Object, Key, CreateArgs>::isTimeoutOrDirty(const Object& object, std::chrono::steady_clock::time_point timePointBegin, std::chrono::steady_clock::time_point timePointNow) const {
     return (objectLifetime > std::chrono::nanoseconds(0) && timePointBegin + objectLifetime <= timePointNow) || isDirty(object);
 }
 
-template<class Object>
-bool ObjectPool<Object>::isDirty(const Object& object) {
+template<class Object, class Key, class CreateArgs>
+bool SessionPool<Object, Key, CreateArgs>::isDirty(const Object& object) {
 	return false;
 }
 
 } /* namespace utility */
 } /* namespace esl */
 
-#endif /* ESL_UTILITY_OBJECTPOOL_H_ */
+#endif /* ESL_UTILITY_SESSIONPOOL_H_ */

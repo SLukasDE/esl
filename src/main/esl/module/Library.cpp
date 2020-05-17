@@ -32,8 +32,9 @@ SOFTWARE.
 namespace esl {
 namespace module {
 
-Library::Library(const std::string& path)
-: libGetModule(nullptr)
+Library::Library(std::string aPath)
+: path(std::move(aPath)),
+  libGetModule(nullptr)
 {
 #ifdef linux
 	libHandle = dlopen(path.c_str(), RTLD_NOW | RTLD_LOCAL );
@@ -42,20 +43,7 @@ Library::Library(const std::string& path)
     }
 
     libGetModule = reinterpret_cast<GetModule>(dlsym(libHandle, "esl__module__library__getModule"));
-    /*
-    void* symbolAddressEslGetModule = dlsym(libHandle, "esl__module__library__getModule");
 
-    if(symbolAddressEslGetModule == nullptr) {
-        if(dlclose(libHandle) != 0) {
-        }
-        libHandle = nullptr;
-    	throw std::runtime_error("Cannot find symbol \"esl__module__library__getModule\" in library \"" + path + "\"");
-    }
-
-    if(symbolAddressEslGetModule != nullptr) {
-        libGetModule = *static_cast<GetModule*>(symbolAddressEslGetModule);
-    }
-    */
     if(libGetModule == nullptr) {
         if(dlclose(libHandle) != 0) {
         }
@@ -76,6 +64,10 @@ Library::~Library() {
         libHandle = nullptr;
 	}
 #endif
+}
+
+const std::string& Library::getPath() const {
+	return path;
 }
 
 esl::module::Module* Library::getModulePointer(const std::string& moduleName) {

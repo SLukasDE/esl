@@ -20,15 +20,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_MODULE_H_
-#define ESL_MODULE_H_
+#ifndef ESL_HTTP_SERVER_SESSIONCONTEXT_H_
+#define ESL_HTTP_SERVER_SESSIONCONTEXT_H_
 
-#include <esl/module/Module.h>
+#include <esl/object/Interface.h>
+#include <esl/object/Settings.h>
+#include <esl/http/server/RequestContext.h>
+//#include <esl/http/server/ObjectContext.h>
 
 namespace esl {
+namespace http {
+namespace server {
 
-esl::module::Module& getModule();
+class SessionContext : public esl::object::Settings {
+public:
+	virtual esl::object::Interface::Object& getSession(RequestContext& requestContext) const = 0;
+//	virtual ObjectContext& getSession(RequestContext& requestContext) const = 0;
+};
 
+} /* namespace server */
+} /* namespace http */
 } /* namespace esl */
 
-#endif /* ESL_MODULE_H_ */
+#endif /* ESL_HTTP_SERVER_SESSIONCONTEXT_H_ */

@@ -44,6 +44,8 @@ struct Interface : esl::module::Interface {
 		RequestHandler() = default;
 		virtual ~RequestHandler() = default;
 
+	// must be public to be able to implement a proxy request handle that can call this method
+	//protected:
 		// return true for every kind of success and get called again for more content data
 		// return false for failure and/or get not called again for more content data
 		// virtual bool process(Connection& connection, const char* contentData, std::size_t contentDataSize) = 0;

@@ -38,7 +38,7 @@ namespace layout {
 namespace {
 
 unsigned int getLoggerThreadNo(std::thread::id threadId) {
-	const logging::Interface* interface = esl::getModule().getInterfacePointer<logging::Interface>();
+	const logging::Interface* interface = esl::getModule().findInterface<logging::Interface>();
 	return interface ? interface->getThreadNo(threadId) : static_cast<unsigned int>(std::hash<std::thread::id>{}(threadId));
 }
 

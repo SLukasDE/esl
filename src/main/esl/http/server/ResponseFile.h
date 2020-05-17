@@ -20,15 +20,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_MODULE_H_
-#define ESL_MODULE_H_
+#ifndef ESL_HTTP_SERVER_RESPONSEFILE_H_
+#define ESL_HTTP_SERVER_RESPONSEFILE_H_
 
-#include <esl/module/Module.h>
+#include <esl/http/server/Response.h>
+#include <functional>
 
 namespace esl {
+namespace http {
+namespace server {
 
-esl::module::Module& getModule();
+class ResponseFile : public Response {
+public:
+	ResponseFile(int httpStatus, const std::string& contentType, std::string path);
 
+	const std::string& getPath() const noexcept;
+
+private:
+	std::string path;
+};
+
+} /* namespace server */
+} /* namespace http */
 } /* namespace esl */
 
-#endif /* ESL_MODULE_H_ */
+#endif /* ESL_HTTP_SERVER_RESPONSEFILE_H_ */

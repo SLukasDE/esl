@@ -55,11 +55,11 @@ const std::string& Module::getLicense() const {
 	return license;
 }
 
-const std::vector<Interface>& Module::getInterfaces() const {
-	return provided;
+const std::vector<Interface>& Module::getMetaInterfaces() const {
+	return metaInterfaces;
 }
 
-const Interface* Module::getInterface(const Interface& descriptor) const {
+const Interface* Module::findInterface(const Interface& descriptor) const {
 	for(auto interface : allInterfaces) {
 		if(!interface) {
 			continue;
@@ -86,20 +86,13 @@ const Interface* Module::getInterface(const Interface& descriptor) const {
 
 	return nullptr;
 }
-/*
-Module* Module::getModule(const std::string& module) {
-	if(module == "esl") {
-		return &esl::getModule();
-	}
-	return nullptr;
-}
-*/
-void Module::addModule(const Module& foreignModule, const std::string& type, const std::string& implementation) {
-	addOrReplaceModule(foreignModule, type, implementation, false);
+
+void Module::addInterfaces(const Module& foreignModule, const std::string& type, const std::string& implementation) {
+	addOrReplaceInterfaces(foreignModule, type, implementation, false);
 }
 
-void Module::replaceModule(const Module& foreignModule, const std::string& type, const std::string& implementation) {
-	addOrReplaceModule(foreignModule, type, implementation, true);
+void Module::replaceInterfaces(const Module& foreignModule, const std::string& type, const std::string& implementation) {
+	addOrReplaceInterfaces(foreignModule, type, implementation, true);
 }
 
 void Module::addInterface(std::unique_ptr<const Interface> interface) {
@@ -107,29 +100,29 @@ void Module::addInterface(std::unique_ptr<const Interface> interface) {
 		throw std::runtime_error("Cannot add empty interface to module \"" + getName() + "\".");
 	}
 
-	if(addInterfaceIntern(*interface.get())) {
-		mainInterfaces.push_back(std::move(interface));
+	if(addInterface(*interface.get(), false)) {
+		ownInterfaces.push_back(std::move(interface));
 	}
 }
 
-Interface* Module::getProvidedInterface(const std::string& type, const std::string& implementation) {
-	for(auto& providedInterface : provided) {
-		if(type != providedInterface.type) {
+Interface* Module::findMetaInterface(const std::string& type, const std::string& implementation) {
+	for(auto& metaInterface : metaInterfaces) {
+		if(type != metaInterface.type) {
 			continue;
 		}
 
-		if(implementation != providedInterface.implementation) {
+		if(implementation != metaInterface.implementation) {
 			continue;
 		}
 
-		return &providedInterface;
+		return &metaInterface;
 	}
 	return nullptr;
 }
 
-void Module::addOrReplaceModule(const Module& foreignModule, const std::string& type, const std::string& implementation, bool replace) {
+void Module::addOrReplaceInterfaces(const Module& foreignModule, const std::string& type, const std::string& implementation, bool doReplace) {
 	if(&foreignModule == this) {
-		throw std::runtime_error("Cannot add module \"" + getName() + "\" to itself.");
+		return;
 	}
 
 	for(auto foreignInterface : foreignModule.allInterfaces) {
@@ -146,38 +139,28 @@ void Module::addOrReplaceModule(const Module& foreignModule, const std::string& 
 			continue;
 		}
 
-		if(replace) {
-			replaceInterfaceIntern(*foreignInterface);
-		}
-		else {
-			addInterfaceIntern(*foreignInterface);
-		}
+		addInterface(*foreignInterface, doReplace);
 	}
 }
 
-bool Module::addInterfaceIntern(const Interface& newInterface) {
-	if(allInterfacesByAddress.insert(&newInterface).second == false) {
+bool Module::addInterface(const Interface& newInterface, bool doReplace) {
+	/* Check if address exists already. */
+	if(interfacesByAddress.find(&newInterface) != interfacesByAddress.end()) {
+		/* Address exist already. */
 		return false;
 	}
 
-	if(getProvidedInterface(newInterface.type, newInterface.implementation)) {
-		return false;
-	}
+	/* Check if an interface with same type and implementation exists already. */
+	Interface* metaInterface = findMetaInterface(newInterface.type, newInterface.implementation);
+	if(metaInterface) {
+		/* Type and implementation exists already.
+		 * Check if replace is forbidden. */
+		if(doReplace == false) {
+			return false;
+		}
 
-	provided.push_back(newInterface);
-	allInterfaces.push_back(&newInterface);
-
-	return true;
-}
-
-void Module::replaceInterfaceIntern(const Interface& newInterface) {
-	if(allInterfacesByAddress.insert(&newInterface).second == false) {
-		return;
-	}
-
-	Interface* providedInterface = getProvidedInterface(newInterface.type, newInterface.implementation);
-	if(providedInterface) {
-		*providedInterface = newInterface;
+		/* Replace meta interface. */
+		*metaInterface = newInterface;
 
 		for(auto& interface : allInterfaces) {
 			if(!interface) {
@@ -200,15 +183,22 @@ void Module::replaceInterfaceIntern(const Interface& newInterface) {
 				continue;
 			}
 
-			allInterfacesByAddress.erase(interface);
+			/* Replace interface address. */
+			interfacesByAddress.erase(interface);
+			interfacesByAddress.insert(&newInterface);
 			interface = &newInterface;
 		}
 	}
 	else {
-		provided.push_back(newInterface);
+		/* Insert meta interface. */
+		metaInterfaces.push_back(newInterface);
+
+		/* Insert interface address. */
+		interfacesByAddress.insert(&newInterface);
 		allInterfaces.push_back(&newInterface);
 	}
 
+	return true;
 }
 
 } /* namespace module */

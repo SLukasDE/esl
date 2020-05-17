@@ -28,11 +28,17 @@ namespace server {
 namespace exception {
 
 namespace {
-static constexpr const char* defaultMessage = "esl::http::server::StatusCode error";
+
+static constexpr const char* messageDefault = "esl::http::server::StatusCode error";
+static constexpr const char* message1xx = "informational response";
+static constexpr const char* message2xx = "successful";
+static constexpr const char* message3xx = "redirection";
+static constexpr const char* message4xx = "client error";
+static constexpr const char* message5xx = "server error";
 }
 
 StatusCode::StatusCode(short int aStatusCode)
-: Exception(defaultMessage),
+: Exception(getMessage(aStatusCode)),
   statusCode(aStatusCode)
 { }
 
@@ -48,6 +54,26 @@ StatusCode::StatusCode(short int aStatusCode, const std::string& message)
 
 short int StatusCode::getStatusCode() const noexcept {
 	return statusCode;
+}
+
+const char* StatusCode::getMessage(short int statusCode) noexcept {
+	if(statusCode >= 100 && statusCode <= 199) {
+		return message1xx;
+	}
+	else if(statusCode >= 200 && statusCode <= 299) {
+		return message2xx;
+	}
+	else if(statusCode >= 300 && statusCode <= 399) {
+		return message3xx;
+	}
+	else if(statusCode >= 400 && statusCode <= 499) {
+		return message4xx;
+	}
+	else if(statusCode >= 500 && statusCode <= 599) {
+		return message5xx;
+	}
+
+	return messageDefault;
 }
 
 } /* namespace exception */

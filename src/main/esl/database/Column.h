@@ -60,25 +60,40 @@ public:
 		sqlUnknown
 	};
 
-	Column(std::string name, Type type, unsigned int characterLength, unsigned int decimalDigits, bool nullable, unsigned int displayLength);
+	//Column(std::string name, Type type, bool nullable, std::size_t characterLength, std::size_t decimalDigits, std::size_t displayLength);
+	Column(std::string name, Type type, bool nullable, std::size_t defaultBufferSize, std::size_t maximumBufferSize, std::size_t decimalDigits, std::size_t characterLength, std::size_t displayLength);
 
+	/* column name as result of the underlying SQL statement */
 	const std::string& getName() const;
+
+	/* type of this column as result of the underlying SQL statement */
 	Type getType() const;
 
+	/* translates type to a string */
 	const std::string& getTypeName() const;
+
+	/* returns true if this column is able to store NULL value */
 	bool isNullable() const;
-	unsigned int getCharacterLength() const;
-	unsigned int getDecimalDigits() const;
-	unsigned int getDisplayLength() const;
+
+	/* returns 0 if value has to be fetched manually */
+	std::size_t getBufferSize() const;
+	std::size_t getDefaultBufferSize() const;
+
+	/* other meta data about this column */
+	std::size_t getCharacterLength() const;
+	std::size_t getDecimalDigits() const;
+	std::size_t getDisplayLength() const;
 
 private:
 	std::string name;
 	Type type = Type::sqlUnknown;
 
-	unsigned int characterLength;
-	unsigned int decimalDigits;
 	bool nullable;
-	unsigned int displayLength;
+	std::size_t defaultBufferSize;
+	std::size_t maximumBufferSize;
+	std::size_t characterLength;
+	std::size_t decimalDigits;
+	std::size_t displayLength;
 };
 
 } /* namespace database */

@@ -38,6 +38,8 @@ public:
 
 	short int getStatusCode() const noexcept;
 
+	static const char* getMessage(short int statusCode) noexcept;
+
 private:
 	short int statusCode;
 };

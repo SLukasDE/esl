@@ -29,7 +29,7 @@ namespace esl {
 namespace logging {
 
 Appender::~Appender() {
-	const Interface* interface = esl::getModule().getInterfacePointer<Interface>();
+	const Interface* interface = esl::getModule().findInterface<Interface>();
 	if(interface) {
 		interface->removeAppender(handle);
 	}

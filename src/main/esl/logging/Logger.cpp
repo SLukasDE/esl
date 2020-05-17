@@ -30,14 +30,14 @@ namespace esl {
 namespace logging {
 
 void setUnblocked(bool isUnblocked) {
-	const Interface* interface = esl::getModule().getInterfacePointer<Interface>();
+	const Interface* interface = esl::getModule().findInterface<Interface>();
 	if(interface) {
 		interface->setUnblocked(isUnblocked);
 	}
 }
 
 void setLevel(Level logLevel, const std::string& typeName) {
-	const Interface* interface = esl::getModule().getInterfacePointer<Interface>();
+	const Interface* interface = esl::getModule().findInterface<Interface>();
 	if(interface) {
 		interface->setLevel(logLevel, typeName);
 	}
@@ -49,7 +49,7 @@ void addAppender(Appender& appender) {
 		return;
 	}
 
-	const Interface* interface = esl::getModule().getInterfacePointer<Interface>();
+	const Interface* interface = esl::getModule().findInterface<Interface>();
 	if(interface) {
 		appender.handle = interface->addAppender(appender);
 	}

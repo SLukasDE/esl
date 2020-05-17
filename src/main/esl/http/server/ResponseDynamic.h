@@ -32,7 +32,7 @@ namespace server {
 
 class ResponseDynamic : public Response {
 public:
-	ResponseDynamic(int httpStatus, const ::std::string& contentType, std::function<int(char*, std::size_t)> getDataFunction);
+	ResponseDynamic(int httpStatus, const std::string& contentType, std::function<int(char*, std::size_t)> getDataFunction);
 	~ResponseDynamic();
 
 	int getData(char* buffer, std::size_t count);

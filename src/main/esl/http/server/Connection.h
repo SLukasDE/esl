@@ -32,6 +32,7 @@ namespace server {
 
 class ResponseBasicAuth;
 class ResponseDynamic;
+class ResponseFile;
 class ResponseStatic;
 
 class Connection {
@@ -41,6 +42,7 @@ public:
 
 	virtual bool sendResponse(std::unique_ptr<ResponseBasicAuth> response) noexcept = 0;
 	virtual bool sendResponse(std::unique_ptr<ResponseDynamic> response) noexcept = 0;
+	virtual bool sendResponse(std::unique_ptr<ResponseFile> response) noexcept = 0;
 	virtual bool sendResponse(std::unique_ptr<ResponseStatic> response) noexcept = 0;
 };
 
