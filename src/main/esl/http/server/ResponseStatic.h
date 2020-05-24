@@ -31,8 +31,8 @@ namespace server {
 
 class ResponseStatic : public Response {
 public:
-	ResponseStatic(int httpStatus, const std::string& contentType, const char* contentData, size_t contentDataSize);
-	~ResponseStatic() = default;
+	ResponseStatic(unsigned short httpStatus, const esl::utility::MIME& contentType, const char* contentData, size_t contentDataSize);
+	//ResponseStatic(unsigned short httpStatus, const std::string& contentType, const char* contentData, size_t contentDataSize);
 
 	const char* getContentData() const noexcept;
 	std::size_t getContentDataSize() const noexcept;

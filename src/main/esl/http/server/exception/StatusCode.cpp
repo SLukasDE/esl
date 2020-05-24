@@ -37,23 +37,48 @@ static constexpr const char* message4xx = "client error";
 static constexpr const char* message5xx = "server error";
 }
 
-StatusCode::StatusCode(short int aStatusCode)
+StatusCode::StatusCode(unsigned short aStatusCode)
 : Exception(getMessage(aStatusCode)),
-  statusCode(aStatusCode)
+  statusCode(aStatusCode),
+  mimeType(utility::MIME::textHtml)
 { }
 
-StatusCode::StatusCode(short int aStatusCode, const char* message)
+StatusCode::StatusCode(unsigned short aStatusCode, const char* message)
 : Exception(message),
-  statusCode(aStatusCode)
+  statusCode(aStatusCode),
+  mimeType(utility::MIME::textHtml)
 { }
 
-StatusCode::StatusCode(short int aStatusCode, const std::string& message)
+StatusCode::StatusCode(unsigned short aStatusCode, const std::string& message)
 : Exception(message),
-  statusCode(aStatusCode)
+  statusCode(aStatusCode),
+  mimeType(utility::MIME::textHtml)
 { }
 
-short int StatusCode::getStatusCode() const noexcept {
+StatusCode::StatusCode(unsigned short aStatusCode, utility::MIME aMimeType)
+: Exception(getMessage(aStatusCode)),
+  statusCode(aStatusCode),
+  mimeType(std::move(aMimeType))
+{ }
+
+StatusCode::StatusCode(unsigned short aStatusCode, utility::MIME aMimeType, const char* message)
+: Exception(message),
+  statusCode(aStatusCode),
+  mimeType(std::move(aMimeType))
+{ }
+
+StatusCode::StatusCode(unsigned short aStatusCode, utility::MIME aMimeType, const std::string& message)
+: Exception(message),
+  statusCode(aStatusCode),
+  mimeType(std::move(aMimeType))
+{ }
+
+unsigned short StatusCode::getStatusCode() const noexcept {
 	return statusCode;
+}
+
+const utility::MIME& StatusCode::getMimeType() const noexcept {
+	return mimeType;
 }
 
 const char* StatusCode::getMessage(short int statusCode) noexcept {

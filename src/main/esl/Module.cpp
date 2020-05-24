@@ -51,7 +51,7 @@ Module::Module()
 	esl::module::Module::initialize(*this);
 
 	addInterface(std::unique_ptr<const esl::module::Interface>(new esl::logging::layout::Interface(
-			esl::logging::layout::Interface::getType(), esl::logging::layout::Default::getImplementation(), &createDefaultLayout)));
+			getId(), esl::logging::layout::Default::getImplementation(), &createDefaultLayout)));
 }
 
 }  /* anonymous namespace */

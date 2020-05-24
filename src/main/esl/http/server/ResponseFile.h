@@ -32,7 +32,8 @@ namespace server {
 
 class ResponseFile : public Response {
 public:
-	ResponseFile(int httpStatus, const std::string& contentType, std::string path);
+	ResponseFile(unsigned short httpStatus, const esl::utility::MIME& contentType, std::string path);
+	//ResponseFile(unsigned short httpStatus, const std::string& contentType, std::string path);
 
 	const std::string& getPath() const noexcept;
 

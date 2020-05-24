@@ -26,12 +26,12 @@ namespace esl {
 namespace http {
 namespace client {
 
-HttpException::HttpException(const int aStatusCode, const char* description) noexcept
+HttpException::HttpException(const unsigned short aStatusCode, const char* description) noexcept
 : std::runtime_error(description),
   statusCode(aStatusCode)
 { }
 
-int HttpException::getStatusCode() const noexcept {
+unsigned short HttpException::getStatusCode() const noexcept {
 	return statusCode;
 }
 

@@ -28,27 +28,30 @@ SOFTWARE.
 namespace esl {
 namespace utility {
 
-struct MIME {
+class MIME {
+public:
+	enum Type {
+		textPlain,
+		textHtml,
+		textXml,
+		applicationXml,
+		applicationJson
+	};
+
 	MIME() = default;
-	MIME(std::string mediaType, std::string subType) noexcept;
+	MIME(Type type) noexcept;
+	explicit MIME(std::string type) noexcept;
 
-	std::string getContentType() noexcept;
+	bool operator==(Type type) const noexcept;
+	bool operator==(const MIME& aMime) const noexcept;
 
-	static MIME byFilename(const std::string& filename);
+	const std::string& toString() const noexcept;
+	static const std::string& toString(Type mimeType) noexcept;
 
-	// e.g. - application
-	//      - audio
-	//      - example
-	//      - image
-	//      - message
-	//      - model
-	//      - multipart
-	//      - text
-	//      - video
-	std::string mediaType;
-
-	// e.g. - jpeg
-	std::string subType;
+private:
+	bool hasEnum = false;
+	Type enumType = textPlain;
+	std::string stringType;
 };
 
 } /* namespace utility */

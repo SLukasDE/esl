@@ -23,6 +23,8 @@ SOFTWARE.
 #ifndef ESL_HTTP_SERVER_RESPONSE_H_
 #define ESL_HTTP_SERVER_RESPONSE_H_
 
+#include <esl/utility/MIME.h>
+
 #include <string>
 #include <map>
 
@@ -32,7 +34,8 @@ namespace server {
 
 class Response {
 public:
-	Response(unsigned short httpStatus, const std::string& contentType) noexcept;
+	Response(unsigned short httpStatus, const esl::utility::MIME& contentType) noexcept;
+	//Response(unsigned short httpStatus, const std::string& contentType) noexcept;
 	virtual ~Response() = default;
 
 	bool isValid() const noexcept;

@@ -32,13 +32,18 @@ namespace server {
 
 class ResponseDynamic : public Response {
 public:
-	ResponseDynamic(int httpStatus, const std::string& contentType, std::function<int(char*, std::size_t)> getDataFunction);
-	~ResponseDynamic();
+	ResponseDynamic(unsigned short httpStatus, const esl::utility::MIME& contentType, std::function<int(char*, std::size_t)> getDataFunction);
+	ResponseDynamic(unsigned short httpStatus, const esl::utility::MIME& contentType, std::string data);
+
+	//ResponseDynamic(unsigned short httpStatus, const std::string& contentType, std::function<int(char*, std::size_t)> getDataFunction);
+	//ResponseDynamic(unsigned short httpStatus, const std::string& contentType, std::string data);
 
 	int getData(char* buffer, std::size_t count);
 
 private:
 	std::function<int(char*, std::size_t)> getDataFunction;
+	std::string data;
+	std::size_t dataPos = 0;
 };
 
 } /* namespace server */

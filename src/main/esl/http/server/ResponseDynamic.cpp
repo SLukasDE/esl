@@ -21,22 +21,52 @@ SOFTWARE.
 */
 
 #include <esl/http/server/ResponseDynamic.h>
+#include <cstring>
 
 namespace esl {
 namespace http {
 namespace server {
 
-ResponseDynamic::ResponseDynamic(int httpStatus, const std::string& contentType, std::function<int(char*, std::size_t)> getDataFunction)
+ResponseDynamic::ResponseDynamic(unsigned short httpStatus, const esl::utility::MIME& contentType, std::function<int(char*, std::size_t)> aGetDataFunction)
 : Response(httpStatus, contentType),
-  getDataFunction(getDataFunction)
-{
-}
+  getDataFunction(aGetDataFunction)
+{ }
 
-ResponseDynamic::~ResponseDynamic() {
-}
+ResponseDynamic::ResponseDynamic(unsigned short httpStatus, const esl::utility::MIME& contentType, std::string aData)
+: Response(httpStatus, contentType),
+  data(std::move(aData))
+{ }
+/*
+ResponseDynamic::ResponseDynamic(unsigned short httpStatus, const std::string& contentType, std::function<int(char*, std::size_t)> aGetDataFunction)
+: Response(httpStatus, contentType),
+  getDataFunction(aGetDataFunction)
+{ }
 
+ResponseDynamic::ResponseDynamic(unsigned short httpStatus, const std::string& contentType, std::string aData)
+: Response(httpStatus, contentType),
+  data(std::move(aData))
+{ }
+*/
 int ResponseDynamic::getData(char* buffer, std::size_t count) {
-	return getDataFunction(buffer, count);
+	if(getDataFunction) {
+		return getDataFunction(buffer, count);
+	}
+
+    std::size_t remainingSize = data.size() - dataPos;
+
+    if(count > remainingSize) {
+    	count = remainingSize;
+    }
+    std::memcpy(buffer, &data.data()[dataPos], count);
+    dataPos += count;
+
+
+    /* Hier wissen wir, dass keine Daten mehr zu senden sind, wenn count == 0 ist */
+    /* Daher geben wir dann auch -1 zurueck - was dem Aufrufer signalisiert, dass keine Daten mehr zu senden sind */
+    if(count == 0) {
+        return -1;
+    }
+    return count;
 }
 
 } /* namespace server */

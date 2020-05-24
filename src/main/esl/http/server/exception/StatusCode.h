@@ -24,6 +24,7 @@ SOFTWARE.
 #define ESL_HTTP_SERVER_EXCEPTION_STATUSCODE_H_
 
 #include <esl/http/server/Exception.h>
+#include <esl/utility/MIME.h>
 
 namespace esl {
 namespace http {
@@ -32,16 +33,22 @@ namespace exception {
 
 class StatusCode : public Exception {
 public:
-	explicit StatusCode(short int statusCode);
-	explicit StatusCode(short int statusCode, const char* message);
-	explicit StatusCode(short int statusCode, const std::string& message);
+	explicit StatusCode(unsigned short statusCode);
+	explicit StatusCode(unsigned short statusCode, const char* message);
+	explicit StatusCode(unsigned short statusCode, const std::string& message);
 
-	short int getStatusCode() const noexcept;
+	explicit StatusCode(unsigned short statusCode, utility::MIME mimeType);
+	explicit StatusCode(unsigned short statusCode, utility::MIME mimeType, const char* message);
+	explicit StatusCode(unsigned short statusCode, utility::MIME mimeType, const std::string& message);
+
+	unsigned short getStatusCode() const noexcept;
+	const utility::MIME& getMimeType() const noexcept;
 
 	static const char* getMessage(short int statusCode) noexcept;
 
 private:
-	short int statusCode;
+	unsigned short statusCode;
+	utility::MIME mimeType;
 };
 
 } /* namespace exception */

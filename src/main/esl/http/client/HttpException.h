@@ -31,12 +31,12 @@ namespace client {
 
 class HttpException : public std::runtime_error {
 public:
-    HttpException(const int statuCode, const char* description) noexcept;
+    HttpException(const unsigned short statusCode, const char* description) noexcept;
 
-    int getStatusCode() const noexcept;
+    unsigned short getStatusCode() const noexcept;
 
 private:
-    int statusCode = 200;
+    unsigned short statusCode = 200;
 };
 
 } /* namespace client */

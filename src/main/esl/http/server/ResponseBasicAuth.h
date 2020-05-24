@@ -31,7 +31,8 @@ namespace server {
 
 class ResponseBasicAuth: public ResponseStatic {
 public:
-	ResponseBasicAuth(std::string realmId, const std::string& contentType, const char* contentData, size_t contentDataSize);
+	ResponseBasicAuth(std::string realmId, const esl::utility::MIME& contentType, const char* contentData, size_t contentDataSize);
+	//ResponseBasicAuth(std::string realmId, const std::string& contentType, const char* contentData, size_t contentDataSize);
 	~ResponseBasicAuth() = default;
 
 	const std::string& getRealmId() const noexcept;

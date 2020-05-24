@@ -26,88 +26,59 @@ SOFTWARE.
 namespace esl {
 namespace utility {
 
-MIME::MIME(std::string mediaType, std::string subType) noexcept
-: mediaType(mediaType),
-  subType(subType)
-{ }
+namespace {
+const std::string strEmpty;
+const std::string strTextPlain = "text/plain";
+const std::string strTextHtml = "text/html";
+const std::string strTextXml = "text/xml";
+const std::string strApplicationXml = "application/xml";
+const std::string strApplicationJson = "application/json";
 
-std::string MIME::getContentType() noexcept {
-	return mediaType + "/" + subType;
 }
 
-MIME MIME::byFilename(const std::string& filename) {
-    std::size_t pos = filename.find_last_of(".");
-    std::string fileType;
+MIME::MIME(Type type) noexcept
+: hasEnum(true),
+  enumType(type)
+{ }
 
-    /* Dateiendung gefunden */
-    if(pos != std::string::npos) {
-        fileType = filename.substr(pos+1);
-        std::transform(fileType.begin(), fileType.end(), fileType.begin(), tolower);
-    }
+MIME::MIME(std::string type) noexcept
+: hasEnum(false),
+  stringType(std::move(type))
+{ }
 
+bool MIME::operator==(MIME::Type type) const noexcept {
+	return (*this == MIME(type));
+}
 
-    if(fileType == "bmp") {
-        return MIME("image", "bmp");
-    }
-    else if(fileType == "bz") {
-        return MIME("application", "x-bzip");
-    }
-    else if(fileType == "bz2") {
-        return MIME("application", "x-bzip2");
-    }
-    else if(fileType == "gif") {
-        return MIME("image", "gif");
-    }
-    else if(fileType == "gz") {
-        return MIME("application", "x-compressed");
-    }
-    else if(fileType == "gzip") {
-        return MIME("application", "x-gzip");
-    }
-    else if(fileType == "htm") {
-        return MIME("text", "html");
-    }
-    else if(fileType == "html") {
-        return MIME("text", "html");
-    }
-    else if(fileType == "jpg" || fileType == "jpeg") {
-        return MIME("image", "jpeg");
-    }
-    else if(fileType == "log") {
-        return MIME("text", "plain");
-    }
-    else if(fileType == "mp3") {
-        return MIME("audio", "mpeg3");
-    }
-    else if(fileType == "png") {
-        return MIME("image", "png");
-    }
-    else if(fileType == "text") {
-        return MIME("text", "plain");
-    }
-    else if(fileType == "txt") {
-        return MIME("text", "plain");
-    }
-    else if(fileType == "tgz") {
-        return MIME("application", "x-compressed");
-    }
-    else if(fileType == "tif") {
-        return MIME("image", "tiff");
-    }
-    else if(fileType == "wav") {
-        return MIME("audio", "wav");
-    }
-    else if(fileType == "xls") {
-        return MIME("application", "excel");
-    }
-    else if(fileType == "xml") {
-        return MIME("text", "xml");
-    }
-    else if(fileType == "zip") {
-        return MIME("application", "zip");
-    }
-    MIME m;
-    return m;
+bool MIME::operator==(const MIME& aMime) const noexcept {
+	if(hasEnum && aMime.hasEnum) {
+		return enumType == aMime.enumType;
+	}
+	return toString() == aMime.toString();
+}
+
+const std::string& MIME::toString() const noexcept {
+	if(hasEnum) {
+		return toString(enumType);
+	}
+
+	return stringType;
+}
+
+const std::string& MIME::toString(MIME::Type mimeType) noexcept {
+	switch(mimeType) {
+	case textPlain:
+		return strTextPlain;
+	case textHtml:
+		return strTextHtml;
+	case textXml:
+		return strTextXml;
+	case applicationXml:
+		return strApplicationXml;
+	case applicationJson:
+		return strApplicationJson;
+	}
+	return strEmpty;
 }
 
 } /* namespace utility */

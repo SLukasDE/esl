@@ -27,11 +27,18 @@ namespace esl {
 namespace http {
 namespace server {
 
+Response::Response(unsigned short httpStatus, const esl::utility::MIME& contentType) noexcept
+: httpStatus(httpStatus)
+{
+	headers["Content-Type"] = contentType.toString();
+}
+/*
 Response::Response(unsigned short httpStatus, const std::string& contentType) noexcept
 : httpStatus(httpStatus)
 {
 	headers["Content-Type"] = contentType;
 }
+*/
 
 bool Response::isValid() const noexcept {
 	return (headers.find("Content-Type")->second != "");
