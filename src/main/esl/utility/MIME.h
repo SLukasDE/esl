@@ -45,6 +45,9 @@ public:
 	bool operator==(Type type) const noexcept;
 	bool operator==(const MIME& aMime) const noexcept;
 
+	bool operator!=(Type type) const noexcept;
+	bool operator!=(const MIME& aMime) const noexcept;
+
 	const std::string& toString() const noexcept;
 	static const std::string& toString(Type mimeType) noexcept;
 

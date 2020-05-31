@@ -24,6 +24,7 @@ SOFTWARE.
 #define ESL_HTTP_SERVER_REQUEST_H_
 
 #include <string>
+#include <cstdint>
 
 namespace esl {
 namespace http {
@@ -38,20 +39,18 @@ public:
 	virtual const std::string& getHTTPVersion() const noexcept = 0;
 	virtual const std::string& getUsername() const noexcept = 0;
 	virtual const std::string& getPassword() const noexcept = 0;
-	virtual const std::string& getDomain() const noexcept = 0;
-	virtual unsigned int getPort() const noexcept = 0;
+
+	virtual const std::string& getHost() const noexcept = 0;
+	virtual const std::string& getHostAddress() const noexcept = 0;
+	virtual uint16_t getHostPort() const noexcept = 0;
+
+	virtual const std::string& getRemoteAddress() const noexcept = 0;
+	virtual uint16_t getRemotePort() const noexcept = 0;
+
 	virtual const std::string& getPath() const noexcept = 0;
-//	const std::string& getSubPath() const;
-//	void getSubPath(std::string subPath);
 	virtual const std::string& getMethod() const noexcept = 0;
 	virtual bool hasArgument(const std::string& key) const noexcept = 0;
 	virtual const std::string& getArgument(const std::string& key) const = 0;
-
-	virtual const std::string& getClientAddress() const noexcept = 0;
-
-//private:
-//	bool isSetToSubPath = false;
-//	std::string subPath;
 };
 
 } /* namespace server */

@@ -24,6 +24,8 @@ SOFTWARE.
 #define ESL_HTTP_SERVER_RESPONSEFILE_H_
 
 #include <esl/http/server/Response.h>
+#include <esl/utility/MIME.h>
+
 #include <functional>
 
 namespace esl {
@@ -33,7 +35,7 @@ namespace server {
 class ResponseFile : public Response {
 public:
 	ResponseFile(unsigned short httpStatus, const esl::utility::MIME& contentType, std::string path);
-	//ResponseFile(unsigned short httpStatus, const std::string& contentType, std::string path);
+	ResponseFile(unsigned short httpStatus, const std::string& contentType, std::string path);
 
 	const std::string& getPath() const noexcept;
 

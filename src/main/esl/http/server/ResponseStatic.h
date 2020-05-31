@@ -24,6 +24,7 @@ SOFTWARE.
 #define ESL_HTTP_SERVER_RESPONSESTATIC_H_
 
 #include <esl/http/server/Response.h>
+#include <esl/utility/MIME.h>
 
 namespace esl {
 namespace http {
@@ -32,7 +33,7 @@ namespace server {
 class ResponseStatic : public Response {
 public:
 	ResponseStatic(unsigned short httpStatus, const esl::utility::MIME& contentType, const char* contentData, size_t contentDataSize);
-	//ResponseStatic(unsigned short httpStatus, const std::string& contentType, const char* contentData, size_t contentDataSize);
+	ResponseStatic(unsigned short httpStatus, const std::string& contentType, const char* contentData, size_t contentDataSize);
 
 	const char* getContentData() const noexcept;
 	std::size_t getContentDataSize() const noexcept;

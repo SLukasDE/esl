@@ -28,15 +28,13 @@ namespace http {
 namespace server {
 
 ResponseDynamic::ResponseDynamic(unsigned short httpStatus, const esl::utility::MIME& contentType, std::function<int(char*, std::size_t)> aGetDataFunction)
-: Response(httpStatus, contentType),
-  getDataFunction(aGetDataFunction)
+: ResponseDynamic(httpStatus, contentType.toString(), aGetDataFunction)
 { }
 
 ResponseDynamic::ResponseDynamic(unsigned short httpStatus, const esl::utility::MIME& contentType, std::string aData)
-: Response(httpStatus, contentType),
-  data(std::move(aData))
+: ResponseDynamic(httpStatus, contentType.toString(), aData)
 { }
-/*
+
 ResponseDynamic::ResponseDynamic(unsigned short httpStatus, const std::string& contentType, std::function<int(char*, std::size_t)> aGetDataFunction)
 : Response(httpStatus, contentType),
   getDataFunction(aGetDataFunction)
@@ -46,7 +44,7 @@ ResponseDynamic::ResponseDynamic(unsigned short httpStatus, const std::string& c
 : Response(httpStatus, contentType),
   data(std::move(aData))
 { }
-*/
+
 int ResponseDynamic::getData(char* buffer, std::size_t count) {
 	if(getDataFunction) {
 		return getDataFunction(buffer, count);

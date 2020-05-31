@@ -24,6 +24,7 @@ SOFTWARE.
 #define ESL_HTTP_SERVER_RESPONSEBASICAUTH_H_
 
 #include <esl/http/server/ResponseStatic.h>
+#include <esl/utility/MIME.h>
 
 namespace esl {
 namespace http {
@@ -32,8 +33,7 @@ namespace server {
 class ResponseBasicAuth: public ResponseStatic {
 public:
 	ResponseBasicAuth(std::string realmId, const esl::utility::MIME& contentType, const char* contentData, size_t contentDataSize);
-	//ResponseBasicAuth(std::string realmId, const std::string& contentType, const char* contentData, size_t contentDataSize);
-	~ResponseBasicAuth() = default;
+	ResponseBasicAuth(std::string realmId, const std::string& contentType, const char* contentData, size_t contentDataSize);
 
 	const std::string& getRealmId() const noexcept;
 

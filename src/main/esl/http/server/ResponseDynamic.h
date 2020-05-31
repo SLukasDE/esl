@@ -24,6 +24,8 @@ SOFTWARE.
 #define ESL_HTTP_SERVER_RESPONSEDYNAMIC_H_
 
 #include <esl/http/server/Response.h>
+#include <esl/utility/MIME.h>
+
 #include <functional>
 
 namespace esl {
@@ -35,8 +37,8 @@ public:
 	ResponseDynamic(unsigned short httpStatus, const esl::utility::MIME& contentType, std::function<int(char*, std::size_t)> getDataFunction);
 	ResponseDynamic(unsigned short httpStatus, const esl::utility::MIME& contentType, std::string data);
 
-	//ResponseDynamic(unsigned short httpStatus, const std::string& contentType, std::function<int(char*, std::size_t)> getDataFunction);
-	//ResponseDynamic(unsigned short httpStatus, const std::string& contentType, std::string data);
+	ResponseDynamic(unsigned short httpStatus, const std::string& contentType, std::function<int(char*, std::size_t)> getDataFunction);
+	ResponseDynamic(unsigned short httpStatus, const std::string& contentType, std::string data);
 
 	int getData(char* buffer, std::size_t count);
 

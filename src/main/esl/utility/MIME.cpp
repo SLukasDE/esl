@@ -27,6 +27,7 @@ namespace esl {
 namespace utility {
 
 namespace {
+
 const std::string strEmpty;
 const std::string strTextPlain = "text/plain";
 const std::string strTextHtml = "text/html";
@@ -55,6 +56,14 @@ bool MIME::operator==(const MIME& aMime) const noexcept {
 		return enumType == aMime.enumType;
 	}
 	return toString() == aMime.toString();
+}
+
+bool MIME::operator!=(MIME::Type type) const noexcept {
+	return (*this != MIME(type));
+}
+
+bool MIME::operator!=(const MIME& aMime) const noexcept {
+	return (*this != aMime);
 }
 
 const std::string& MIME::toString() const noexcept {

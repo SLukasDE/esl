@@ -27,19 +27,15 @@ namespace http {
 namespace server {
 
 ResponseStatic::ResponseStatic(unsigned short httpStatus, const esl::utility::MIME& contentType, const char* aContentData, size_t aContentDataSize)
-: Response(httpStatus, contentType),
-  contentData(aContentData),
-  contentDataSize(aContentDataSize)
-{
-}
-/*
+: ResponseStatic(httpStatus, contentType.toString(), aContentData, aContentDataSize)
+{ }
+
 ResponseStatic::ResponseStatic(unsigned short httpStatus, const std::string& contentType, const char* aContentData, size_t aContentDataSize)
 : Response(httpStatus, contentType),
   contentData(aContentData),
   contentDataSize(aContentDataSize)
-{
-}
-*/
+{ }
+
 const char* ResponseStatic::getContentData() const noexcept {
 	return contentData;
 }

@@ -23,7 +23,7 @@ SOFTWARE.
 #include <esl/Module.h>
 #include <esl/module/Interface.h>
 #include <esl/logging/layout/Interface.h>
-#include <esl/logging/layout/Default.h>
+#include <esl/logging/builtin/Layout.h>
 #include <esl/Stacktrace.h>
 #include <stdexcept>
 #include <new>         // placement new
@@ -41,17 +41,13 @@ public:
 typename std::aligned_storage<sizeof(Module), alignof(Module)>::type moduleBuffer; // memory for the object;
 Module* modulePtr = nullptr;
 
-std::unique_ptr<esl::logging::layout::Interface::Layout> createDefaultLayout() {
-	return std::unique_ptr<esl::logging::layout::Interface::Layout>(new esl::logging::layout::Default());
-}
-
 Module::Module()
 : esl::module::Module()
 {
 	esl::module::Module::initialize(*this);
 
 	addInterface(std::unique_ptr<const esl::module::Interface>(new esl::logging::layout::Interface(
-			getId(), esl::logging::layout::Default::getImplementation(), &createDefaultLayout)));
+			getId(), esl::logging::builtin::Layout::getImplementation(), &esl::logging::builtin::Layout::create)));
 }
 
 }  /* anonymous namespace */

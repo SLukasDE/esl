@@ -27,15 +27,14 @@ namespace http {
 namespace server {
 
 ResponseFile::ResponseFile(unsigned short httpStatus, const esl::utility::MIME& contentType, std::string aPath)
-: Response(httpStatus, contentType),
-  path(std::move(aPath))
+: ResponseFile(httpStatus, contentType.toString(), std::move(aPath))
 { }
-/*
+
 ResponseFile::ResponseFile(unsigned short httpStatus, const std::string& contentType, std::string aPath)
 : Response(httpStatus, contentType),
   path(std::move(aPath))
 { }
-*/
+
 
 const std::string& ResponseFile::getPath() const noexcept {
 	return path;

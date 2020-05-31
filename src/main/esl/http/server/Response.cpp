@@ -27,24 +27,18 @@ namespace esl {
 namespace http {
 namespace server {
 
-Response::Response(unsigned short httpStatus, const esl::utility::MIME& contentType) noexcept
-: httpStatus(httpStatus)
-{
-	headers["Content-Type"] = contentType.toString();
-}
-/*
-Response::Response(unsigned short httpStatus, const std::string& contentType) noexcept
-: httpStatus(httpStatus)
+Response::Response(unsigned short aHttpStatus, const std::string& contentType) noexcept
+: httpStatus(aHttpStatus)
 {
 	headers["Content-Type"] = contentType;
 }
-*/
+
 
 bool Response::isValid() const noexcept {
 	return (headers.find("Content-Type")->second != "");
 }
 
-int Response::getHttpStatus() const noexcept {
+unsigned short Response::getHttpStatus() const noexcept {
 	return httpStatus;
 }
 
@@ -55,10 +49,6 @@ void Response::addHeader(const std::string& key, const std::string& value) {
 const std::map<std::string, std::string>& Response::getHeaders() const {
 	return headers;
 }
-
-//const std::string& Response::getContentType() const noexcept {
-//	return headers["Content-Type"];
-//}
 
 } /* namespace server */
 } /* namespace http */
