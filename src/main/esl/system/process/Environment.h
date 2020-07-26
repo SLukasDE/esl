@@ -20,23 +20,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_SYSTEM_PROCESS_OUTPUTFILE_H_
-#define ESL_SYSTEM_PROCESS_OUTPUTFILE_H_
+#ifndef ESL_SYSTEM_PROCESS_ENVIRONMENT_H_
+#define ESL_SYSTEM_PROCESS_ENVIRONMENT_H_
 
-#include <esl/system/Process.h>
 #include <string>
+#include <vector>
+#include <utility>
 
 namespace esl {
 namespace system {
 namespace process {
 
-class OutputFile : public Process::Output {
+class Environment {
 public:
-	OutputFile(const std::string& filename);
+	Environment();
+	Environment(const Environment&) = delete;
+	Environment(Environment&& other);
+	Environment(std::vector<std::pair<std::string, std::string>> values);
+	~Environment();
+
+	Environment& operator=(const Environment&) = delete;
+	Environment& operator=(Environment&& other);
+
+	const std::vector<std::pair<std::string, std::string>>& getValues() const noexcept;
+	char* const* getEnvp() const noexcept;
+
+private:
+	std::vector<std::pair<std::string, std::string>> values;
+
+	std::size_t envc = 0;
+	char** envp = nullptr;
 };
 
 } /* namespace process */
 } /* namespace system */
 } /* namespace esl */
 
-#endif /* ESL_SYSTEM_PROCESS_OUTPUTFILE_H_ */
+#endif /* ESL_SYSTEM_PROCESS_ENVIRONMENT_H_ */

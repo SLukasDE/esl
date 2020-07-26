@@ -24,6 +24,9 @@ SOFTWARE.
 #define SRC_ESL_HTTP_CLIENT_REQUESTFILE_H_
 
 #include <esl/http/client/Request.h>
+#include <esl/utility/HttpMethod.h>
+#include <esl/utility/MIME.h>
+
 #include <string>
 
 namespace esl {
@@ -32,8 +35,7 @@ namespace client {
 
 class RequestFile : public Request {
 public:
-	RequestFile(const std::string& servicePath, const std::string& contentType, const std::string& filename);
-	~RequestFile() = default;
+	RequestFile(std::string path, utility::HttpMethod method, utility::MIME contentType, std::string filename);
 
 	const std::string& getFilename() const;
 

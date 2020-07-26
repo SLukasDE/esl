@@ -20,27 +20,41 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_HTTP_CLIENT_HTTPEXCEPTION_H_
-#define ESL_HTTP_CLIENT_HTTPEXCEPTION_H_
+#include <esl/object/ValueSettings.h>
+#include <esl/Stacktrace.h>
 
 #include <stdexcept>
 
 namespace esl {
-namespace http {
-namespace client {
+namespace object {
 
-class HttpException : public std::runtime_error {
-public:
-    HttpException(const unsigned short statusCode, const char* description) noexcept;
+ValueSettings::ValueSettings(std::initializer_list<std::pair<std::string, std::string>> values)
+ : object::Values<std::string>(),
+   object::Settings(),
+   settings(std::move(values)),
+   settingsMap(settings.begin(), settings.end())
+{ }
 
-    unsigned short getStatusCode() const noexcept;
+void ValueSettings::addSetting(const std::string& key, const std::string& value) {
+	settingsMap[key] = value;
+	settings.push_back(std::make_pair(key, value));
+}
 
-private:
-    unsigned short statusCode = 200;
-};
+bool ValueSettings::hasValue(const std::string& key) const {
+	return settingsMap.find(key) != settingsMap.end();
+}
 
-} /* namespace client */
-} /* namespace http */
-} /* namespace esl  */
+std::string ValueSettings::getValue(const std::string& key) const {
+	auto iter = settingsMap.find(key);
+	if(iter == settingsMap.cend()) {
+		throw esl::addStacktrace(std::runtime_error("Unknown parameter key=\"" + key + "\""));
+	}
+	return iter->second;
+}
 
-#endif /* ESL_HTTP_CLIENT_NETWORKEXCEPTION_H_ */
+const std::vector<std::pair<std::string, std::string>>& ValueSettings::getValues() const {
+	return settings;
+}
+
+} /* namespace object */
+} /* namespace esl */

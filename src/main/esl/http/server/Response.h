@@ -36,16 +36,16 @@ public:
 
 	bool isValid() const noexcept;
 
-	unsigned short getHttpStatus() const noexcept;
+	unsigned short getStatusCode() const noexcept;
 
 	void addHeader(const std::string& key, const std::string& value);
 	const std::map<std::string, std::string>& getHeaders() const;
 
 protected:
-	Response(unsigned short httpStatus, const std::string& contentType) noexcept;
+	Response(unsigned short statusCode, const std::string& contentType) noexcept;
 
 private:
-	unsigned short httpStatus;
+	unsigned short statusCode;
 	std::map<std::string, std::string> headers;
 };
 

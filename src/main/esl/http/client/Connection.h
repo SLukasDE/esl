@@ -24,7 +24,16 @@ SOFTWARE.
 #define SRC_MAIN_C___ESL_SERVICE_CLIENT_CONNECTION_H_
 
 #include <esl/http/client/Interface.h>
+#include <esl/http/client/RequestDynamic.h>
+#include <esl/http/client/RequestStatic.h>
+#include <esl/http/client/RequestFile.h>
+#include <esl/http/client/Response.h>
+#include <esl/http/client/ResponseHandler.h>
+#include <esl/object/Values.h>
+#include <esl/utility/URL.h>
+
 #include <string>
+#include <initializer_list>
 #include <memory>
 
 namespace esl {
@@ -33,18 +42,18 @@ namespace client {
 
 class Connection : public Interface::Connection {
 public:
-	Connection(const std::string& hostUrl,
-               const long timeout,
-               const std::string& username = "",
-               const std::string& password = "",
-               const std::string& proxy = "",
-			   const std::string& proxyUser = "",
-			   const std::string& proxyPassword = "",
-               const std::string& userAgent = "esl-http-client");
+	Connection(const utility::URL& hostUrl, std::initializer_list<std::pair<std::string, std::string>> values,
+			   const std::string& implementation = getDefaultImplementation());
 
-	void send(Response& response, const RequestDynamic& request, const std::string& method) const;
-	void send(Response& response, const RequestStatic& request, const std::string& method) const;
-	void send(Response& response, const RequestFile& request, const std::string& method) const;
+	Connection(const utility::URL& hostUrl, const object::Values<std::string>& values,
+			   const std::string& implementation = getDefaultImplementation());
+
+	Response send(RequestDynamic& request, ResponseHandler* responseHandler = nullptr) const override;
+	Response send(const RequestStatic& request, ResponseHandler* responseHandler = nullptr) const override;
+	Response send(const RequestFile& request, ResponseHandler* responseHandler = nullptr) const override;
+
+	static void setDefaultImplementation(std::string implementation);
+	static const std::string& getDefaultImplementation();
 
 private:
 	std::unique_ptr<Interface::Connection> connection;

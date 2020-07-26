@@ -20,21 +20,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/client/HttpException.h>
+#ifndef ESL_SYSTEM_PROCESS_PRODUCERDYNAMIC_H_
+#define ESL_SYSTEM_PROCESS_PRODUCERDYNAMIC_H_
+
+#include <esl/system/Interface.h>
+
+#include <string>
+#include <functional>
 
 namespace esl {
-namespace http {
-namespace client {
+namespace system {
+namespace process {
 
-HttpException::HttpException(const unsigned short aStatusCode, const char* description) noexcept
-: std::runtime_error(description),
-  statusCode(aStatusCode)
-{ }
+class ProducerDynamic : public Interface::Producer {
+public:
+	ProducerDynamic(std::function<std::size_t(char*, std::size_t)> getDataFunction);
+	ProducerDynamic(std::string content);
 
-unsigned short HttpException::getStatusCode() const noexcept {
-	return statusCode;
-}
+	std::size_t write(Interface::FileDescriptor& fileDescriptor) override;
 
-} /* namespace client */
-} /* namespace http */
-} /* namespace esl  */
+private:
+	std::function<std::size_t(char*, std::size_t)> getDataFunction;
+	std::string data;
+
+	char buffer[4096];
+	const char *bufferRead;
+	std::size_t currentPos = 0;
+	std::size_t currentSize = 0;
+};
+
+} /* namespace process */
+} /* namespace system */
+} /* namespace esl */
+
+#endif /* ESL_SYSTEM_PROCESS_PRODUCERDYNAMIC_H_ */

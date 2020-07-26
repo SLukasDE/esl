@@ -25,39 +25,20 @@ SOFTWARE.
 
 #include <string>
 #include <map>
-#include <cstdlib>
 
 namespace esl {
 namespace http {
 namespace client {
 
-//class Connection;
-
-// Serverantwort bestehend aus: Http-Rueckgabewert, Antwort als Text und Key-Value Paaren mit Einstellungen
 class Response {
-friend class Connection; // fuer readCallback;
 public:
-	Response() noexcept;
-	virtual ~Response() noexcept;
+	Response(unsigned short statusCode, std::map<std::string, std::string> headers);
 
-	std::string getHeader(const std::string& header) const noexcept;
-
-
-/* TODO: diese Low-Level-Callback Funktionen muessen noch nach curl::Connection */
-	// writedata callback function
-	static size_t  writeCallback(void *ptr, size_t size, size_t nmemb, void *userdata);
-
-	// header callback function
-	static size_t headerCallback(void *ptr, size_t size, size_t nmemb, void *userdata);
-
-
-
-protected:
-	virtual size_t read(void* data, size_t size) noexcept = 0;
+	const std::map<std::string, std::string>& getHeaders() const noexcept;
+	unsigned short getStatusCode() const noexcept;
 
 private:
-	size_t readHeader(void *data, size_t size) noexcept;
-
+	unsigned short statusCode = 0;
 	std::map<std::string, std::string> headers;
 };
 

@@ -20,23 +20,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_SYSTEM_PROCESS_OUTPUTPIPE_H_
-#define ESL_SYSTEM_PROCESS_OUTPUTPIPE_H_
+#ifndef ESL_HTTP_CLIENT_RESPONSEHANDLERDATA_H_
+#define ESL_HTTP_CLIENT_RESPONSEHANDLERDATA_H_
 
-#include <esl/system/Process.h>
+#include <esl/http/client/ResponseHandler.h>
+
+#include <string>
 
 namespace esl {
-namespace system {
-namespace process {
+namespace http {
+namespace client {
 
-class OutputPipe : public Process::Output {
+class ResponseHandlerData : public ResponseHandler {
 public:
-	OutputPipe();
-	~OutputPipe() = default;
+	bool process(const char* contentData, std::size_t contentDataSize) override;
+	const std::string& getData() const noexcept;
+
+protected:
+	std::string data;
 };
 
-} /* namespace process */
-} /* namespace system */
+} /* namespace client */
+} /* namespace http */
 } /* namespace esl */
 
-#endif /* ESL_SYSTEM_PROCESS_OUTPUTPIPE_H_ */
+#endif /* ESL_HTTP_CLIENT_RESPONSEHANDLERDATA_H_ */

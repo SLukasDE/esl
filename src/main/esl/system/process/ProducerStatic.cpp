@@ -20,39 +20,41 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_OBJECT_VALUES_H_
-#define ESL_OBJECT_VALUES_H_
-
-#include <esl/object/Interface.h>
-#include <esl/Stacktrace.h>
-
-#include <vector>
-#include <utility>
-#include <stdexcept>
+#include <esl/system/process/ProducerStatic.h>
 
 namespace esl {
-namespace object {
+namespace system {
+namespace process {
 
-template<typename T>
-class Values : public virtual Interface::Object {
-public:
-	virtual bool hasValue(const std::string& key) const {
-		return false;
+ProducerStatic::ProducerStatic(const char* aData, std::size_t aSize)
+: data(aData),
+  size(aSize)
+{ }
+
+std::size_t ProducerStatic::write(Interface::FileDescriptor& fileDescriptor) {
+	std::size_t count = fileDescriptor.write(getData(), getSize() - currentPos);
+
+	if(count != 0) {
+		if(count == Interface::FileDescriptor::npos) {
+			/* error occurred. set currentPos to the end of the content */
+			currentPos = getSize();
+		}
+		else {
+			currentPos += count;
+		}
 	}
 
-	virtual T getValue(const std::string& key) const {
-		throw esl::addStacktrace(std::runtime_error("Unknown parameter key=\"" + key + "\""));
-	}
+	return (currentPos < getSize()) ? count : Interface::FileDescriptor::npos;
+}
 
-	virtual const std::vector<std::pair<std::string, T>>& getValues() const {
-		return values;
-	}
+const char* ProducerStatic::getData() const noexcept {
+	return data;
+}
 
-private:
-	std::vector<std::pair<std::string, T>> values;
-};
+std::size_t ProducerStatic::getSize() const noexcept {
+	return size;
+}
 
-} /* namespace object */
+} /* namespace process */
+} /* namespace system */
 } /* namespace esl */
-
-#endif /* ESL_OBJECT_VALUES_H_ */

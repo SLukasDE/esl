@@ -20,53 +20,67 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_UTILITY_URL_H_
-#define ESL_UTILITY_URL_H_
-
 #include <esl/utility/Protocol.h>
 
-#include <string>
+#include <algorithm>
 
 namespace esl {
 namespace utility {
 
-class URL {
-public:
-	URL(const std::string& url);
+namespace {
+const std::string strEmpty;
+const std::string strProtocolHttp = "http";
+const std::string strProtocolHttps = "https";
+}
 
-	const Protocol& getScheme() const;
-	const std::string& getHostname() const;
-	const std::string& getPort() const;
-	const std::string& getPath() const;
-	const std::string& getQuery() const;
-	const std::string& getTag() const;
+Protocol::Protocol(Type type) noexcept
+: hasEnum(true),
+  enumType(type)
+{ }
 
-private:
-	enum class NextFragment {
-		SCHEME,
-		HOSTNAME,
-		PORT,
-		PATH,
-		QUERY,
-		TAG,
-		EMPTY
-	};
-	NextFragment parseScheme(size_t& pos, const char* str, const size_t len);
-	NextFragment parseHostname(size_t& pos, const char* str, const size_t len);
-	NextFragment parsePort(size_t& pos, const char* str, const size_t len);
-	NextFragment parsePath(size_t& pos, const char* str, const size_t len);
-	NextFragment parseQuery(size_t& pos, const char* str, const size_t len);
-	NextFragment parseTag(size_t& pos, const char* str, const size_t len);
+Protocol::Protocol(std::string type) noexcept
+: hasEnum(false),
+  stringType(std::move(type))
+{ }
 
-	Protocol scheme;
-	std::string hostname;
-	std::string port;
-	std::string path;
-	std::string query;
-	std::string tag;
-};
+bool Protocol::operator==(Protocol::Type type) const noexcept {
+	return (*this == Protocol(type));
+}
+
+bool Protocol::operator==(const Protocol& aMime) const noexcept {
+	if(hasEnum && aMime.hasEnum) {
+		return enumType == aMime.enumType;
+	}
+	return toString() == aMime.toString();
+}
+
+bool Protocol::operator!=(Protocol::Type type) const noexcept {
+	return (*this != Protocol(type));
+}
+
+bool Protocol::operator!=(const Protocol& aMime) const noexcept {
+	return (*this != aMime);
+}
+
+const std::string& Protocol::toString() const noexcept {
+	if(hasEnum) {
+		return toString(enumType);
+	}
+
+	return stringType;
+}
+
+const std::string& Protocol::toString(Protocol::Type mimeType) noexcept {
+	switch(mimeType) {
+	case protocolHttp:
+		return strProtocolHttp;
+	case protocolHttps:
+		return strProtocolHttps;
+	case protocolNone:
+		break;
+	}
+	return strEmpty;
+}
 
 } /* namespace utility */
 } /* namespace esl */
-
-#endif /* ESL_UTILITY_URL_H_ */

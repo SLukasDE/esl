@@ -20,47 +20,50 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/Stacktrace.h>
-#include <esl/stacktrace/Interface.h>
-#include <esl/Module.h>
+#include <esl/system/process/ProducerDynamic.h>
 
 namespace esl {
+namespace system {
+namespace process {
 
-namespace {
-
-const char* dummyMessage = "no implementation available for \"esl::Stacktrace\"";
-
-std::unique_ptr<stacktrace::Interface::Stacktrace> createStacktrace() {
-	const stacktrace::Interface* interface = esl::getModule().findInterface<stacktrace::Interface>();
-	return interface ? interface->createStacktrace() : nullptr;
-}
-
-} /* anonymous Namespace */
-
-Stacktrace::Stacktrace()
-: stacktrace(createStacktrace())
+ProducerDynamic::ProducerDynamic(std::function<std::size_t(char*, std::size_t)> aGetDataFunction)
+: getDataFunction(aGetDataFunction),
+  bufferRead(buffer)
 { }
 
-Stacktrace::Stacktrace(const esl::Stacktrace& aStacktrace)
-: stacktrace(aStacktrace.stacktrace ? aStacktrace.stacktrace->clone() : nullptr)
+ProducerDynamic::ProducerDynamic(std::string aContent)
+: data(std::move(aContent)),
+  bufferRead(data.data()),
+  currentSize(data.size() == 0 ? Interface::FileDescriptor::npos : data.size())
 { }
 
-void Stacktrace::dump(std::ostream& stream) const {
-	if(stacktrace) {
-		stacktrace->dump(stream);
+std::size_t ProducerDynamic::write(Interface::FileDescriptor& fileDescriptor) {
+	if(currentPos >= currentSize) {
+		if(getDataFunction) {
+			currentPos = 0;
+			currentSize = getDataFunction(buffer, sizeof(buffer));
+
+			if(currentSize == 0) {
+				currentSize = Interface::FileDescriptor::npos;
+			}
+		}
+		else {
+			currentSize = Interface::FileDescriptor::npos;
+		}
 	}
-	else {
-		stream << dummyMessage << "\n";
+
+	if(currentSize == Interface::FileDescriptor::npos) {
+		return Interface::FileDescriptor::npos;
 	}
+
+	std::size_t count = fileDescriptor.write(&bufferRead[currentPos], currentSize - currentPos);
+	if(count != Interface::FileDescriptor::npos) {
+		currentPos += count;
+	}
+
+	return count;
 }
 
-void Stacktrace::dump(esl::logging::StreamReal& stream, esl::logging::Location location) const {
-	if(stacktrace) {
-		stacktrace->dump(stream, location);
-	}
-	else {
-		stream << dummyMessage << "\n";
-	}
-}
-
+} /* namespace process */
+} /* namespace system */
 } /* namespace esl */

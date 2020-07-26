@@ -20,39 +20,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_OBJECT_VALUES_H_
-#define ESL_OBJECT_VALUES_H_
+#ifndef ESL_SYSTEM_PROCESS_PRODUCERSTATIC_H_
+#define ESL_SYSTEM_PROCESS_PRODUCERSTATIC_H_
 
-#include <esl/object/Interface.h>
-#include <esl/Stacktrace.h>
+#include <esl/system/Interface.h>
 
-#include <vector>
-#include <utility>
-#include <stdexcept>
+#include <string>
 
 namespace esl {
-namespace object {
+namespace system {
+namespace process {
 
-template<typename T>
-class Values : public virtual Interface::Object {
+class ProducerStatic : public Interface::Producer {
 public:
-	virtual bool hasValue(const std::string& key) const {
-		return false;
-	}
+	ProducerStatic(const char* data, std::size_t size);
 
-	virtual T getValue(const std::string& key) const {
-		throw esl::addStacktrace(std::runtime_error("Unknown parameter key=\"" + key + "\""));
-	}
+	std::size_t write(Interface::FileDescriptor& fileDescriptor) override;
 
-	virtual const std::vector<std::pair<std::string, T>>& getValues() const {
-		return values;
-	}
+	const char* getData() const noexcept;
+	std::size_t getSize() const noexcept;
 
 private:
-	std::vector<std::pair<std::string, T>> values;
+	const char* data;
+	std::size_t size;
+	std::size_t currentPos = 0;
 };
 
-} /* namespace object */
+} /* namespace process */
+} /* namespace system */
 } /* namespace esl */
 
-#endif /* ESL_OBJECT_VALUES_H_ */
+#endif /* ESL_SYSTEM_PROCESS_PRODUCERSTATIC_H_ */

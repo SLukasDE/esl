@@ -20,32 +20,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/client/ResponseStatic.h>
-#include <esl/logging/Logger.h>
+#ifndef ESL_HTTP_CLIENT_RESPONSEHANDLER_H_
+#define ESL_HTTP_CLIENT_RESPONSEHANDLER_H_
+
+#include <string>
 
 namespace esl {
 namespace http {
 namespace client {
 
-ResponseStatic::ResponseStatic() noexcept
-{
-}
-
-const ::std::string& ResponseStatic::getData() const noexcept {
-	return data;
-}
-
-size_t ResponseStatic::read(void *aData, size_t size) noexcept {
-	try {
-		data.append(reinterpret_cast<char*>(aData), size);
-	} catch(const ::std::exception& e) {
-		esl::logger.warn << "Error appending data '" << e.what() << "'\n";
-		return 0;
-	}
-
-	return size;
-}
+class ResponseHandler {
+public:
+	virtual ~ResponseHandler() = default;
+	virtual bool process(const char* contentData, std::size_t contentSize) = 0;
+};
 
 } /* namespace client */
 } /* namespace http */
 } /* namespace esl */
+
+#endif /* ESL_HTTP_CLIENT_RESPONSEHANDLER_H_ */

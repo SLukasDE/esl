@@ -20,18 +20,44 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/system/process/OutputPipe.h>
-//#include <esl/module/Interface.h>
-#include <esl/Module.h>
+#include <esl/system/process/ConsumerFile.h>
+#include <esl/object/ValueSettings.h>
 
 namespace esl {
 namespace system {
 namespace process {
+namespace {
+std::string defaultImplementation;
+}
 
-OutputPipe::OutputPipe()
-: Process::Output(std::unique_ptr<Interface::Process::Output>(esl::getModule().getInterface<Interface>().createProcessOutputPipe()))
+void ConsumerFile::setDefaultImplementation(std::string implementation) {
+	defaultImplementation = std::move(implementation);
+}
+
+const std::string& ConsumerFile::getDefaultImplementation() {
+	return defaultImplementation;
+}
+
+ConsumerFile::ConsumerFile(std::string filename,
+		std::initializer_list<std::pair<std::string, std::string>> values,
+		const std::string& implementation)
+: consumerFile(esl::getModule().getInterface<Interface>(implementation).createConsumerFile(std::move(filename), object::ValueSettings(std::move(values))))
 { }
 
+ConsumerFile::ConsumerFile(std::string filename,
+		const object::Values<std::string>& values,
+		const std::string& implementation)
+: consumerFile(esl::getModule().getInterface<Interface>(implementation).createConsumerFile(std::move(filename), values))
+{ }
+
+std::size_t ConsumerFile::read(Interface::FileDescriptor& fileDescriptor) {
+	return consumerFile->read(fileDescriptor);
+}
+/*
+Interface::FileDescriptor::Handle ConsumerFile::getFileDescriptorHandle() {
+	return consumerFile->getFileDescriptorHandle();
+}
+*/
 } /* namespace process */
 } /* namespace system */
 } /* namespace esl */

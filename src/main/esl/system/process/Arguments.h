@@ -20,39 +20,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_OBJECT_VALUES_H_
-#define ESL_OBJECT_VALUES_H_
+#ifndef ESL_SYSTEM_PROCESS_ARGUMENTS_H_
+#define ESL_SYSTEM_PROCESS_ARGUMENTS_H_
 
-#include <esl/object/Interface.h>
-#include <esl/Stacktrace.h>
-
-#include <vector>
-#include <utility>
-#include <stdexcept>
+#include <string>
 
 namespace esl {
-namespace object {
+namespace system {
+namespace process {
 
-template<typename T>
-class Values : public virtual Interface::Object {
+class Arguments {
 public:
-	virtual bool hasValue(const std::string& key) const {
-		return false;
-	}
+	Arguments() = default;
+	Arguments(const Arguments& other);
+	Arguments(Arguments&& other);
+	Arguments(std::string args);
+	Arguments(std::size_t argc, const char** argv);
+	~Arguments();
 
-	virtual T getValue(const std::string& key) const {
-		throw esl::addStacktrace(std::runtime_error("Unknown parameter key=\"" + key + "\""));
-	}
+	Arguments& operator=(const Arguments& other);
+	Arguments& operator=(Arguments&& other);
 
-	virtual const std::vector<std::pair<std::string, T>>& getValues() const {
-		return values;
-	}
+	const std::string& getArgs() const noexcept;
+	std::size_t getArgc() const noexcept;
+	char** getArgv() const noexcept;
 
 private:
-	std::vector<std::pair<std::string, T>> values;
+	static const char* argumentSize(const char* src, std::size_t& length);
+	static const char* argumentCopy(const char* src, char* dst);
+
+	std::string args;
+	std::size_t argc = 0;
+	char** argv = nullptr;
 };
 
-} /* namespace object */
+} /* namespace process */
+} /* namespace system */
 } /* namespace esl */
 
-#endif /* ESL_OBJECT_VALUES_H_ */
+#endif /* ESL_SYSTEM_PROCESS_ARGUMENTS_H_ */

@@ -23,7 +23,9 @@ SOFTWARE.
 #ifndef SRC_MAIN_C___RSM_SERVICE_CLIENT_REQUEST_H_
 #define SRC_MAIN_C___RSM_SERVICE_CLIENT_REQUEST_H_
 
-#include <esl/http/client/Interface.h>
+#include <esl/utility/HttpMethod.h>
+#include <esl/utility/MIME.h>
+
 #include <string>
 #include <map>
 
@@ -31,22 +33,25 @@ namespace esl {
 namespace http {
 namespace client {
 
-//class Connection;
-
 class Request {
-friend class Interface::Connection; // fuer readCallback;
 public:
-	Request(const std::string& servicePath, const std::string& contentType);
 	virtual ~Request() = default;
 
-	const std::string& getServicePath() const noexcept;
-	const std::string& getContentType() const noexcept;
+	const std::string& getPath() const noexcept;
+	const utility::HttpMethod& getMethod() const noexcept;
+	const utility::MIME& getContentType() const noexcept;
+
 	const std::map<std::string, std::string>& getHeaders() const noexcept;
 	void addHeader(const std::string& key, const std::string& value);
 
+protected:
+	Request(std::string path, utility::HttpMethod method, utility::MIME contentType);
+
 private:
-	std::string servicePath;
-	std::string contentType;
+	std::string path;
+	utility::HttpMethod method;
+	utility::MIME contentType;
+
 	std::map<std::string, std::string> headers;
 };
 

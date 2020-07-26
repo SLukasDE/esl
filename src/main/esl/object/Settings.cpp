@@ -22,6 +22,7 @@ SOFTWARE.
 
 #include <esl/object/Settings.h>
 #include <esl/Stacktrace.h>
+
 #include <stdexcept>
 
 namespace esl {

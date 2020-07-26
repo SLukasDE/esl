@@ -20,18 +20,46 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/system/process/OutputDefault.h>
-//#include <esl/module/Interface.h>
-#include <esl/Module.h>
+#ifndef ESL_UTILITY_HTTPMETHOD_H_
+#define ESL_UTILITY_HTTPMETHOD_H_
+
+#include <string>
 
 namespace esl {
-namespace system {
-namespace process {
+namespace utility {
 
-OutputDefault::OutputDefault()
-: Process::Output(std::unique_ptr<Interface::Process::Output>(esl::getModule().getInterface<Interface>().createProcessOutputDefault()))
-{ }
+class HttpMethod {
+public:
+	enum Type {
+		httpGet,
+		httpPut,
+		httpPost,
+		httpDelete,
+		httpHead,
+		httpPatch,
+		httpOptions
+	};
 
-} /* namespace process */
-} /* namespace system */
+	HttpMethod() = default;
+	HttpMethod(Type type) noexcept;
+	explicit HttpMethod(std::string type) noexcept;
+
+	bool operator==(Type type) const noexcept;
+	bool operator==(const HttpMethod& aMime) const noexcept;
+
+	bool operator!=(Type type) const noexcept;
+	bool operator!=(const HttpMethod& aMime) const noexcept;
+
+	const std::string& toString() const noexcept;
+	static const std::string& toString(Type mimeType) noexcept;
+
+private:
+	bool hasEnum = false;
+	Type enumType = httpGet;
+	std::string stringType;
+};
+
+} /* namespace utility */
 } /* namespace esl */
+
+#endif /* ESL_UTILITY_HTTPMETHOD_H_ */

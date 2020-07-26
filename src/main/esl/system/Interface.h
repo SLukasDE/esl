@@ -25,9 +25,15 @@ SOFTWARE.
 
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
-#include <memory>
-#include <list>
+
+#include <esl/system/process/Arguments.h>
+#include <esl/system/process/Environment.h>
+#include <esl/object/Values.h>
+
+#include <string>
+#include <vector>
 #include <functional>
+#include <memory>
 
 namespace esl {
 namespace system {
@@ -37,40 +43,74 @@ struct Interface : esl::module::Interface {
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
+	class FileDescriptor {
+	public:
+		using Handle = int;
+
+		static const Handle noHandle = -1;
+		static const Handle stdInHandle = 0;
+		static const Handle stdOutHandle = 1;
+		static const Handle stdErrHandle = 2;
+
+		static const std::size_t npos = static_cast<std::size_t>(-1);
+
+		FileDescriptor() = default;
+		virtual ~FileDescriptor() = default;
+
+		virtual std::size_t read(void* data, std::size_t size) = 0;
+		virtual std::size_t write(const void* data, std::size_t size) = 0;
+	};
+
+	class Consumer {
+	public:
+		Consumer() = default;
+		virtual ~Consumer() = default;
+
+		virtual std::size_t read(FileDescriptor& fileDescriptor) = 0;
+	};
+/*
+	class ConsumerFile : public Consumer {
+	public:
+	};
+*/
+	class Producer {
+	public:
+		Producer() = default;
+		virtual ~Producer() = default;
+
+		/* return: FileDescriptor::npos
+		 *           if there is no more data to produce (IMPORTANT)
+		 *
+		 *         Number of characters written to fileDescriptor
+		 *           if there are data available to write to fileDescripor
+		 *           (produced now or queued from previous call). */
+		virtual std::size_t write(FileDescriptor& fileDescriptor) = 0;
+	};
+
+	class ProducerFile : public Producer {
+	public:
+		virtual std::size_t getFileSize() const = 0;
+	};
+
+	class Feature {
+	public:
+		virtual ~Feature() = default;
+	};
+
 	class Process {
 	public:
-	    class Output {
-	    public:
-	    	Output() = default;
-	    	virtual ~Output() = default;
+		struct ParameterStream {
+			Producer* producer = nullptr;
+			Consumer* consumer = nullptr;
+		};
+		using ParameterStreams = std::map<FileDescriptor::Handle, ParameterStream>;
 
-	    	virtual std::size_t read(void* buffer, std::size_t s) = 0;
-	    	virtual bool setBlocking(bool blocking) = 0;
-	    };
+		using ParameterFeatures = std::vector<std::reference_wrapper<Feature>>;
 
-	    Process() = default;
+		Process() = default;
 	    virtual ~Process() = default;
 
-	    virtual void enableTimeMeasurement(bool enabled) = 0;
-	    virtual void setWorkingDirectory(const std::string& workingDirectory) = 0;
-
-	    //virtual void setOutput(std::unique_ptr<Output> output, bool stdOut, bool stdErr) = 0;
-	    virtual void setStdOut(Output* output) = 0;
-	    //virtual Output* getStdOut() const = 0;
-
-	    virtual void setStdErr(Output* output) = 0;
-	    //virtual Output* getStdErr() const = 0;
-
-	    /* return true on success */
-	    virtual bool execute(const std::string& executable, const std::list<std::string>& arguments) = 0;
-
-	    virtual int wait() = 0;
-	    virtual bool isRunning() = 0;
-	    virtual bool isFailed() = 0;
-
-	    virtual unsigned int getTimeRealMS() const = 0;
-	    virtual unsigned int getTimeUserMS() const = 0;
-	    virtual unsigned int getTimeSysMS() const = 0;
+		virtual int execute(const ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures) = 0;
 	};
 
 	enum class SignalType {
@@ -93,10 +133,10 @@ struct Interface : esl::module::Interface {
 	    pipe
 	};
 
-	using CreateProcess = Process* (*)();
-	using CreateProcessOutputDefault = Process::Output* (*)();
-	using CreateProcessOutputPipe = Process::Output* (*)();
-	using CreateProcessOutputFile = Process::Output* (*)(const std::string& filename);
+	using CreateProcess = std::unique_ptr<Process>(*)(process::Arguments arguments, std::string workingDir);
+	using CreateProcessWithEnvironment = std::unique_ptr<Process>(*)(process::Arguments arguments, process::Environment environment, std::string workingDir);
+	using CreateConsumerFile = std::unique_ptr<Consumer>(*)(std::string filename, const object::Values<std::string>& values);
+	using CreateProducerFile = std::unique_ptr<ProducerFile>(*)(std::string filename, const object::Values<std::string>& values);
 
 	using InstallSignalHandler = void (*)(SignalType signalType, std::function<void()> handler);
 	using RemoveSignalHandler = void (*)(SignalType signalType, std::function<void()> handler);
@@ -119,24 +159,24 @@ struct Interface : esl::module::Interface {
 
 	Interface(std::string module, std::string implementation,
 			CreateProcess aCreateProcess,
-			CreateProcessOutputDefault aCreateProcessOutputDefault,
-			CreateProcessOutputPipe aCreateProcessOutputPipe,
-			CreateProcessOutputFile aCreateProcessOutputFile,
+			CreateProcessWithEnvironment aCreateProcessWithEnvironment,
+			CreateConsumerFile aCreateConsumerFile,
+			CreateProducerFile aCreateProducerFile,
 			InstallSignalHandler aInstallSignalHandler,
 			RemoveSignalHandler aRemoveSignalHandler)
 	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
 	  createProcess(aCreateProcess),
-	  createProcessOutputDefault(aCreateProcessOutputDefault),
-	  createProcessOutputPipe(aCreateProcessOutputPipe),
-	  createProcessOutputFile(aCreateProcessOutputFile),
+	  createProcessWithEnvironment(aCreateProcessWithEnvironment),
+	  createConsumerFile(aCreateConsumerFile),
+	  createProducerFile(aCreateProducerFile),
 	  installSignalHandler(aInstallSignalHandler),
 	  removeSignalHandler(aRemoveSignalHandler)
 	{ }
 
 	CreateProcess createProcess;
-	CreateProcessOutputDefault createProcessOutputDefault;
-	CreateProcessOutputPipe createProcessOutputPipe;
-	CreateProcessOutputFile createProcessOutputFile;
+	CreateProcessWithEnvironment createProcessWithEnvironment;
+	CreateConsumerFile createConsumerFile;
+	CreateProducerFile createProducerFile;
 
 	InstallSignalHandler installSignalHandler;
 	RemoveSignalHandler removeSignalHandler;

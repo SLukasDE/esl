@@ -20,39 +20,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_OBJECT_VALUES_H_
-#define ESL_OBJECT_VALUES_H_
+#ifndef ESL_SYSTEM_PROCESS_CONSUMERFILE_H_
+#define ESL_SYSTEM_PROCESS_CONSUMERFILE_H_
 
-#include <esl/object/Interface.h>
-#include <esl/Stacktrace.h>
+#include <esl/system/Interface.h>
+#include <esl/object/Values.h>
 
-#include <vector>
-#include <utility>
-#include <stdexcept>
+#include <initializer_list>
+#include <string>
+#include <memory>
 
 namespace esl {
-namespace object {
+namespace system {
+namespace process {
 
-template<typename T>
-class Values : public virtual Interface::Object {
+class ConsumerFile final : public Interface::Consumer {
 public:
-	virtual bool hasValue(const std::string& key) const {
-		return false;
-	}
+	static void setDefaultImplementation(std::string implementation);
+	static const std::string& getDefaultImplementation();
 
-	virtual T getValue(const std::string& key) const {
-		throw esl::addStacktrace(std::runtime_error("Unknown parameter key=\"" + key + "\""));
-	}
+	ConsumerFile(std::string filename,
+			std::initializer_list<std::pair<std::string, std::string>> values,
+			const std::string& implementation = getDefaultImplementation());
 
-	virtual const std::vector<std::pair<std::string, T>>& getValues() const {
-		return values;
-	}
+	ConsumerFile(std::string filename,
+			const object::Values<std::string>& values,
+			const std::string& implementation = getDefaultImplementation());
+
+	std::size_t read(Interface::FileDescriptor& fileDescriptor) override;
+//	Interface::FileDescriptor::Handle getFileDescriptorHandle() override;
 
 private:
-	std::vector<std::pair<std::string, T>> values;
+	std::unique_ptr<Interface::Consumer> consumerFile;
 };
 
-} /* namespace object */
+} /* namespace process */
+} /* namespace system */
 } /* namespace esl */
 
-#endif /* ESL_OBJECT_VALUES_H_ */
+#endif /* ESL_SYSTEM_PROCESS_CONSUMERFILE_H_ */

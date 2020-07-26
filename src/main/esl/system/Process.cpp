@@ -21,108 +21,100 @@ SOFTWARE.
 */
 
 #include <esl/system/Process.h>
-//#include <esl/module/Interface.h>
 #include <esl/Module.h>
 
 namespace esl {
 namespace system {
+namespace {
+std::string defaultImplementation;
+}
 
-Process::Process()
-: process(esl::getModule().getInterface<Interface>().createProcess())
+void Process::setDefaultImplementation(std::string implementation) {
+	defaultImplementation = std::move(implementation);
+}
+
+const std::string& Process::getDefaultImplementation() {
+	return defaultImplementation;
+}
+
+Process::Process(process::Arguments arguments, std::string workingDir, const std::string& implementation)
+: process(esl::getModule().getInterface<Interface>(implementation).createProcess(std::move(arguments), std::move(workingDir)))
 { }
 
-Process::~Process() {
-    wait();
+Process::Process(process::Arguments arguments, process::Environment environment, std::string workingDir, const std::string& implementation)
+: process(esl::getModule().getInterface<Interface>(implementation).createProcessWithEnvironment(std::move(arguments), std::move(environment), std::move(workingDir)))
+{ }
+
+int Process::execute() {
+	ParameterFeatures parameterFeatures;
+
+	return execute(ParameterStreams(), parameterFeatures);
 }
 
-void Process::enableTimeMeasurement(bool enabled) {
-	process->enableTimeMeasurement(enabled);
+int Process::execute(Interface::FileDescriptor::Handle handle) {
+	ParameterStreams parameterStream;
+	ParameterFeatures parameterFeatures;
+
+	addParameterStream(parameterStream, handle, nullptr, nullptr);
+	return execute(parameterStream, parameterFeatures);
 }
 
-void Process::setWorkingDirectory(const std::string& workingDirectory) {
-	process->setWorkingDirectory(workingDirectory);
+int Process::execute(Interface::Producer& producer, Interface::FileDescriptor::Handle handle) {
+	ParameterStreams parameterStream;
+	ParameterFeatures parameterFeatures;
+
+	addParameterStream(parameterStream, handle, &producer, nullptr);
+	return execute(parameterStream, parameterFeatures);
 }
 
-void Process::setOutput(std::unique_ptr<Process::Output> output, bool stdOut, bool stdErr) {
-	/* make "output" and "output->baseOutput" to
-	 * raw pointers "outputPtr" and "outputBasePtr"
-	 * and let's control "output" by our self */
+int Process::execute(Interface::Consumer& consumer, Interface::FileDescriptor::Handle handle) {
+	ParameterStreams parameterStream;
+	ParameterFeatures parameterFeatures;
 
-	Process::Output* outputPtr = nullptr;
-	Interface::Process::Output* outputBasePtr = nullptr;
+	addParameterStream(parameterStream, handle, nullptr, &consumer);
+	return execute(parameterStream, parameterFeatures);
+}
 
-	if(output) {
-		outputBasePtr = output->output.get();
-		outputPtr = output.get();
-		output.release();
+int Process::execute(Interface::Feature& feature) {
+	ParameterFeatures parameterFeatures;
+
+	parameterFeatures.emplace_back(std::ref(feature));
+	return execute(ParameterStreams(), parameterFeatures);
+}
+
+int Process::execute(const ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures) {
+	return process->execute(parameterStreams, parameterFeatures);
+}
+
+void Process::addParameterStream(ParameterStreams& parameterStreams, Interface::FileDescriptor::Handle handle, Interface::Producer* producer, Interface::Consumer* consumer) {
+	ParameterStream& parameterStream = parameterStreams[handle];
+
+	if(producer == nullptr && consumer == nullptr) {
+    	if(parameterStream.producer && parameterStream.consumer) {
+    		throw esl::addStacktrace(std::runtime_error("Conflicting parameters: Flag defined to close handle " + std::to_string(handle) + " for child process, but there is already a producer and a consumer defined for this handle."));
+    	}
+    	else if(parameterStream.producer && parameterStream.consumer == nullptr) {
+    		throw esl::addStacktrace(std::runtime_error("Conflicting parameters: Flag defined to close handle " + std::to_string(handle) + " for child process, but there is already a producer defined for this handle."));
+    	}
+    	else if(parameterStream.producer == nullptr && parameterStream.consumer) {
+    		throw esl::addStacktrace(std::runtime_error("Conflicting parameters: Flag defined to close handle " + std::to_string(handle) + " for child process, but there is already a consumer defined for this handle."));
+    	}
 	}
+	else {
+    	if(producer) {
+        	if(parameterStream.producer) {
+        		throw esl::addStacktrace(std::runtime_error("Conflicting parameters: Multiple producer defined for handle " + std::to_string(handle) + " for child process."));
+        	}
+        	parameterStream.producer = producer;
+    	}
 
-	if(stdOut) {
-		process->setStdOut(outputBasePtr);
+    	if(consumer) {
+        	if(parameterStream.consumer) {
+        		throw esl::addStacktrace(std::runtime_error("Conflicting parameters: Multiple producer defined for handle " + std::to_string(handle) + " for child process."));
+        	}
+        	parameterStream.consumer = consumer;
+    	}
 	}
-	if(stdErr) {
-		process->setStdErr(outputBasePtr);
-	}
-
-
-	if(stdOut) {
-		/* if previous output was specified for stdErr and stdErr,
-		 * then we have do move "outErr" to "err"
-		 */
-		if(outPtr == errPtr) {
-			err = std::move(outErr);
-		}
-		outErr.reset(outputPtr);
-
-		outPtr = outputPtr;
-
-		if(stdErr) {
-			errPtr = outputPtr;
-		}
-	}
-	else if(stdErr) {
-		err.reset(outputPtr);
-		errPtr = outputPtr;
-	}
-
-}
-
-Process::Output* Process::getStdOut() const {
-	return outPtr;
-//	return process.getStdOut();
-}
-
-Process::Output* Process::getStdErr() const {
-	return errPtr;
-//	return process.getStdErr();
-}
-
-bool Process::execute(const std::string& executable, const std::list<std::string>& arguments) {
-	return process->execute(executable, arguments);
-}
-
-int Process::wait() {
-	return process->wait();
-}
-
-bool Process::isRunning() {
-	return process->isRunning();
-}
-
-bool Process::isFailed() {
-	return process->isFailed();
-}
-
-unsigned int Process::getTimeRealMS() const {
-	return process->getTimeRealMS();
-}
-
-unsigned int Process::getTimeUserMS() const {
-	return process->getTimeUserMS();
-}
-
-unsigned int Process::getTimeSysMS() const {
-	return process->getTimeSysMS();
 }
 
 } /* namespace system */

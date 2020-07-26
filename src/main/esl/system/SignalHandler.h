@@ -29,10 +29,18 @@ SOFTWARE.
 namespace esl {
 namespace system {
 
-using SignalType = Interface::SignalType;
+class SignalHandler final {
+public:
+	using SignalType = Interface::SignalType;
 
-void signalHandlerInstall(SignalType signalType, std::function<void()> handler);
-void signalHandlerRemove(SignalType signalType, std::function<void()> handler);
+	SignalHandler() = delete;
+
+	static void setDefaultImplementation(std::string implementation);
+	static const std::string& getDefaultImplementation();
+
+	static void install(SignalType signalType, std::function<void()> handler, const std::string& implementation = getDefaultImplementation());
+	static void remove(SignalType signalType, std::function<void()> handler, const std::string& implementation = getDefaultImplementation());
+};
 
 } /* namespace system */
 } /* namespace esl */

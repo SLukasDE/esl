@@ -20,23 +20,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_SYSTEM_PROCESS_OUTPUTDEFAULT_H_
-#define ESL_SYSTEM_PROCESS_OUTPUTDEFAULT_H_
-
-#include <esl/system/Process.h>
+#include <esl/http/client/ResponseHandlerData.h>
 
 namespace esl {
-namespace system {
-namespace process {
+namespace http {
+namespace client {
 
-class OutputDefault : public Process::Output {
-public:
-	OutputDefault();
-	~OutputDefault() = default;
-};
+bool ResponseHandlerData::process(const char* contentData, std::size_t contentDataSize) {
+	data.append(contentData, contentDataSize);
+	return true;
+}
 
-} /* namespace process */
-} /* namespace system */
+const std::string& ResponseHandlerData::getData() const noexcept {
+	return data;
+}
+
+} /* namespace client */
+} /* namespace http */
 } /* namespace esl */
-
-#endif /* ESL_SYSTEM_PROCESS_OUTPUTDEFAULT_H_ */

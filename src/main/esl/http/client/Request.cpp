@@ -26,17 +26,21 @@ namespace esl {
 namespace http {
 namespace client {
 
-Request::Request(const ::std::string& aServicePath, const ::std::string& aContentType)
-: servicePath(aServicePath),
-  contentType(aContentType)
-{
+Request::Request(std::string aPath, utility::HttpMethod aMethod, utility::MIME aContentType)
+: path(std::move(aPath)),
+  method(std::move(aMethod)),
+  contentType(std::move(aContentType))
+{ }
+
+const std::string& Request::getPath() const noexcept {
+	return path;
 }
 
-const ::std::string& Request::getServicePath() const noexcept {
-	return servicePath;
+const utility::HttpMethod& Request::getMethod() const noexcept {
+	return method;
 }
 
-const ::std::string& Request::getContentType() const noexcept {
+const utility::MIME& Request::getContentType() const noexcept {
 	return contentType;
 }
 

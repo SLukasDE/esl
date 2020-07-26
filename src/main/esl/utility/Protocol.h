@@ -20,39 +20,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_OBJECT_VALUES_H_
-#define ESL_OBJECT_VALUES_H_
+#ifndef ESL_UTILITY_PROTOCOL_H_
+#define ESL_UTILITY_PROTOCOL_H_
 
-#include <esl/object/Interface.h>
-#include <esl/Stacktrace.h>
-
-#include <vector>
-#include <utility>
-#include <stdexcept>
+#include <string>
 
 namespace esl {
-namespace object {
+namespace utility {
 
-template<typename T>
-class Values : public virtual Interface::Object {
+class Protocol {
 public:
-	virtual bool hasValue(const std::string& key) const {
-		return false;
-	}
+	enum Type {
+		protocolNone,
+		protocolHttp,
+		protocolHttps
+	};
 
-	virtual T getValue(const std::string& key) const {
-		throw esl::addStacktrace(std::runtime_error("Unknown parameter key=\"" + key + "\""));
-	}
+	Protocol() = default;
+	Protocol(Type type) noexcept;
+	explicit Protocol(std::string type) noexcept;
 
-	virtual const std::vector<std::pair<std::string, T>>& getValues() const {
-		return values;
-	}
+	bool operator==(Type type) const noexcept;
+	bool operator==(const Protocol& aMime) const noexcept;
+
+	bool operator!=(Type type) const noexcept;
+	bool operator!=(const Protocol& aMime) const noexcept;
+
+	const std::string& toString() const noexcept;
+	static const std::string& toString(Type mimeType) noexcept;
 
 private:
-	std::vector<std::pair<std::string, T>> values;
+	bool hasEnum = false;
+	Type enumType = protocolNone;
+	std::string stringType;
 };
 
-} /* namespace object */
+} /* namespace utility */
 } /* namespace esl */
 
-#endif /* ESL_OBJECT_VALUES_H_ */
+#endif /* ESL_UTILITY_PROTOCOL_H_ */

@@ -24,62 +24,93 @@ SOFTWARE.
 #define ESL_SYSTEM_PROCESS_H_
 
 #include <esl/system/Interface.h>
+#include <esl/system/process/Arguments.h>
+#include <esl/system/process/Environment.h>
+#include <esl/object/Values.h>
 #include <string>
-#include <list>
 #include <memory>
 
 namespace esl {
 namespace system {
 
-class Process /*: public Interface::Process*/ {
+class Process final : public Interface::Process {
 public:
-    class Output/* : public Interface::ProcessOutput*/ {
-    	friend class Process;
-    public:
-    	Output(std::unique_ptr<Interface::Process::Output> aOutput)
-        : /*Interface::ProcessOutput(), */
-        	output(std::move(aOutput))
-    	{ }
-    	~Output() = default;
+	static void setDefaultImplementation(std::string implementation);
+	static const std::string& getDefaultImplementation();
 
-    	std::size_t read(void* buffer, std::size_t s) /*override*/ {
-    		return output->read(buffer, s);
-    	}
-    	bool setBlocking(bool blocking) /*override*/ {
-    		return output->setBlocking(blocking);
-    	}
+	Process(process::Arguments arguments, std::string workingDir = "", const std::string& implementation = getDefaultImplementation());
+	Process(process::Arguments arguments, process::Environment environment, std::string workingDir = "", const std::string& implementation = getDefaultImplementation());
 
-    private:
-    	std::unique_ptr<Interface::Process::Output> output;
-    };
+	int execute();
+	int execute(Interface::FileDescriptor::Handle handle);
+	int execute(Interface::Producer& producer, Interface::FileDescriptor::Handle handle);
+	int execute(Interface::Consumer& consumer, Interface::FileDescriptor::Handle handle);
+	int execute(Interface::Feature& feature);
+	int execute(const ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures) override;
 
-    Process();
-    ~Process();
+	template<typename... Args>
+	int execute(Interface::FileDescriptor::Handle handle, Args&... args) {
+    	ParameterStreams parameterStreams;
+    	ParameterFeatures parameterFeatures;
 
-    void enableTimeMeasurement(bool enabled); // override;
-    void setWorkingDirectory(const std::string& workingDirectory); // override;
-    void setOutput(std::unique_ptr<Output> output, bool stdOut, bool stdErr); // override;
-    Output* getStdOut() const; // override;
-    Output* getStdErr() const; // override;
+    	addParameterStream(parameterStreams, handle, nullptr, nullptr);
+    	return execute(parameterStreams, parameterFeatures, args...);
+	}
 
-    /* return true on success */
-    bool execute(const std::string& executable, const std::list<std::string>& arguments); // override;
+	template<typename... Args>
+	int execute(Interface::Producer& producer, Interface::FileDescriptor::Handle handle, Args&... args) {
+    	ParameterStreams parameterStreams;
+    	ParameterFeatures parameterFeatures;
 
-    int wait(); // override;
-    bool isRunning(); // override;
-    bool isFailed(); // override;
+    	addParameterStream(parameterStreams, handle, &producer, nullptr);
+    	return execute(parameterStreams, parameterFeatures, args...);
+	}
 
-    unsigned int getTimeRealMS() const; // override;
-    unsigned int getTimeUserMS() const; // override;
-    unsigned int getTimeSysMS() const; // override;
+	template<typename... Args>
+	int execute(Interface::Consumer& consumer, Interface::FileDescriptor::Handle handle, Args&... args) {
+		ParameterStreams parameterStreams;
+		ParameterFeatures parameterFeatures;
+
+		addParameterStream(parameterStreams, handle, nullptr, &consumer);
+    	return execute(parameterStreams, parameterFeatures, args...);
+	}
+
+	template<typename... Args>
+	int execute(Interface::Feature& feature, Args&... args) {
+		ParameterFeatures parameterFeatures;
+
+		parameterFeatures.emplace_back(std::ref(feature));
+    	return execute(ParameterStreams(), parameterFeatures, args...);
+	}
 
 private:
-	std::unique_ptr<Interface::Process> process;
-    std::unique_ptr<Output> outErr;
-    std::unique_ptr<Output> err;
+	template<typename... Args>
+	int execute(ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures, Interface::FileDescriptor::Handle handle, Args&... args) {
+		addParameterStream(parameterStreams, handle, nullptr, nullptr);
+		return execute(parameterStreams, parameterFeatures, args...);
+	}
 
-    Output* outPtr = nullptr;
-    Output* errPtr = nullptr;
+	template<typename... Args>
+	int execute(ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures, Interface::Producer& producer, Interface::FileDescriptor::Handle handle, Args&... args) {
+		addParameterStream(parameterStreams, handle, &producer, nullptr);
+		return execute(parameterStreams, parameterFeatures, args...);
+	}
+
+	template<typename... Args>
+	int execute(ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures, Interface::Consumer& consumer, Interface::FileDescriptor::Handle handle, Args&... args) {
+		addParameterStream(parameterStreams, handle, nullptr, &consumer);
+		return execute(parameterStreams, parameterFeatures, args...);
+	}
+
+	template<typename... Args>
+	int execute(ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures, Interface::Feature& feature, Args&... args) {
+		parameterFeatures.emplace_back(std::ref(feature));
+    	return execute(ParameterStreams(), parameterFeatures, args...);
+	}
+
+	static void addParameterStream(ParameterStreams& parameterStreams, Interface::FileDescriptor::Handle handle, Interface::Producer* producer, Interface::Consumer* consumer);
+
+	std::unique_ptr<Interface::Process> process;
 };
 
 } /* namespace system */

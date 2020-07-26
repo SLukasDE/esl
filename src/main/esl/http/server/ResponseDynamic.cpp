@@ -21,6 +21,7 @@ SOFTWARE.
 */
 
 #include <esl/http/server/ResponseDynamic.h>
+
 #include <cstring>
 
 namespace esl {

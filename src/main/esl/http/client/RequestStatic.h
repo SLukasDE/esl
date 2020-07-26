@@ -25,6 +25,9 @@ SOFTWARE.
 #define SRC_ESL_HTTP_CLIENT_REQUESTSTATIC_H_
 
 #include <esl/http/client/Request.h>
+#include <esl/utility/HttpMethod.h>
+#include <esl/utility/MIME.h>
+
 #include <string>
 
 namespace esl {
@@ -33,16 +36,16 @@ namespace client {
 
 class RequestStatic : public Request {
 public:
-	RequestStatic(const std::string& servicePath);
-	RequestStatic(const std::string& servicePath, const std::string& contentType, const std::string& data);
-	~RequestStatic() = default;
+	RequestStatic(std::string path, utility::HttpMethod method, utility::MIME contentType, const char* data, std::size_t size);
 
-	std::size_t getDataSize() const;
-
-	std::size_t write(void* data, std::size_t size);
+	//std::size_t getData(char* buffer, std::size_t count);
+	const char* getData() const;
+	std::size_t getSize() const;
 
 private:
-	std::string data;
+	const char* data;
+	std::size_t size;
+	//std::size_t dataPos = 0;
 };
 
 } /* namespace client */

@@ -21,6 +21,7 @@ SOFTWARE.
 */
 
 #include <esl/utility/URL.h>
+
 #include <memory>
 
 namespace esl {
@@ -59,7 +60,7 @@ URL::URL(const std::string& aURL)  {
 	}
 }
 
-const std::string& URL::getScheme() const {
+const Protocol& URL::getScheme() const {
 	return scheme;
 }
 
@@ -90,7 +91,7 @@ URL::NextFragment URL::parseScheme(size_t& pos, const char* str, const size_t le
 	for(;pos<len && str[pos]==' '; pos++) {
 	}
 	if (str[pos] == '/') {
-		scheme.clear();
+		scheme = Protocol();
 		++pos;
 		return NextFragment::PATH;
 	}
@@ -116,7 +117,7 @@ URL::NextFragment URL::parseScheme(size_t& pos, const char* str, const size_t le
 		return NextFragment::EMPTY;
 	}
 
-	scheme = std::move(tmpScheme);
+	scheme = Protocol(std::move(tmpScheme));
 	return NextFragment::HOSTNAME;
 }
 

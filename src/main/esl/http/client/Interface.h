@@ -25,7 +25,13 @@ SOFTWARE.
 
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
+#include <esl/object/Values.h>
+#include <esl/utility/URL.h>
+#include <esl/http/client/Response.h>
+#include <esl/http/client/ResponseHandler.h>
+
 #include <string>
+#include <memory>
 
 namespace esl {
 namespace http {
@@ -34,7 +40,6 @@ namespace client {
 class RequestDynamic;
 class RequestStatic;
 class RequestFile;
-class Response;
 
 struct Interface : esl::module::Interface {
 	/* *************************************** *
@@ -42,39 +47,17 @@ struct Interface : esl::module::Interface {
 	 * *************************************** */
 	class Connection {
 	public:
-		Connection() = default;
 		virtual ~Connection() = default;
 
-		void sendGet(Response& response, const RequestDynamic& request) const;
-		void sendGet(Response& response, const RequestStatic& request) const;
-		void sendGet(Response& response, const RequestFile& request) const;
+		virtual Response send(RequestDynamic& request, ResponseHandler* responseHandler) const = 0;
+		virtual Response send(const RequestStatic& request, ResponseHandler* responseHandler) const = 0;
+		virtual Response send(const RequestFile& request, ResponseHandler* responseHandler) const = 0;
 
-		void sendPost(Response& response, const RequestDynamic& request) const;
-		void sendPost(Response& response, const RequestStatic& request) const;
-		void sendPost(Response& response, const RequestFile& request) const;
-
-		void sendPut(Response& response, const RequestDynamic& request) const;
-		void sendPut(Response& response, const RequestStatic& request) const;
-		void sendPut(Response& response, const RequestFile& request) const;
-
-		void sendDelete(Response& response, const RequestDynamic& request) const;
-		void sendDelete(Response& response, const RequestStatic& request) const;
-		void sendDelete(Response& response, const RequestFile& request) const;
-
-		virtual void send(Response& response, const RequestDynamic& request, const std::string& method) const = 0;
-		virtual void send(Response& response, const RequestStatic& request, const std::string& method) const = 0;
-		virtual void send(Response& response, const RequestFile& request, const std::string& method) const = 0;
+	protected:
+		Connection() = default;
 	};
 
-	using CreateConnection = Connection* (*)(
-			const std::string& hostUrl,
-            const long timeout,
-            const std::string& username,
-            const std::string& password,
-            const std::string& proxy,
-            const std::string& proxyUser,
-            const std::string& proxyPassword,
-            const std::string& userAgent);
+	using CreateConnection = std::unique_ptr<Connection> (*)(const utility::URL& hostUrl, const object::Values<std::string>& values);
 
 	/* ************************************ *
 	 * standard API definition of interface *

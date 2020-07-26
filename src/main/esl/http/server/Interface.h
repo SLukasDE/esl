@@ -25,10 +25,11 @@ SOFTWARE.
 
 #include <esl/module/Interface.h>
 #include <esl/object/Interface.h>
+#include <esl/object/Values.h>
 #include <esl/Module.h>
-
 #include <esl/http/server/RequestContext.h>
 #include <esl/http/server/requesthandler/Interface.h>
+
 #include <string>
 #include <functional>
 #include <cstdint>
@@ -57,7 +58,7 @@ struct Interface : esl::module::Interface {
 		virtual void release() = 0;
 	};
 
-	using CreateSocket = std::unique_ptr<Socket> (*)(uint16_t port, uint16_t numThreads, requesthandler::Interface::CreateRequestHandler createRequestHandler);
+	using CreateSocket = std::unique_ptr<Socket> (*)(uint16_t port, requesthandler::Interface::CreateRequestHandler createRequestHandler, const object::Values<std::string>& values);
 
 	/* ************************************ *
 	 * standard API definition of interface *

@@ -22,35 +22,37 @@ SOFTWARE.
 
 #include <esl/http/client/RequestStatic.h>
 #include <esl/http/client/Connection.h>
+
 #include <string.h>
 
 namespace esl {
 namespace http {
 namespace client {
 
-RequestStatic::RequestStatic(const std::string& servicePath)
-: Request(servicePath, std::string())
-{
-}
+RequestStatic::RequestStatic(std::string path, utility::HttpMethod method, utility::MIME contentType, const char* aData, std::size_t aSize)
+: Request(std::move(path), std::move(method), std::move(contentType)),
+  data(aData),
+  size(aSize)
+{ }
 
-RequestStatic::RequestStatic(const std::string& servicePath, const std::string& contentType, const std::string& aData)
-: Request(servicePath, contentType),
-  data(aData)
-{
-}
+/*
+std::size_t RequestStatic::getData(char* buffer, std::size_t count) {
+	std::size_t remainingSize = size - dataPos;
 
-std::size_t RequestStatic::getDataSize() const {
-	return data.size();
-}
-
-std::size_t RequestStatic::write(void* buffer, std::size_t size) {
-	if(size > data.size()) {
-		size = data.size();
+	if(count > remainingSize) {
+		count = remainingSize;
 	}
-	if(size > 0) {
-		memcpy(buffer, data.data(), size);
-		data = data.substr(size, data.size()-size);
-	}
+	std::memcpy(buffer, &data[dataPos], count);
+	dataPos += count;
+
+	return count;
+}
+*/
+const char* RequestStatic::getData() const {
+	return data;
+}
+
+std::size_t RequestStatic::getSize() const {
 	return size;
 }
 

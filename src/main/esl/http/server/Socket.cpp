@@ -21,17 +21,38 @@ SOFTWARE.
 */
 
 #include <esl/http/server/Socket.h>
+#include <esl/object/ValueSettings.h>
 #include <esl/Module.h>
 
 namespace esl {
 namespace http {
 namespace server {
 
-Socket::Socket(uint16_t port, uint16_t numThreads, requesthandler::Interface::CreateRequestHandler createRequestHandler)
-: Interface::Socket(),
-  socket(esl::getModule().getInterface<Interface>().createSocket(port, numThreads, createRequestHandler))
-{
+namespace {
+std::string defaultImplementation;
 }
+
+void Socket::setDefaultImplementation(std::string implementation) {
+	defaultImplementation = std::move(implementation);
+}
+
+const std::string& Socket::getDefaultImplementation() {
+	return defaultImplementation;
+}
+
+Socket::Socket(uint16_t port, requesthandler::Interface::CreateRequestHandler createRequestHandler,
+		std::initializer_list<std::pair<std::string, std::string>> values,
+		const std::string& implementation)
+: Interface::Socket(),
+  socket(esl::getModule().getInterface<Interface>(implementation).createSocket(port, createRequestHandler, object::ValueSettings(std::move(values))))
+{ }
+
+Socket::Socket(uint16_t port, requesthandler::Interface::CreateRequestHandler createRequestHandler,
+		const object::Values<std::string>& values,
+		const std::string& implementation)
+: Interface::Socket(),
+  socket(esl::getModule().getInterface<Interface>(implementation).createSocket(port, createRequestHandler, values))
+{ }
 
 void Socket::addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) {
 	return socket->addTLSHost(hostname, certificate, key);

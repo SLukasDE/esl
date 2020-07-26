@@ -26,6 +26,7 @@ SOFTWARE.
 #include <esl/database/Column.h>
 #include <esl/database/ResultSet.h>
 #include <esl/database/Field.h>
+
 #include <vector>
 #include <memory>
 

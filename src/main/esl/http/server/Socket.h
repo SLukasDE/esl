@@ -25,8 +25,10 @@ SOFTWARE.
 
 #include <esl/http/server/Interface.h>
 #include <esl/http/server/requesthandler/Interface.h>
+#include <esl/object/Values.h>
 
 #include <cstdint>
+#include <initializer_list>
 #include <memory>
 
 namespace esl {
@@ -35,7 +37,14 @@ namespace server {
 
 class Socket final : public Interface::Socket {
 public:
-	Socket(uint16_t port, uint16_t numThreads, requesthandler::Interface::CreateRequestHandler createRequestHandler);
+	static void setDefaultImplementation(std::string implementation);
+	static const std::string& getDefaultImplementation();
+
+	Socket(uint16_t port, requesthandler::Interface::CreateRequestHandler createRequestHandler, std::initializer_list<std::pair<std::string, std::string>> values,
+			   const std::string& implementation = getDefaultImplementation());
+
+	Socket(uint16_t port, requesthandler::Interface::CreateRequestHandler createRequestHandler, const object::Values<std::string>& values,
+			   const std::string& implementation = getDefaultImplementation());
 
 	void addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) override;
 	void setObject(const std::string& id, GetObject getObject) override;

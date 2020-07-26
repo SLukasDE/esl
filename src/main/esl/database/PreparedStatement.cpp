@@ -21,12 +21,13 @@ SOFTWARE.
 */
 
 #include <esl/database/PreparedStatement.h>
+#include <esl/logging/Logger.h>
 
 namespace esl {
 namespace database {
-
 namespace {
 std::vector<Column> emptyColumns;
+esl::logging::Logger<esl::logging::Level::TRACE> logger;
 }
 
 PreparedStatement::PreparedStatement(PreparedStatement&& other)
@@ -43,7 +44,9 @@ PreparedStatement::operator bool() const noexcept {
 }
 
 PreparedStatement& PreparedStatement::operator=(PreparedStatement&& other) {
-	binding = std::move(other.binding);
+	if(this != &other) {
+		binding = std::move(other.binding);
+	}
 	return *this;
 }
 

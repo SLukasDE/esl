@@ -27,13 +27,24 @@ SOFTWARE.
 
 namespace esl {
 namespace system {
-
-void signalHandlerInstall(SignalType signalType, std::function<void()> handler) {
-	esl::getModule().getInterface<Interface>().installSignalHandler(signalType, handler);
+namespace {
+std::string defaultImplementation;
 }
 
-void signalHandlerRemove(SignalType signalType, std::function<void()> handler) {
-	esl::getModule().getInterface<Interface>().removeSignalHandler(signalType, handler);
+void SignalHandler::setDefaultImplementation(std::string implementation) {
+	defaultImplementation = std::move(implementation);
+}
+
+const std::string& SignalHandler::getDefaultImplementation() {
+	return defaultImplementation;
+}
+
+void SignalHandler::install(SignalType signalType, std::function<void()> handler, const std::string& implementation) {
+	esl::getModule().getInterface<Interface>(implementation).installSignalHandler(signalType, handler);
+}
+
+void SignalHandler::remove(SignalType signalType, std::function<void()> handler, const std::string& implementation) {
+	esl::getModule().getInterface<Interface>(implementation).removeSignalHandler(signalType, handler);
 }
 
 } /* namespace system */

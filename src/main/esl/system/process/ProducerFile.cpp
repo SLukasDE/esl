@@ -20,54 +20,44 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/client/Connection.h>
-#include <esl/http/client/Interface.h>
-#include <esl/Module.h>
+#include <esl/system/process/ProducerFile.h>
 #include <esl/object/ValueSettings.h>
 
 namespace esl {
-namespace http {
-namespace client {
-
+namespace system {
+namespace process {
 namespace {
 std::string defaultImplementation;
 }
 
-Connection::Connection(const utility::URL& hostUrl,
-		std::initializer_list<std::pair<std::string, std::string>> values,
-		const std::string& implementation)
-: Interface::Connection(),
-  connection(esl::getModule().getInterface<Interface>(implementation).createConnection(hostUrl, object::ValueSettings(std::move(values))))
-{ }
-
-Connection::Connection(const utility::URL& hostUrl,
-		const object::Values<std::string>& values,
-		const std::string& implementation)
-: Interface::Connection(),
-  connection(esl::getModule().getInterface<Interface>(implementation).createConnection(hostUrl, values))
-{
-}
-
-Response Connection::send(RequestDynamic& request, ResponseHandler* responseHandler) const {
-	return connection->send(request, responseHandler);
-}
-
-Response Connection::send(const RequestStatic& request, ResponseHandler* responseHandler) const {
-	return connection->send(request, responseHandler);
-}
-
-Response Connection::send(const RequestFile& request, ResponseHandler* responseHandler) const {
-	return connection->send(request, responseHandler);
-}
-
-void Connection::setDefaultImplementation(std::string implementation) {
+void ProducerFile::setDefaultImplementation(std::string implementation) {
 	defaultImplementation = std::move(implementation);
 }
 
-const std::string& Connection::getDefaultImplementation() {
+const std::string& ProducerFile::getDefaultImplementation() {
 	return defaultImplementation;
 }
 
-} /* namespace client */
-} /* namespace http */
+ProducerFile::ProducerFile(std::string filename,
+		std::initializer_list<std::pair<std::string, std::string>> values,
+		const std::string& implementation)
+: producerFile(esl::getModule().getInterface<Interface>(implementation).createProducerFile(std::move(filename), object::ValueSettings(std::move(values))))
+{ }
+
+ProducerFile::ProducerFile(std::string filename,
+		const object::Values<std::string>& values,
+		const std::string& implementation)
+: producerFile(esl::getModule().getInterface<Interface>(implementation).createProducerFile(std::move(filename), values))
+{ }
+
+std::size_t ProducerFile::write(Interface::FileDescriptor& fileDescriptor) {
+	return producerFile->write(fileDescriptor);
+}
+
+std::size_t ProducerFile::getFileSize() const {
+	return producerFile->getFileSize();
+}
+
+} /* namespace process */
+} /* namespace system */
 } /* namespace esl */

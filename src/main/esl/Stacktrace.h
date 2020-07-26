@@ -31,7 +31,7 @@ SOFTWARE.
 #include <esl/logging/Location.h>
 #include <esl/logging/StreamReal.h>
 #include <esl/logging/StreamEmpty.h>
-//#include <boost/exception/all.hpp>
+
 #include <ostream>
 #include <memory>
 

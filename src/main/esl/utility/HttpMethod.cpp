@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/utility/MIME.h>
+#include <esl/utility/HttpMethod.h>
 
 #include <algorithm>
 
@@ -28,46 +28,46 @@ namespace esl {
 namespace utility {
 
 namespace {
-
 const std::string strEmpty;
-const std::string strTextPlain = "text/plain";
-const std::string strTextHtml = "text/html";
-const std::string strTextXml = "text/xml";
-const std::string strApplicationXml = "application/xml";
-const std::string strApplicationJson = "application/json";
-
+const std::string strHttpGet = "GET";
+const std::string strHttpPut = "PUT";
+const std::string strHttpPost = "POST";
+const std::string strHttpDelete = "DELETE";
+const std::string strHttpHead = "HEAD";
+const std::string strHttpPatch = "PATCH";
+const std::string strHttpOptions = "OPTIONS";
 }
 
-MIME::MIME(Type type) noexcept
+HttpMethod::HttpMethod(Type type) noexcept
 : hasEnum(true),
   enumType(type)
 { }
 
-MIME::MIME(std::string type) noexcept
+HttpMethod::HttpMethod(std::string type) noexcept
 : hasEnum(false),
   stringType(std::move(type))
 { }
 
-bool MIME::operator==(MIME::Type type) const noexcept {
-	return (*this == MIME(type));
+bool HttpMethod::operator==(HttpMethod::Type type) const noexcept {
+	return (*this == HttpMethod(type));
 }
 
-bool MIME::operator==(const MIME& aMime) const noexcept {
+bool HttpMethod::operator==(const HttpMethod& aMime) const noexcept {
 	if(hasEnum && aMime.hasEnum) {
 		return enumType == aMime.enumType;
 	}
 	return toString() == aMime.toString();
 }
 
-bool MIME::operator!=(MIME::Type type) const noexcept {
-	return (*this != MIME(type));
+bool HttpMethod::operator!=(HttpMethod::Type type) const noexcept {
+	return (*this != HttpMethod(type));
 }
 
-bool MIME::operator!=(const MIME& aMime) const noexcept {
+bool HttpMethod::operator!=(const HttpMethod& aMime) const noexcept {
 	return (*this != aMime);
 }
 
-const std::string& MIME::toString() const noexcept {
+const std::string& HttpMethod::toString() const noexcept {
 	if(hasEnum) {
 		return toString(enumType);
 	}
@@ -75,22 +75,25 @@ const std::string& MIME::toString() const noexcept {
 	return stringType;
 }
 
-const std::string& MIME::toString(MIME::Type mimeType) noexcept {
+const std::string& HttpMethod::toString(HttpMethod::Type mimeType) noexcept {
 	switch(mimeType) {
-	case textPlain:
-		return strTextPlain;
-	case textHtml:
-		return strTextHtml;
-	case textXml:
-		return strTextXml;
-	case applicationXml:
-		return strApplicationXml;
-	case applicationJson:
-		return strApplicationJson;
+	case httpGet:
+		return strHttpGet;
+	case httpPut:
+		return strHttpPut;
+	case httpPost:
+		return strHttpPost;
+	case httpDelete:
+		return strHttpDelete;
+	case httpHead:
+		return strHttpHead;
+	case httpPatch:
+		return strHttpPatch;
+	case httpOptions:
+		return strHttpOptions;
 	}
 	return strEmpty;
 }
 
 } /* namespace utility */
 } /* namespace esl */
-

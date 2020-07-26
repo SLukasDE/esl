@@ -73,6 +73,12 @@ std::vector<std::string> String::split(const std::string& str, const char separa
     return rv;
 }
 
+/*
+std::string &String::ltrim(std::string &s) {
+	s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+	return s;
+}
+*/
 std::string String::ltrim(std::string str, char trimCharacter) {
     str.erase(std::begin(str), std::find_if(std::begin(str), std::end(str), [trimCharacter](int c) {
         return c != trimCharacter;
@@ -81,6 +87,12 @@ std::string String::ltrim(std::string str, char trimCharacter) {
     return str;
 }
 
+/*
+std::string &String::rtrim(std::string &s) {
+	s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+	return s;
+}
+*/
 std::string String::rtrim(std::string str, char trimCharacter) {
     str.erase(std::find_if(str.rbegin(), str.rend(), [trimCharacter](int c) {
         return c != trimCharacter;

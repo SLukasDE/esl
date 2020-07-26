@@ -21,102 +21,25 @@ SOFTWARE.
 */
 
 #include <esl/http/client/Response.h>
+#include <esl/utility/String.h>
+
 #include <algorithm>
 
 namespace esl {
 namespace http {
 namespace client {
 
-namespace {
-std::string &ltrim(std::string &s) {
-	s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
-	return s;
+Response::Response(unsigned short aStatusCode, std::map<std::string, std::string> aHeaders)
+: statusCode(aStatusCode),
+  headers(std::move(aHeaders))
+{ }
+
+const std::map<std::string, std::string>& Response::getHeaders() const noexcept {
+	return headers;
 }
 
-// trim from end
-std::string &rtrim(std::string &s) {
-	s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
-	return s;
-}
-
-// trim from both ends
-std::string &trim(std::string &s) {
-	return ltrim(rtrim(s));
-}
-}
-
-
-Response::Response() noexcept
-{
-}
-
-Response::~Response() noexcept
-{
-}
-
-::std::string Response::getHeader(const std::string& header) const noexcept
-{
-	::std::string ret;
-	const auto headerIt = headers.find(header);
-	if(headerIt != headers.end()) {
-		ret = headerIt->second;
-	}
-	return ret;
-}
-
-
-
-size_t Response::readHeader(void *data, size_t size) noexcept {
-	std::string header(reinterpret_cast<char*>(data), size);
-	size_t seperator = header.find_first_of(":");
-
-	if(seperator == std::string::npos) {
-		//roll with non seperated headers...
-		trim(header);
-		if(header.size() == 0) {
-			return size; //blank line;
-		}
-		headers[header] = "";
-	}
-	else {
-		std::string key = header.substr(0, seperator);
-		trim(key);
-		std::string value = header.substr(seperator + 1);
-		trim (value);
-		headers[key] = value;
-	}
-
-	return size;
-}
-
-/**
-* @brief write callback function for libcurl
-*
-* @param data returned data of size (size*nmemb)
-* @param size size parameter
-* @param nmemb memblock parameter
-* @param userdata pointer to user data to save/work with return data
-*
-* @return (size * nmemb)
-*/
-size_t Response::writeCallback(void *data, size_t size, size_t nmemb, void *userdata)
-{
-	Response* r = static_cast<Response*>(userdata);
-	return r->read(data, size*nmemb);
-}
-
-/**
-* @brief header callback for libcurl
-*
-* @param data returned (header line)
-* @param size of data
-* @param nmemb memblock
-* @param userdata pointer to user data object to save headr data
-* @return size * nmemb;
-*/
-size_t Response::headerCallback(void *data, size_t size, size_t nmemb, void *userdata) {
-	Response* r = static_cast<Response*>(userdata);
-	return r->readHeader(data, size*nmemb);
+unsigned short Response::getStatusCode() const noexcept {
+	return statusCode;
 }
 
 } /* namespace client */

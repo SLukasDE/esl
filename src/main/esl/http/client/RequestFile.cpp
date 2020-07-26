@@ -27,11 +27,10 @@ namespace esl {
 namespace http {
 namespace client {
 
-RequestFile::RequestFile(const std::string& servicePath, const std::string& contentType, const std::string& aFilename)
-: Request(servicePath, contentType),
-  filename(aFilename)
-{
-}
+RequestFile::RequestFile(std::string path, utility::HttpMethod method, utility::MIME contentType, std::string aFilename)
+: Request(std::move(path), std::move(method), std::move(contentType)),
+  filename(std::move(aFilename))
+{ }
 
 const std::string& RequestFile::getFilename() const {
 	return filename;

@@ -20,35 +20,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef SRC_ESL_HTTP_CLIENT_RESPONSESTATIC_H_
-#define SRC_ESL_HTTP_CLIENT_RESPONSESTATIC_H_
+#ifndef ESL_SYSTEM_PROCESS_PRODUCERFILE_H_
+#define ESL_SYSTEM_PROCESS_PRODUCERFILE_H_
 
-#include <esl/http/client/Response.h>
+#include <esl/system/Interface.h>
+#include <esl/object/Values.h>
+
+#include <initializer_list>
 #include <string>
-//#include <map>
-//#include <cstdlib>
+#include <memory>
 
 namespace esl {
-namespace http {
-namespace client {
+namespace system {
+namespace process {
 
-//class Connection;
-
-class ResponseStatic: public esl::http::client::Response {
+class ProducerFile : public Interface::ProducerFile {
 public:
-	ResponseStatic() noexcept;
+	static void setDefaultImplementation(std::string implementation);
+	static const std::string& getDefaultImplementation();
 
-	const std::string& getData() const noexcept;
+	ProducerFile(std::string filename,
+			std::initializer_list<std::pair<std::string, std::string>> values,
+			const std::string& implementation = getDefaultImplementation());
 
-protected:
-	size_t read(void* data, size_t size) noexcept override final;
+	ProducerFile(std::string filename,
+			const object::Values<std::string>& values,
+			const std::string& implementation = getDefaultImplementation());
+
+	std::size_t write(Interface::FileDescriptor& fileDescriptor) override;
+	std::size_t getFileSize() const override;
 
 private:
-	std::string data;
+	std::unique_ptr<Interface::ProducerFile> producerFile;
 };
 
-} /* namespace client */
-} /* namespace http */
+} /* namespace process */
+} /* namespace system */
 } /* namespace esl */
 
-#endif /* SRC_ESL_HTTP_CLIENT_RESPONSESTATIC_H_ */
+#endif /* ESL_SYSTEM_PROCESS_PRODUCERFILE_H_ */

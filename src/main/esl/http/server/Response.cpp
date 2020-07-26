@@ -27,8 +27,8 @@ namespace esl {
 namespace http {
 namespace server {
 
-Response::Response(unsigned short aHttpStatus, const std::string& contentType) noexcept
-: httpStatus(aHttpStatus)
+Response::Response(unsigned short aStatusCode, const std::string& contentType) noexcept
+: statusCode(aStatusCode)
 {
 	headers["Content-Type"] = contentType;
 }
@@ -38,8 +38,8 @@ bool Response::isValid() const noexcept {
 	return (headers.find("Content-Type")->second != "");
 }
 
-unsigned short Response::getHttpStatus() const noexcept {
-	return httpStatus;
+unsigned short Response::getStatusCode() const noexcept {
+	return statusCode;
 }
 
 void Response::addHeader(const std::string& key, const std::string& value) {
