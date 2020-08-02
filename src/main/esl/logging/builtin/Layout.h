@@ -24,6 +24,7 @@ SOFTWARE.
 #define ESL_LOGGING_BUILTIN_LAYOUT_H_
 
 #include <esl/logging/layout/Interface.h>
+#include <esl/object/Values.h>
 
 namespace esl {
 namespace logging {
@@ -31,14 +32,14 @@ namespace builtin {
 
 class Layout : public layout::Interface::Layout {
 public:
-	static std::unique_ptr<layout::Interface::Layout> create();
+	static std::unique_ptr<layout::Interface::Layout> create(const object::Values<std::string>& values);
 
 	static inline const char* getImplementation() {
 		return "esl/logging/builtin";
 	}
 
 	std::string toString(const Location& location) const override;
-	void addSetting(const std::string& key, const std::string& value) override;
+	//void addSetting(const std::string& key, const std::string& value) override;
 
 	bool getShowTimestamp() const;
 	void setShowTimestamp(bool showTimestamp = true);
@@ -65,6 +66,8 @@ public:
 	void setShowThreadNo(bool showThreadNo = true);
 
 private:
+	Layout(const object::Values<std::string>& values);
+
 	bool showTimestamp = true;
 	bool showLevel = true;
 	bool showTypeName = true;

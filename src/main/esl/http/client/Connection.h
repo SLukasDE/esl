@@ -31,6 +31,7 @@ SOFTWARE.
 #include <esl/http/client/ResponseHandler.h>
 #include <esl/object/Values.h>
 #include <esl/utility/URL.h>
+#include <esl/module/Implementation.h>
 
 #include <string>
 #include <initializer_list>
@@ -42,18 +43,32 @@ namespace client {
 
 class Connection : public Interface::Connection {
 public:
-	Connection(const utility::URL& hostUrl, std::initializer_list<std::pair<std::string, std::string>> values,
-			   const std::string& implementation = getDefaultImplementation());
+	static module::Implementation& getDefault();
 
-	Connection(const utility::URL& hostUrl, const object::Values<std::string>& values,
-			   const std::string& implementation = getDefaultImplementation());
-
-	Response send(RequestDynamic& request, ResponseHandler* responseHandler = nullptr) const override;
-	Response send(const RequestStatic& request, ResponseHandler* responseHandler = nullptr) const override;
-	Response send(const RequestFile& request, ResponseHandler* responseHandler = nullptr) const override;
-
-	static void setDefaultImplementation(std::string implementation);
-	static const std::string& getDefaultImplementation();
+	Connection(const utility::URL& hostUrl,
+			std::initializer_list<std::pair<std::string, std::string>> settings,
+			const std::string& implementation = getDefault().getImplementation());
+#if 0
+	Connection(const utility::URL& hostUrl,
+			const object::Values<std::string>& settings = getDefault().getSettings(),
+			const std::string& implementation = getDefault().getImplementation());
+#else
+	Connection(const utility::URL& hostUrl);
+	Connection(const utility::URL& hostUrl,
+			const object::Values<std::string>& settings,
+			const std::string& implementation);
+#endif
+	Response send(std::string path, utility::HttpMethod method) const;
+	Response send(std::string path, utility::HttpMethod method, ResponseHandler& responseHandler) const;
+	Response send(std::string path, utility::HttpMethod method, Request& request) const;
+	Response send(std::string path, utility::HttpMethod method, Request& request, ResponseHandler& responseHandler) const;
+/*
+	Response send(std::string path, utility::HttpMethod method, utility::MIME contentType, RequestDynamic& request, ResponseHandler* responseHandler = nullptr) const override;
+	Response send(std::string path, utility::HttpMethod method, utility::MIME contentType, const RequestStatic& request, ResponseHandler* responseHandler = nullptr) const override;
+	Response send(std::string path, utility::HttpMethod method, utility::MIME contentType, const RequestFile& request, ResponseHandler* responseHandler = nullptr) const override;
+*/
+protected:
+	Response send(std::string path, utility::HttpMethod method, Request* request, ResponseHandler* responseHandler) const override;
 
 private:
 	std::unique_ptr<Interface::Connection> connection;

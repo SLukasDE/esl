@@ -20,40 +20,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_OBJECT_VALUES_H_
-#define ESL_OBJECT_VALUES_H_
+#ifndef ESL_HTTP_CLIENT_REQUESTCONTENT_H_
+#define ESL_HTTP_CLIENT_REQUESTCONTENT_H_
 
-#include <esl/object/Interface.h>
-//#include <esl/Stacktrace.h>
-
-#include <vector>
-#include <utility>
-#include <stdexcept>
+#include <esl/utility/MIME.h>
 
 namespace esl {
-namespace object {
+namespace http {
+namespace client {
 
-template<typename T>
-class Values : public virtual Interface::Object {
+class RequestContent {
 public:
-	virtual bool hasValue(const std::string& key) const {
-		return false;
-	}
+	virtual ~RequestContent() = default;
 
-	virtual T getValue(const std::string& key) const {
-		throw std::runtime_error("esl::object::Values: Unknown parameter key=\"" + key + "\"");
-		//throw esl::addStacktrace(std::runtime_error("esl::object::Values: Unknown parameter key=\"" + key + "\""));
-	}
+	const utility::MIME& getContentType() const noexcept;
 
-	virtual const std::vector<std::pair<std::string, T>>& getValues() const {
-		return values;
-	}
+protected:
+	RequestContent(utility::MIME contentType);
 
 private:
-	std::vector<std::pair<std::string, T>> values;
+	utility::MIME contentType;
 };
 
-} /* namespace object */
+} /* namespace client */
+} /* namespace http */
 } /* namespace esl */
 
-#endif /* ESL_OBJECT_VALUES_H_ */
+#endif /* ESL_HTTP_CLIENT_REQUESTCONTENT_H_ */

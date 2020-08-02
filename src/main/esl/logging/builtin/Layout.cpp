@@ -123,10 +123,37 @@ bool convertValueToBool(const std::string& value) {
 
 } /* anonymous namespace */
 
-std::unique_ptr<esl::logging::layout::Interface::Layout> Layout::create() {
-	return std::unique_ptr<esl::logging::layout::Interface::Layout>(new Layout());
+std::unique_ptr<esl::logging::layout::Interface::Layout> Layout::create(const object::Values<std::string>& values) {
+	return std::unique_ptr<esl::logging::layout::Interface::Layout>(new Layout(values));
 }
 
+Layout::Layout(const object::Values<std::string>& values)
+{
+	if(values.hasValue("showTimestamp")) {
+		setShowTimestamp(convertValueToBool(values.getValue("showTimestamp")));
+	}
+	if(values.hasValue("showLevel")) {
+		setShowLevel(convertValueToBool(values.getValue("showLevel")));
+	}
+	if(values.hasValue("showTypeName")) {
+		setShowTypeName(convertValueToBool(values.getValue("showTypeName")));
+	}
+	if(values.hasValue("showAddress")) {
+		setShowAddress(convertValueToBool(values.getValue("showAddress")));
+	}
+	if(values.hasValue("showFile")) {
+		setShowFile(convertValueToBool(values.getValue("showFile")));
+	}
+	if(values.hasValue("showFunction")) {
+		setShowFunction(convertValueToBool(values.getValue("showFunction")));
+	}
+	if(values.hasValue("showLineNo")) {
+		setShowLineNo(convertValueToBool(values.getValue("showLineNo")));
+	}
+	if(values.hasValue("showThreadNo")) {
+		setShowThreadNo(convertValueToBool(values.getValue("showThreadNo")));
+	}
+}
 std::string Layout::toString(const Location& location) const {
 	std::string rv;
 
@@ -161,7 +188,7 @@ std::string Layout::toString(const Location& location) const {
 
 	return rv;
 }
-
+/*
 void Layout::addSetting(const std::string& key, const std::string& value) {
 	if(key == "showTimestamp") {
 		setShowTimestamp(convertValueToBool(value));
@@ -188,7 +215,7 @@ void Layout::addSetting(const std::string& key, const std::string& value) {
 		setShowThreadNo(convertValueToBool(value));
 	}
 }
-
+*/
 bool Layout::getShowTimestamp() const {
 	return showTimestamp;
 }

@@ -26,28 +26,22 @@ SOFTWARE.
 namespace esl {
 namespace system {
 namespace process {
-namespace {
-std::string defaultImplementation;
-}
 
-void ConsumerFile::setDefaultImplementation(std::string implementation) {
-	defaultImplementation = std::move(implementation);
-}
-
-const std::string& ConsumerFile::getDefaultImplementation() {
-	return defaultImplementation;
+module::Implementation& ConsumerFile::getDefault() {
+	static module::Implementation implementation;
+	return implementation;
 }
 
 ConsumerFile::ConsumerFile(std::string filename,
-		std::initializer_list<std::pair<std::string, std::string>> values,
+		std::initializer_list<std::pair<std::string, std::string>> settings,
 		const std::string& implementation)
-: consumerFile(esl::getModule().getInterface<Interface>(implementation).createConsumerFile(std::move(filename), object::ValueSettings(std::move(values))))
+: consumerFile(esl::getModule().getInterface<Interface>(implementation).createConsumerFile(std::move(filename), object::ValueSettings(std::move(settings))))
 { }
 
 ConsumerFile::ConsumerFile(std::string filename,
-		const object::Values<std::string>& values,
+		const object::Values<std::string>& settings,
 		const std::string& implementation)
-: consumerFile(esl::getModule().getInterface<Interface>(implementation).createConsumerFile(std::move(filename), values))
+: consumerFile(esl::getModule().getInterface<Interface>(implementation).createConsumerFile(std::move(filename), settings))
 { }
 
 std::size_t ConsumerFile::read(Interface::FileDescriptor& fileDescriptor) {

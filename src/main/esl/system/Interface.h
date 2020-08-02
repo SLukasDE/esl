@@ -99,6 +99,13 @@ struct Interface : esl::module::Interface {
 
 	class Process {
 	public:
+		using FileDescriptorHandle = int;
+
+		static const FileDescriptorHandle noHandle = -1;
+		static const FileDescriptorHandle stdInHandle = 0;
+		static const FileDescriptorHandle stdOutHandle = 1;
+		static const FileDescriptorHandle stdErrHandle = 2;
+
 		struct ParameterStream {
 			Producer* producer = nullptr;
 			Consumer* consumer = nullptr;
@@ -133,13 +140,13 @@ struct Interface : esl::module::Interface {
 	    pipe
 	};
 
-	using CreateProcess = std::unique_ptr<Process>(*)(process::Arguments arguments, std::string workingDir);
-	using CreateProcessWithEnvironment = std::unique_ptr<Process>(*)(process::Arguments arguments, process::Environment environment, std::string workingDir);
-	using CreateConsumerFile = std::unique_ptr<Consumer>(*)(std::string filename, const object::Values<std::string>& values);
-	using CreateProducerFile = std::unique_ptr<ProducerFile>(*)(std::string filename, const object::Values<std::string>& values);
+	using CreateProcess = std::unique_ptr<Process>(*)(process::Arguments arguments, std::string workingDir, const object::Values<std::string>& setting);
+	using CreateProcessWithEnvironment = std::unique_ptr<Process>(*)(process::Arguments arguments, process::Environment environment, std::string workingDir, const object::Values<std::string>& setting);
+	using CreateConsumerFile = std::unique_ptr<Consumer>(*)(std::string filename, const object::Values<std::string>& settings);
+	using CreateProducerFile = std::unique_ptr<ProducerFile>(*)(std::string filename, const object::Values<std::string>& setting);
 
-	using InstallSignalHandler = void (*)(SignalType signalType, std::function<void()> handler);
-	using RemoveSignalHandler = void (*)(SignalType signalType, std::function<void()> handler);
+	using InstallSignalHandler = void (*)(SignalType signalType, std::function<void()> handler, const object::Values<std::string>& setting);
+	using RemoveSignalHandler = void (*)(SignalType signalType, std::function<void()> handler, const object::Values<std::string>& setting);
 
 	/* ************************************ *
 	 * standard API definition of interface *

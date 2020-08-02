@@ -22,25 +22,37 @@ SOFTWARE.
 
 #include <esl/Stacktrace.h>
 #include <esl/stacktrace/Interface.h>
+#include <esl/object/ValueSettings.h>
 #include <esl/Module.h>
 
 namespace esl {
 
 namespace {
-
 const char* dummyMessage = "no implementation available for \"esl::Stacktrace\"";
 
-std::unique_ptr<stacktrace::Interface::Stacktrace> createStacktrace() {
-	const stacktrace::Interface* interface = esl::getModule().findInterface<stacktrace::Interface>();
-	return interface ? interface->createStacktrace() : nullptr;
+std::unique_ptr<stacktrace::Interface::Stacktrace> createStacktrace(const std::string& implementation, const object::Values<std::string>& values) {
+	const stacktrace::Interface* interface = esl::getModule().findInterface<stacktrace::Interface>(implementation);
+	return interface ? interface->createStacktrace(values) : nullptr;
 }
-
 } /* anonymous Namespace */
 
+module::Implementation& Stacktrace::getDefault() {
+	static module::Implementation implementation;
+	return implementation;
+}
+
+Stacktrace::Stacktrace(std::initializer_list<std::pair<std::string, std::string>> settings, const std::string& implementation)
+: stacktrace(createStacktrace(implementation, object::ValueSettings(std::move(settings))))
+{ }
+
+Stacktrace::Stacktrace(const object::Values<std::string>& settings, const std::string& implementation)
+: stacktrace(createStacktrace(implementation, settings))
+{ }
+/*
 Stacktrace::Stacktrace()
 : stacktrace(createStacktrace())
 { }
-
+*/
 Stacktrace::Stacktrace(const esl::Stacktrace& aStacktrace)
 : stacktrace(aStacktrace.stacktrace ? aStacktrace.stacktrace->clone() : nullptr)
 { }

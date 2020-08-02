@@ -26,28 +26,22 @@ SOFTWARE.
 namespace esl {
 namespace system {
 namespace process {
-namespace {
-std::string defaultImplementation;
-}
 
-void ProducerFile::setDefaultImplementation(std::string implementation) {
-	defaultImplementation = std::move(implementation);
-}
-
-const std::string& ProducerFile::getDefaultImplementation() {
-	return defaultImplementation;
+module::Implementation& ProducerFile::getDefault() {
+	static module::Implementation implementation;
+	return implementation;
 }
 
 ProducerFile::ProducerFile(std::string filename,
-		std::initializer_list<std::pair<std::string, std::string>> values,
+		std::initializer_list<std::pair<std::string, std::string>> settings,
 		const std::string& implementation)
-: producerFile(esl::getModule().getInterface<Interface>(implementation).createProducerFile(std::move(filename), object::ValueSettings(std::move(values))))
+: producerFile(esl::getModule().getInterface<Interface>(implementation).createProducerFile(std::move(filename), object::ValueSettings(std::move(settings))))
 { }
 
 ProducerFile::ProducerFile(std::string filename,
-		const object::Values<std::string>& values,
+		const object::Values<std::string>& settings,
 		const std::string& implementation)
-: producerFile(esl::getModule().getInterface<Interface>(implementation).createProducerFile(std::move(filename), values))
+: producerFile(esl::getModule().getInterface<Interface>(implementation).createProducerFile(std::move(filename), settings))
 { }
 
 std::size_t ProducerFile::write(Interface::FileDescriptor& fileDescriptor) {

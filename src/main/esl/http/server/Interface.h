@@ -58,7 +58,7 @@ struct Interface : esl::module::Interface {
 		virtual void release() = 0;
 	};
 
-	using CreateSocket = std::unique_ptr<Socket> (*)(uint16_t port, requesthandler::Interface::CreateRequestHandler createRequestHandler, const object::Values<std::string>& values);
+	using CreateSocket = std::unique_ptr<Socket> (*)(std::uint16_t port, requesthandler::Interface::CreateRequestHandler createRequestHandler, const object::Values<std::string>& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *

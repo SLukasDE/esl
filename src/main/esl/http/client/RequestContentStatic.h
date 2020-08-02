@@ -20,40 +20,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_OBJECT_VALUES_H_
-#define ESL_OBJECT_VALUES_H_
+#ifndef ESL_HTTP_CLIENT_REQUESTCONTENTSTATIC_H_
+#define ESL_HTTP_CLIENT_REQUESTCONTENTSTATIC_H_
 
-#include <esl/object/Interface.h>
-//#include <esl/Stacktrace.h>
+#include <esl/http/client/RequestContent.h>
+#include <esl/utility/MIME.h>
 
-#include <vector>
-#include <utility>
-#include <stdexcept>
+#include <string>
 
 namespace esl {
-namespace object {
+namespace http {
+namespace client {
 
-template<typename T>
-class Values : public virtual Interface::Object {
+class RequestContentStatic: public RequestContent {
 public:
-	virtual bool hasValue(const std::string& key) const {
-		return false;
-	}
+	RequestContentStatic(utility::MIME contentType, const char* data, std::size_t size);
 
-	virtual T getValue(const std::string& key) const {
-		throw std::runtime_error("esl::object::Values: Unknown parameter key=\"" + key + "\"");
-		//throw esl::addStacktrace(std::runtime_error("esl::object::Values: Unknown parameter key=\"" + key + "\""));
-	}
-
-	virtual const std::vector<std::pair<std::string, T>>& getValues() const {
-		return values;
-	}
+	const char* getData() const noexcept;
+	std::size_t getSize() const noexcept;
 
 private:
-	std::vector<std::pair<std::string, T>> values;
+	const char* data;
+	std::size_t size;
 };
 
-} /* namespace object */
+} /* namespace client */
+} /* namespace http */
 } /* namespace esl */
 
-#endif /* ESL_OBJECT_VALUES_H_ */
+#endif /* ESL_HTTP_CLIENT_REQUESTCONTENTSTATIC_H_ */

@@ -26,6 +26,7 @@ SOFTWARE.
 #include <esl/logging/Logger.h>
 #include <esl/logging/Location.h>
 #include <esl/logging/layout/Interface.h>
+
 #include <cstddef>
 
 namespace esl {

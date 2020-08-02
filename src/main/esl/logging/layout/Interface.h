@@ -25,7 +25,8 @@ SOFTWARE.
 
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
-#include <esl/object/Settings.h>
+//#include <esl/object/Settings.h>
+#include <esl/object/Values.h>
 #include <esl/logging/Location.h>
 #include <string>
 #include <memory>
@@ -40,12 +41,15 @@ struct Interface : esl::module::Interface {
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class Layout : public esl::object::Settings {
+	//class Layout : public esl::object::Settings {
+	class Layout {
 	public:
+		virtual ~Layout() = default;
+
 		virtual std::string toString(const Location& location) const = 0;
 	};
 
-	using CreateLayout = std::unique_ptr<Layout> (*)();
+	using CreateLayout = std::unique_ptr<Layout> (*)(const object::Values<std::string>& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *

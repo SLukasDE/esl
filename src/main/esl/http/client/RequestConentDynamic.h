@@ -20,35 +20,49 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef SRC_ESL_HTTP_CLIENT_REQUESTSTATIC_H_
-#define SRC_ESL_HTTP_CLIENT_REQUESTSTATIC_H_
+#ifndef ESL_HTTP_CLIENT_REQUESTCONENTDYNAMIC_H_
+#define ESL_HTTP_CLIENT_REQUESTCONENTDYNAMIC_H_
 
-#include <esl/http/client/Request.h>
-#include <esl/utility/HttpMethod.h>
+#include <esl/http/client/RequestContent.h>
 #include <esl/utility/MIME.h>
 
+#include <functional>
 #include <string>
 
 namespace esl {
 namespace http {
 namespace client {
 
-class RequestStatic : public Request {
+class RequestConentDynamic: public RequestContent {
 public:
-	RequestStatic(utility::MIME contentType, const char* data, std::size_t size);
+	RequestConentDynamic(utility::MIME contentType, std::function<std::size_t(char*, std::size_t)> getDataFunction);
+	RequestConentDynamic(utility::MIME contentType, std::string data);
 
-	//std::size_t getData(char* buffer, std::size_t count);
-	const char* getData() const;
+	std::size_t produceData(char* buffer, std::size_t count);
+
+	/* return true if size is available already. if not, getSize() still works, but might be a very expensive call */
+	bool hasSize() const;
+
+	/* this can be a very expensive call if getDataFunction has been specified */
 	std::size_t getSize() const;
 
+	/* instead of calling getSize() to check if it return 0, it's much cheaper to call isEmpty().
+	 * Calling isEmpty() will prefetch at most 1024 bytes.
+	 */
+	bool isEmpty() const;
+
 private:
-	const char* data;
-	std::size_t size;
-	//std::size_t dataPos = 0;
+	std::size_t prefetchData(std::size_t count) const;
+
+	mutable std::function<std::size_t(char*, std::size_t)> getDataFunction;
+	mutable std::size_t fetchedDirectSize = 0;
+
+	mutable std::string data;
+	std::size_t dataPos = 0;
 };
 
 } /* namespace client */
 } /* namespace http */
 } /* namespace esl */
 
-#endif /* SRC_ESL_HTTP_CLIENT_REQUESTSTATIC_H_ */
+#endif /* ESL_HTTP_CLIENT_REQUESTCONENTDYNAMIC_H_ */

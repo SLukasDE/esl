@@ -20,40 +20,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_OBJECT_VALUES_H_
-#define ESL_OBJECT_VALUES_H_
-
-#include <esl/object/Interface.h>
-//#include <esl/Stacktrace.h>
-
-#include <vector>
-#include <utility>
-#include <stdexcept>
+#include <esl/http/client/RequestContentStatic.h>
 
 namespace esl {
-namespace object {
+namespace http {
+namespace client {
 
-template<typename T>
-class Values : public virtual Interface::Object {
-public:
-	virtual bool hasValue(const std::string& key) const {
-		return false;
-	}
+RequestContentStatic::RequestContentStatic(utility::MIME contentType, const char* aData, std::size_t aSize)
+: RequestContent(contentType),
+  data(aData),
+  size(aSize)
+{ }
 
-	virtual T getValue(const std::string& key) const {
-		throw std::runtime_error("esl::object::Values: Unknown parameter key=\"" + key + "\"");
-		//throw esl::addStacktrace(std::runtime_error("esl::object::Values: Unknown parameter key=\"" + key + "\""));
-	}
+const char* RequestContentStatic::getData() const noexcept {
+	return data;
+}
 
-	virtual const std::vector<std::pair<std::string, T>>& getValues() const {
-		return values;
-	}
+std::size_t RequestContentStatic::getSize() const noexcept {
+	return size;
+}
 
-private:
-	std::vector<std::pair<std::string, T>> values;
-};
-
-} /* namespace object */
+} /* namespace client */
+} /* namespace http */
 } /* namespace esl */
-
-#endif /* ESL_OBJECT_VALUES_H_ */

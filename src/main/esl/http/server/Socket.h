@@ -26,6 +26,7 @@ SOFTWARE.
 #include <esl/http/server/Interface.h>
 #include <esl/http/server/requesthandler/Interface.h>
 #include <esl/object/Values.h>
+#include <esl/module/Implementation.h>
 
 #include <cstdint>
 #include <initializer_list>
@@ -37,14 +38,15 @@ namespace server {
 
 class Socket final : public Interface::Socket {
 public:
-	static void setDefaultImplementation(std::string implementation);
-	static const std::string& getDefaultImplementation();
+	static module::Implementation& getDefault();
 
-	Socket(uint16_t port, requesthandler::Interface::CreateRequestHandler createRequestHandler, std::initializer_list<std::pair<std::string, std::string>> values,
-			   const std::string& implementation = getDefaultImplementation());
+	Socket(std::uint16_t port, requesthandler::Interface::CreateRequestHandler createRequestHandler,
+			std::initializer_list<std::pair<std::string, std::string>> settings,
+			const std::string& implementation = getDefault().getImplementation());
 
-	Socket(uint16_t port, requesthandler::Interface::CreateRequestHandler createRequestHandler, const object::Values<std::string>& values,
-			   const std::string& implementation = getDefaultImplementation());
+	Socket(std::uint16_t port, requesthandler::Interface::CreateRequestHandler createRequestHandler,
+			const object::Values<std::string>& settings = getDefault().getSettings(),
+			const std::string& implementation = getDefault().getImplementation());
 
 	void addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) override;
 	void setObject(const std::string& id, GetObject getObject) override;

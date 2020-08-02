@@ -25,6 +25,7 @@ SOFTWARE.
 
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
+#include <esl/object/Values.h>
 #include <esl/logging/Location.h>
 #include <esl/logging/StreamReal.h>
 
@@ -49,7 +50,7 @@ struct Interface : esl::module::Interface {
 		virtual std::unique_ptr<Stacktrace> clone() const = 0;
 	};
 
-	using CreateStacktrace = std::unique_ptr<Stacktrace> (*)();
+	using CreateStacktrace = std::unique_ptr<Stacktrace> (*)(const object::Values<std::string>& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *

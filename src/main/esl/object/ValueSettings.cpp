@@ -28,12 +28,20 @@ SOFTWARE.
 namespace esl {
 namespace object {
 
-ValueSettings::ValueSettings(std::initializer_list<std::pair<std::string, std::string>> values)
+ValueSettings::ValueSettings(std::initializer_list<std::pair<std::string, std::string>> aSettings)
  : object::Values<std::string>(),
    object::Settings(),
-   settings(std::move(values)),
+   settings(std::move(aSettings)),
    settingsMap(settings.begin(), settings.end())
 { }
+
+ValueSettings::ValueSettings(const object::Values<std::string>& aSettings)
+{
+	const std::vector<std::pair<std::string, std::string>>& values = aSettings.getValues();
+	for(const auto& setting : values) {
+		addSetting(setting.first, setting.second);
+	}
+}
 
 void ValueSettings::addSetting(const std::string& key, const std::string& value) {
 	settingsMap[key] = value;

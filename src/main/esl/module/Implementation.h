@@ -20,40 +20,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_OBJECT_VALUES_H_
-#define ESL_OBJECT_VALUES_H_
+#ifndef ESL_MODULE_IMPLEMENTATION_H_
+#define ESL_MODULE_IMPLEMENTATION_H_
 
-#include <esl/object/Interface.h>
-//#include <esl/Stacktrace.h>
+#include <esl/object/Values.h>
+#include <esl/object/ValueSettings.h>
 
-#include <vector>
+#include <string>
+#include <initializer_list>
 #include <utility>
-#include <stdexcept>
 
 namespace esl {
-namespace object {
+namespace module {
 
-template<typename T>
-class Values : public virtual Interface::Object {
+class Implementation final {
 public:
-	virtual bool hasValue(const std::string& key) const {
-		return false;
-	}
+	void setImplementation(std::string implementation, std::initializer_list<std::pair<std::string, std::string>> settings = {});
+	void setImplementation(std::string implementation, const object::Values<std::string>& settings);
 
-	virtual T getValue(const std::string& key) const {
-		throw std::runtime_error("esl::object::Values: Unknown parameter key=\"" + key + "\"");
-		//throw esl::addStacktrace(std::runtime_error("esl::object::Values: Unknown parameter key=\"" + key + "\""));
-	}
-
-	virtual const std::vector<std::pair<std::string, T>>& getValues() const {
-		return values;
-	}
+	const std::string& getImplementation() const noexcept;
+	const object::ValueSettings& getSettings() const noexcept;
+	object::ValueSettings& getSettings() noexcept;
 
 private:
-	std::vector<std::pair<std::string, T>> values;
+	std::string implementation;
+	object::ValueSettings settings;
 };
 
-} /* namespace object */
+} /* namespace module */
 } /* namespace esl */
 
-#endif /* ESL_OBJECT_VALUES_H_ */
+#endif /* ESL_MODULE_IMPLEMENTATION_H_ */

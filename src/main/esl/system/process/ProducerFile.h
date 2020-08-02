@@ -25,6 +25,7 @@ SOFTWARE.
 
 #include <esl/system/Interface.h>
 #include <esl/object/Values.h>
+#include <esl/module/Implementation.h>
 
 #include <initializer_list>
 #include <string>
@@ -36,16 +37,15 @@ namespace process {
 
 class ProducerFile : public Interface::ProducerFile {
 public:
-	static void setDefaultImplementation(std::string implementation);
-	static const std::string& getDefaultImplementation();
+	static module::Implementation& getDefault();
 
 	ProducerFile(std::string filename,
-			std::initializer_list<std::pair<std::string, std::string>> values,
-			const std::string& implementation = getDefaultImplementation());
+			std::initializer_list<std::pair<std::string, std::string>> settings,
+			const std::string& implementation = getDefault().getImplementation());
 
 	ProducerFile(std::string filename,
-			const object::Values<std::string>& values,
-			const std::string& implementation = getDefaultImplementation());
+			const object::Values<std::string>& settings = getDefault().getSettings(),
+			const std::string& implementation = getDefault().getImplementation());
 
 	std::size_t write(Interface::FileDescriptor& fileDescriptor) override;
 	std::size_t getFileSize() const override;

@@ -59,7 +59,10 @@ bool Protocol::operator!=(Protocol::Type type) const noexcept {
 }
 
 bool Protocol::operator!=(const Protocol& aMime) const noexcept {
-	return (*this != aMime);
+	if(hasEnum && aMime.hasEnum) {
+		return enumType != aMime.enumType;
+	}
+	return toString() != aMime.toString();
 }
 
 const std::string& Protocol::toString() const noexcept {

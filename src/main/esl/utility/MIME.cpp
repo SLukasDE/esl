@@ -64,7 +64,10 @@ bool MIME::operator!=(MIME::Type type) const noexcept {
 }
 
 bool MIME::operator!=(const MIME& aMime) const noexcept {
-	return (*this != aMime);
+	if(hasEnum && aMime.hasEnum) {
+		return enumType != aMime.enumType;
+	}
+	return toString() != aMime.toString();
 }
 
 const std::string& MIME::toString() const noexcept {

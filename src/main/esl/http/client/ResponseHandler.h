@@ -29,8 +29,28 @@ namespace esl {
 namespace http {
 namespace client {
 
+class Connection;
+class Request;
+class Response;
+
 class ResponseHandler {
 public:
+	class Context {
+	public:
+		Context(Connection& connection, std::string path, const Request& request, const Response& response);
+
+		Connection& getConnection() const;
+		const std::string& getPath() const;
+		const Request& getRequest() const;
+		const Response& getResponse() const;
+
+	private:
+		Connection& connection;
+		std::string path;
+		const Request& request;
+		const Response& response;
+	};
+
 	virtual ~ResponseHandler() = default;
 	virtual bool process(const char* contentData, std::size_t contentSize) = 0;
 };

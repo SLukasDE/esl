@@ -21,7 +21,6 @@ SOFTWARE.
 */
 
 #include <esl/logging/Appender.h>
-
 #include <esl/logging/Interface.h>
 #include <esl/Module.h>
 

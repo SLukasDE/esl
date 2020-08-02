@@ -21,28 +21,51 @@ SOFTWARE.
 */
 
 #include <esl/system/Process.h>
+#include <esl/Stacktrace.h>
 #include <esl/Module.h>
 
 namespace esl {
 namespace system {
-namespace {
-std::string defaultImplementation;
+
+module::Implementation& Process::getDefault() {
+	static module::Implementation implementation;
+	return implementation;
 }
 
-void Process::setDefaultImplementation(std::string implementation) {
-	defaultImplementation = std::move(implementation);
-}
-
-const std::string& Process::getDefaultImplementation() {
-	return defaultImplementation;
-}
-
-Process::Process(process::Arguments arguments, std::string workingDir, const std::string& implementation)
-: process(esl::getModule().getInterface<Interface>(implementation).createProcess(std::move(arguments), std::move(workingDir)))
+Process::Process(process::Arguments arguments,
+		std::initializer_list<std::pair<std::string, std::string>> settings,
+		const std::string& implementation)
+: process(esl::getModule().getInterface<Interface>(implementation).createProcess(std::move(arguments), "", object::ValueSettings(std::move(settings))))
 { }
 
-Process::Process(process::Arguments arguments, process::Environment environment, std::string workingDir, const std::string& implementation)
-: process(esl::getModule().getInterface<Interface>(implementation).createProcessWithEnvironment(std::move(arguments), std::move(environment), std::move(workingDir)))
+Process::Process(process::Arguments arguments, std::string workingDir,
+		std::initializer_list<std::pair<std::string, std::string>> settings,
+		const std::string& implementation)
+: process(esl::getModule().getInterface<Interface>(implementation).createProcess(std::move(arguments), std::move(workingDir), object::ValueSettings(std::move(settings))))
+{ }
+
+Process::Process(process::Arguments arguments, std::string workingDir,
+		const object::Values<std::string>& settings,
+		const std::string& implementation)
+: process(esl::getModule().getInterface<Interface>(implementation).createProcess(std::move(arguments), std::move(workingDir), settings))
+{ }
+
+Process::Process(process::Arguments arguments, process::Environment environment,
+		std::initializer_list<std::pair<std::string, std::string>> settings,
+		const std::string& implementation)
+: process(esl::getModule().getInterface<Interface>(implementation).createProcessWithEnvironment(std::move(arguments), std::move(environment), "", object::ValueSettings(std::move(settings))))
+{ }
+
+Process::Process(process::Arguments arguments, process::Environment environment, std::string workingDir,
+		std::initializer_list<std::pair<std::string, std::string>> settings,
+		const std::string& implementation)
+: process(esl::getModule().getInterface<Interface>(implementation).createProcessWithEnvironment(std::move(arguments), std::move(environment), std::move(workingDir), object::ValueSettings(std::move(settings))))
+{ }
+
+Process::Process(process::Arguments arguments, process::Environment environment, std::string workingDir,
+		const object::Values<std::string>& settings,
+		const std::string& implementation)
+: process(esl::getModule().getInterface<Interface>(implementation).createProcessWithEnvironment(std::move(arguments), std::move(environment), std::move(workingDir), settings))
 { }
 
 int Process::execute() {

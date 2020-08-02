@@ -20,40 +20,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_OBJECT_VALUES_H_
-#define ESL_OBJECT_VALUES_H_
-
-#include <esl/object/Interface.h>
-//#include <esl/Stacktrace.h>
-
-#include <vector>
-#include <utility>
-#include <stdexcept>
+#include <esl/http/client/RequestContent.h>
 
 namespace esl {
-namespace object {
+namespace http {
+namespace client {
 
-template<typename T>
-class Values : public virtual Interface::Object {
-public:
-	virtual bool hasValue(const std::string& key) const {
-		return false;
-	}
+RequestContent::RequestContent(utility::MIME aContentType)
+: contentType(std::move(aContentType))
+{ }
 
-	virtual T getValue(const std::string& key) const {
-		throw std::runtime_error("esl::object::Values: Unknown parameter key=\"" + key + "\"");
-		//throw esl::addStacktrace(std::runtime_error("esl::object::Values: Unknown parameter key=\"" + key + "\""));
-	}
+const utility::MIME& RequestContent::getContentType() const noexcept {
+	return contentType;
+}
 
-	virtual const std::vector<std::pair<std::string, T>>& getValues() const {
-		return values;
-	}
-
-private:
-	std::vector<std::pair<std::string, T>> values;
-};
-
-} /* namespace object */
+} /* namespace client */
+} /* namespace http */
 } /* namespace esl */
-
-#endif /* ESL_OBJECT_VALUES_H_ */

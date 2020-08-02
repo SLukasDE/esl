@@ -28,30 +28,23 @@ namespace esl {
 namespace http {
 namespace server {
 
-namespace {
-std::string defaultImplementation;
+module::Implementation& Socket::getDefault() {
+	static module::Implementation implementation;
+	return implementation;
 }
 
-void Socket::setDefaultImplementation(std::string implementation) {
-	defaultImplementation = std::move(implementation);
-}
-
-const std::string& Socket::getDefaultImplementation() {
-	return defaultImplementation;
-}
-
-Socket::Socket(uint16_t port, requesthandler::Interface::CreateRequestHandler createRequestHandler,
-		std::initializer_list<std::pair<std::string, std::string>> values,
+Socket::Socket(std::uint16_t port, requesthandler::Interface::CreateRequestHandler createRequestHandler,
+		std::initializer_list<std::pair<std::string, std::string>> settings,
 		const std::string& implementation)
 : Interface::Socket(),
-  socket(esl::getModule().getInterface<Interface>(implementation).createSocket(port, createRequestHandler, object::ValueSettings(std::move(values))))
+  socket(esl::getModule().getInterface<Interface>(implementation).createSocket(port, createRequestHandler, object::ValueSettings(std::move(settings))))
 { }
 
-Socket::Socket(uint16_t port, requesthandler::Interface::CreateRequestHandler createRequestHandler,
-		const object::Values<std::string>& values,
+Socket::Socket(std::uint16_t port, requesthandler::Interface::CreateRequestHandler createRequestHandler,
+		const object::Values<std::string>& settings,
 		const std::string& implementation)
 : Interface::Socket(),
-  socket(esl::getModule().getInterface<Interface>(implementation).createSocket(port, createRequestHandler, values))
+  socket(esl::getModule().getInterface<Interface>(implementation).createSocket(port, createRequestHandler, settings))
 { }
 
 void Socket::addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) {

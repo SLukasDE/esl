@@ -29,24 +29,32 @@ namespace esl {
 namespace http {
 namespace client {
 
-namespace {
-std::string defaultImplementation;
+module::Implementation& Connection::getDefault() {
+	static module::Implementation implementation;
+	return implementation;
 }
 
-Connection::Connection(const utility::URL& hostUrl,
-		std::initializer_list<std::pair<std::string, std::string>> values,
-		const std::string& implementation)
+namespace {
+object::ValueSettings settings;
+}
+Connection::Connection(const utility::URL& hostUrl)
 : Interface::Connection(),
-  connection(esl::getModule().getInterface<Interface>(implementation).createConnection(hostUrl, object::ValueSettings(std::move(values))))
+  connection(esl::getModule().getInterface<Interface>().createConnection(hostUrl, settings))
 { }
 
 Connection::Connection(const utility::URL& hostUrl,
-		const object::Values<std::string>& values,
+		std::initializer_list<std::pair<std::string, std::string>> setting,
 		const std::string& implementation)
 : Interface::Connection(),
-  connection(esl::getModule().getInterface<Interface>(implementation).createConnection(hostUrl, values))
-{
-}
+  connection(esl::getModule().getInterface<Interface>(implementation).createConnection(hostUrl, object::ValueSettings(std::move(setting))))
+{ }
+
+Connection::Connection(const utility::URL& hostUrl,
+		const object::Values<std::string>& setting,
+		const std::string& implementation)
+: Interface::Connection(),
+  connection(esl::getModule().getInterface<Interface>(implementation).createConnection(hostUrl, setting))
+{ }
 
 Response Connection::send(RequestDynamic& request, ResponseHandler* responseHandler) const {
 	return connection->send(request, responseHandler);
@@ -58,14 +66,6 @@ Response Connection::send(const RequestStatic& request, ResponseHandler* respons
 
 Response Connection::send(const RequestFile& request, ResponseHandler* responseHandler) const {
 	return connection->send(request, responseHandler);
-}
-
-void Connection::setDefaultImplementation(std::string implementation) {
-	defaultImplementation = std::move(implementation);
-}
-
-const std::string& Connection::getDefaultImplementation() {
-	return defaultImplementation;
 }
 
 } /* namespace client */

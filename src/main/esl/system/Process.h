@@ -27,6 +27,9 @@ SOFTWARE.
 #include <esl/system/process/Arguments.h>
 #include <esl/system/process/Environment.h>
 #include <esl/object/Values.h>
+#include <esl/module/Implementation.h>
+
+#include <initializer_list>
 #include <string>
 #include <memory>
 
@@ -35,11 +38,26 @@ namespace system {
 
 class Process final : public Interface::Process {
 public:
-	static void setDefaultImplementation(std::string implementation);
-	static const std::string& getDefaultImplementation();
+	static module::Implementation& getDefault();
 
-	Process(process::Arguments arguments, std::string workingDir = "", const std::string& implementation = getDefaultImplementation());
-	Process(process::Arguments arguments, process::Environment environment, std::string workingDir = "", const std::string& implementation = getDefaultImplementation());
+	Process(process::Arguments arguments,
+			std::initializer_list<std::pair<std::string, std::string>> settings,
+			const std::string& implementation = getDefault().getImplementation());
+	Process(process::Arguments arguments, std::string workingDir,
+			std::initializer_list<std::pair<std::string, std::string>> settings,
+			const std::string& implementation = getDefault().getImplementation());
+	Process(process::Arguments arguments, std::string workingDir = "",
+			const object::Values<std::string>& settings = getDefault().getSettings(),
+			const std::string& implementation = getDefault().getImplementation());
+	Process(process::Arguments arguments, process::Environment environment,
+			std::initializer_list<std::pair<std::string, std::string>> settings,
+			const std::string& implementation = getDefault().getImplementation());
+	Process(process::Arguments arguments, process::Environment environment, std::string workingDir,
+			std::initializer_list<std::pair<std::string, std::string>> settings,
+			const std::string& implementation = getDefault().getImplementation());
+	Process(process::Arguments arguments, process::Environment environment, std::string workingDir = "",
+			const object::Values<std::string>& settings = getDefault().getSettings(),
+			const std::string& implementation = getDefault().getImplementation());
 
 	int execute();
 	int execute(Interface::FileDescriptor::Handle handle);

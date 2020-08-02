@@ -21,26 +21,40 @@ SOFTWARE.
 */
 
 #include <esl/logging/Layout.h>
+#include <esl/object/ValueSettings.h>
 #include <esl/Module.h>
 
 namespace esl {
 namespace logging {
 
 namespace {
-std::unique_ptr<layout::Interface::Layout> createLayout(const std::string& implementation) {
+std::unique_ptr<layout::Interface::Layout> createLayout(const std::string& implementation, const object::Values<std::string>& values) {
 	const layout::Interface* interface = esl::getModule().findInterface<layout::Interface>(implementation);
-	return interface ? interface->createLayout() : nullptr;
+	return interface ? interface->createLayout(values) : nullptr;
 }
 }
 
-Layout::Layout(const std::string& aImplementation)
+module::Implementation& Layout::getDefault() {
+	static module::Implementation implementation;
+	return implementation;
+}
+
+
+Layout::Layout(std::initializer_list<std::pair<std::string, std::string>> aSettings, const std::string& aImplementation)
 : layout::Interface::Layout(),
-  implementation(aImplementation)
+  implementation(aImplementation),
+  settings(aSettings)
+{ }
+
+Layout::Layout(const object::Values<std::string>& aSettings, const std::string& aImplementation)
+: layout::Interface::Layout(),
+  implementation(aImplementation),
+  settings(std::move(aSettings))
 { }
 
 std::string Layout::toString(const Location& location) const {
 	if(!layout) {
-		layout = createLayout(implementation);
+		layout = createLayout(implementation, settings);
 	}
 	if(layout) {
 		return layout->toString(location);
@@ -48,6 +62,7 @@ std::string Layout::toString(const Location& location) const {
 	return "";
 }
 
+#if 0
 void Layout::addSetting(const std::string& key, const std::string& value) {
 	if(!layout) {
 		layout = createLayout(implementation);
@@ -56,6 +71,6 @@ void Layout::addSetting(const std::string& key, const std::string& value) {
 		layout->addSetting(key, value);
 	}
 }
-
+#endif
 } /* namespace esl */
 } /* namespace logging */

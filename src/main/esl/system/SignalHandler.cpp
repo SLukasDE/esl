@@ -27,24 +27,34 @@ SOFTWARE.
 
 namespace esl {
 namespace system {
-namespace {
-std::string defaultImplementation;
+
+module::Implementation& SignalHandler::getDefault() {
+	static module::Implementation implementation;
+	return implementation;
 }
 
-void SignalHandler::setDefaultImplementation(std::string implementation) {
-	defaultImplementation = std::move(implementation);
+void SignalHandler::install(SignalType signalType, std::function<void()> handler,
+		std::initializer_list<std::pair<std::string, std::string>> settings,
+		const std::string& implementation) {
+	esl::getModule().getInterface<Interface>(implementation).installSignalHandler(signalType, handler, object::ValueSettings(std::move(settings)));
 }
 
-const std::string& SignalHandler::getDefaultImplementation() {
-	return defaultImplementation;
+void SignalHandler::install(SignalType signalType, std::function<void()> handler,
+		const object::Values<std::string>& settings,
+		const std::string& implementation) {
+	esl::getModule().getInterface<Interface>(implementation).installSignalHandler(signalType, handler, settings);
 }
 
-void SignalHandler::install(SignalType signalType, std::function<void()> handler, const std::string& implementation) {
-	esl::getModule().getInterface<Interface>(implementation).installSignalHandler(signalType, handler);
+void SignalHandler::remove(SignalType signalType, std::function<void()> handler,
+		std::initializer_list<std::pair<std::string, std::string>> settings,
+		const std::string& implementation) {
+	esl::getModule().getInterface<Interface>(implementation).removeSignalHandler(signalType, handler, object::ValueSettings(std::move(settings)));
 }
 
-void SignalHandler::remove(SignalType signalType, std::function<void()> handler, const std::string& implementation) {
-	esl::getModule().getInterface<Interface>(implementation).removeSignalHandler(signalType, handler);
+void SignalHandler::remove(SignalType signalType, std::function<void()> handler,
+		const object::Values<std::string>& settings,
+		const std::string& implementation) {
+	esl::getModule().getInterface<Interface>(implementation).removeSignalHandler(signalType, handler, settings);
 }
 
 } /* namespace system */

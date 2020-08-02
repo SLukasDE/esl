@@ -24,9 +24,11 @@ SOFTWARE.
 #define ESL_DATABASE_INTERFACE_H_
 
 #include <esl/module/Interface.h>
-#include <esl/object/Settings.h>
+//#include <esl/object/Settings.h>
 #include <esl/Module.h>
+#include <esl/object/Values.h>
 #include <esl/database/Connection.h>
+
 #include <string>
 #include <functional>
 #include <cstdint>
@@ -41,13 +43,13 @@ struct Interface : esl::module::Interface {
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class ConnectionFactory : public esl::object::Settings {
+	class ConnectionFactory { // : public esl::object::Settings {
 	public:
 		virtual ~ConnectionFactory() = default;
 	    virtual std::unique_ptr<Connection> createConnection() = 0;
 	};
 
-	using CreateConnectionFactory = std::unique_ptr<ConnectionFactory>(*)();
+	using CreateConnectionFactory = std::unique_ptr<ConnectionFactory>(*)(const object::Values<std::string>& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *

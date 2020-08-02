@@ -23,8 +23,12 @@ SOFTWARE.
 #ifndef ESL_SYSTEM_SIGNALHANDLER_H_
 #define ESL_SYSTEM_SIGNALHANDLER_H_
 
-#include <functional>
 #include <esl/system/Interface.h>
+#include <esl/object/Values.h>
+#include <esl/module/Implementation.h>
+
+#include <initializer_list>
+#include <functional>
 
 namespace esl {
 namespace system {
@@ -33,13 +37,23 @@ class SignalHandler final {
 public:
 	using SignalType = Interface::SignalType;
 
+	static module::Implementation& getDefault();
+
 	SignalHandler() = delete;
 
-	static void setDefaultImplementation(std::string implementation);
-	static const std::string& getDefaultImplementation();
+	static void install(SignalType signalType, std::function<void()> handler,
+			std::initializer_list<std::pair<std::string, std::string>> settings,
+			const std::string& implementation = getDefault().getImplementation());
+	static void install(SignalType signalType, std::function<void()> handler,
+			const object::Values<std::string>& settings = getDefault().getSettings(),
+			const std::string& implementation = getDefault().getImplementation());
 
-	static void install(SignalType signalType, std::function<void()> handler, const std::string& implementation = getDefaultImplementation());
-	static void remove(SignalType signalType, std::function<void()> handler, const std::string& implementation = getDefaultImplementation());
+	static void remove(SignalType signalType, std::function<void()> handler,
+			std::initializer_list<std::pair<std::string, std::string>> settings,
+			const std::string& implementation = getDefault().getImplementation());
+	static void remove(SignalType signalType, std::function<void()> handler,
+			const object::Values<std::string>& settings = getDefault().getSettings(),
+			const std::string& implementation = getDefault().getImplementation());
 };
 
 } /* namespace system */

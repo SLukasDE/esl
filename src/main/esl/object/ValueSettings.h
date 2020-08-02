@@ -36,7 +36,8 @@ namespace object {
 
 class ValueSettings : public object::Values<std::string>, public object::Settings {
 public:
-	ValueSettings(std::initializer_list<std::pair<std::string, std::string>> values);
+	ValueSettings(std::initializer_list<std::pair<std::string, std::string>> settings = {});
+	ValueSettings(const object::Values<std::string>& settings);
 
 	void addSetting(const std::string& key, const std::string& value) override;
 	bool hasValue(const std::string& key) const override;

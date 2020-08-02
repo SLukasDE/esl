@@ -49,15 +49,17 @@ struct Interface : esl::module::Interface {
 	public:
 		virtual ~Connection() = default;
 
-		virtual Response send(RequestDynamic& request, ResponseHandler* responseHandler) const = 0;
-		virtual Response send(const RequestStatic& request, ResponseHandler* responseHandler) const = 0;
-		virtual Response send(const RequestFile& request, ResponseHandler* responseHandler) const = 0;
+		//virtual Response send(RequestDynamic& request, ResponseHandler* responseHandler) const = 0;
+		//virtual Response send(const RequestStatic& request, ResponseHandler* responseHandler) const = 0;
+		//virtual Response send(const RequestFile& request, ResponseHandler* responseHandler) const = 0;
 
 	protected:
 		Connection() = default;
+
+		virtual Response send(std::string path, utility::HttpMethod method, Request* request, ResponseHandler* responseHandler) const = 0;
 	};
 
-	using CreateConnection = std::unique_ptr<Connection> (*)(const utility::URL& hostUrl, const object::Values<std::string>& values);
+	using CreateConnection = std::unique_ptr<Connection> (*)(const utility::URL& hostUrl, const object::Values<std::string>& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *
