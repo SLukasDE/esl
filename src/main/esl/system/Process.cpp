@@ -74,7 +74,7 @@ int Process::execute() {
 	return execute(ParameterStreams(), parameterFeatures);
 }
 
-int Process::execute(Interface::FileDescriptor::Handle handle) {
+int Process::execute(Interface::Process::FileDescriptorHandle handle) {
 	ParameterStreams parameterStream;
 	ParameterFeatures parameterFeatures;
 
@@ -82,7 +82,7 @@ int Process::execute(Interface::FileDescriptor::Handle handle) {
 	return execute(parameterStream, parameterFeatures);
 }
 
-int Process::execute(Interface::Producer& producer, Interface::FileDescriptor::Handle handle) {
+int Process::execute(Interface::Producer& producer, Interface::Process::FileDescriptorHandle handle) {
 	ParameterStreams parameterStream;
 	ParameterFeatures parameterFeatures;
 
@@ -90,7 +90,7 @@ int Process::execute(Interface::Producer& producer, Interface::FileDescriptor::H
 	return execute(parameterStream, parameterFeatures);
 }
 
-int Process::execute(Interface::Consumer& consumer, Interface::FileDescriptor::Handle handle) {
+int Process::execute(Interface::Consumer& consumer, Interface::Process::FileDescriptorHandle handle) {
 	ParameterStreams parameterStream;
 	ParameterFeatures parameterFeatures;
 
@@ -109,7 +109,7 @@ int Process::execute(const ParameterStreams& parameterStreams, ParameterFeatures
 	return process->execute(parameterStreams, parameterFeatures);
 }
 
-void Process::addParameterStream(ParameterStreams& parameterStreams, Interface::FileDescriptor::Handle handle, Interface::Producer* producer, Interface::Consumer* consumer) {
+void Process::addParameterStream(ParameterStreams& parameterStreams, Interface::Process::FileDescriptorHandle handle, Interface::Producer* producer, Interface::Consumer* consumer) {
 	ParameterStream& parameterStream = parameterStreams[handle];
 
 	if(producer == nullptr && consumer == nullptr) {

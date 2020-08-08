@@ -60,14 +60,14 @@ public:
 			const std::string& implementation = getDefault().getImplementation());
 
 	int execute();
-	int execute(Interface::FileDescriptor::Handle handle);
-	int execute(Interface::Producer& producer, Interface::FileDescriptor::Handle handle);
-	int execute(Interface::Consumer& consumer, Interface::FileDescriptor::Handle handle);
+	int execute(Interface::Process::FileDescriptorHandle handle);
+	int execute(Interface::Producer& producer, Interface::Process::FileDescriptorHandle handle);
+	int execute(Interface::Consumer& consumer, Interface::Process::FileDescriptorHandle handle);
 	int execute(Interface::Feature& feature);
 	int execute(const ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures) override;
 
 	template<typename... Args>
-	int execute(Interface::FileDescriptor::Handle handle, Args&... args) {
+	int execute(Interface::Process::FileDescriptorHandle handle, Args&... args) {
     	ParameterStreams parameterStreams;
     	ParameterFeatures parameterFeatures;
 
@@ -76,7 +76,7 @@ public:
 	}
 
 	template<typename... Args>
-	int execute(Interface::Producer& producer, Interface::FileDescriptor::Handle handle, Args&... args) {
+	int execute(Interface::Producer& producer, Interface::Process::FileDescriptorHandle handle, Args&... args) {
     	ParameterStreams parameterStreams;
     	ParameterFeatures parameterFeatures;
 
@@ -85,7 +85,7 @@ public:
 	}
 
 	template<typename... Args>
-	int execute(Interface::Consumer& consumer, Interface::FileDescriptor::Handle handle, Args&... args) {
+	int execute(Interface::Consumer& consumer, Interface::Process::FileDescriptorHandle handle, Args&... args) {
 		ParameterStreams parameterStreams;
 		ParameterFeatures parameterFeatures;
 
@@ -103,19 +103,19 @@ public:
 
 private:
 	template<typename... Args>
-	int execute(ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures, Interface::FileDescriptor::Handle handle, Args&... args) {
+	int execute(ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures, Interface::Process::FileDescriptorHandle handle, Args&... args) {
 		addParameterStream(parameterStreams, handle, nullptr, nullptr);
 		return execute(parameterStreams, parameterFeatures, args...);
 	}
 
 	template<typename... Args>
-	int execute(ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures, Interface::Producer& producer, Interface::FileDescriptor::Handle handle, Args&... args) {
+	int execute(ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures, Interface::Producer& producer, Interface::Process::FileDescriptorHandle handle, Args&... args) {
 		addParameterStream(parameterStreams, handle, &producer, nullptr);
 		return execute(parameterStreams, parameterFeatures, args...);
 	}
 
 	template<typename... Args>
-	int execute(ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures, Interface::Consumer& consumer, Interface::FileDescriptor::Handle handle, Args&... args) {
+	int execute(ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures, Interface::Consumer& consumer, Interface::Process::FileDescriptorHandle handle, Args&... args) {
 		addParameterStream(parameterStreams, handle, nullptr, &consumer);
 		return execute(parameterStreams, parameterFeatures, args...);
 	}
@@ -126,7 +126,7 @@ private:
     	return execute(ParameterStreams(), parameterFeatures, args...);
 	}
 
-	static void addParameterStream(ParameterStreams& parameterStreams, Interface::FileDescriptor::Handle handle, Interface::Producer* producer, Interface::Consumer* consumer);
+	static void addParameterStream(ParameterStreams& parameterStreams, Interface::Process::FileDescriptorHandle handle, Interface::Producer* producer, Interface::Consumer* consumer);
 
 	std::unique_ptr<Interface::Process> process;
 };

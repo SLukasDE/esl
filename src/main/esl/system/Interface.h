@@ -45,13 +45,14 @@ struct Interface : esl::module::Interface {
 
 	class FileDescriptor {
 	public:
+		/*
 		using Handle = int;
 
 		static const Handle noHandle = -1;
 		static const Handle stdInHandle = 0;
 		static const Handle stdOutHandle = 1;
 		static const Handle stdErrHandle = 2;
-
+*/
 		static const std::size_t npos = static_cast<std::size_t>(-1);
 
 		FileDescriptor() = default;
@@ -106,7 +107,7 @@ struct Interface : esl::module::Interface {
 			Producer* producer = nullptr;
 			Consumer* consumer = nullptr;
 		};
-		using ParameterStreams = std::map<FileDescriptor::Handle, ParameterStream>;
+		using ParameterStreams = std::map<FileDescriptorHandle, ParameterStream>;
 
 		using ParameterFeatures = std::vector<std::reference_wrapper<Feature>>;
 
