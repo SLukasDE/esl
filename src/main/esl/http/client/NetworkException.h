@@ -23,7 +23,7 @@ SOFTWARE.
 #ifndef ESL_HTTP_CLIENT_NETWORKEXCEPTION_H_
 #define ESL_HTTP_CLIENT_NETWORKEXCEPTION_H_
 
-#include <exception>
+#include <stdexcept>
 
 namespace esl {
 namespace http {

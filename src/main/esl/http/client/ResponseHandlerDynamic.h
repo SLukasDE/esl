@@ -20,30 +20,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_HTTP_CLIENT_REQUESTCONTENT_H_
-#define ESL_HTTP_CLIENT_REQUESTCONTENT_H_
+#ifndef ESL_HTTP_CLIENT_RESPONSEHANDLERDYNAMIC_H_
+#define ESL_HTTP_CLIENT_RESPONSEHANDLERDYNAMIC_H_
 
-#include <esl/utility/MIME.h>
+#include <esl/http/client/ResponseHandler.h>
+
+#include <string>
 
 namespace esl {
 namespace http {
 namespace client {
 
-class RequestContent {
+class ResponseHandlerDynamic : public ResponseHandler {
 public:
-	virtual ~RequestContent() = default;
+	bool consumer(const char* contentData, std::size_t contentDataSize) override;
 
-	const utility::MIME& getContentType() const noexcept;
-
-protected:
-	RequestContent(utility::MIME contentType);
+	const std::string& getData() const noexcept;
 
 private:
-	utility::MIME contentType;
+	std::string data;
 };
 
 } /* namespace client */
 } /* namespace http */
 } /* namespace esl */
 
-#endif /* ESL_HTTP_CLIENT_REQUESTCONTENT_H_ */
+#endif /* ESL_HTTP_CLIENT_RESPONSEHANDLERDYNAMIC_H_ */

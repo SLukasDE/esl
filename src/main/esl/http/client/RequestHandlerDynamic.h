@@ -20,40 +20,46 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/client/Request.h>
-#include <esl/utility/HttpMethod.h>
+#ifndef ESL_HTTP_CLIENT_REQUESTHANDLERDYNAMIC_H_
+#define ESL_HTTP_CLIENT_REQUESTHANDLERDYNAMIC_H_
+
+#include <esl/http/client/RequestHandler.h>
 #include <esl/utility/MIME.h>
 
 #include <functional>
 #include <string>
 
-#ifndef SRC_ESL_HTTP_CLIENT_REQUESTDYNAMIC_H_
-#define SRC_ESL_HTTP_CLIENT_REQUESTDYNAMIC_H_
-
 namespace esl {
 namespace http {
 namespace client {
 
-class RequestDynamic : public Request {
+class RequestHandlerDynamic: public RequestHandler {
 public:
-	RequestDynamic(std::string path, utility::HttpMethod method, utility::MIME contentType, std::function<std::size_t(char*, std::size_t)> getDataFunction);
-	RequestDynamic(std::string path, utility::HttpMethod method, utility::MIME contentType, std::string data);
+	RequestHandlerDynamic(utility::MIME contentType, std::function<std::size_t(char*, std::size_t)> getDataFunction);
+	RequestHandlerDynamic(utility::MIME contentType, std::string data);
 
-	std::size_t produceData(char* buffer, std::size_t count);
+	std::size_t producer(char* buffer, std::size_t count) override;
 
 	/* return true if size is available already. if not, getSize() still works, but might be a very expensive call */
-	bool hasSize() const;
+	bool hasSize() const override;
 
 	/* this can be a very expensive call if getDataFunction has been specified */
-	std::size_t getSize() const;
+	std::size_t getSize() const override;
 
-	/* instead of calling getSize() ( if hasSize() returns false ), it's much cheaper to call isEmpty().
+	/* instead of calling getSize() to check if it return 0, it's much cheaper to call isEmpty().
 	 * Calling isEmpty() will prefetch at most 1024 bytes.
 	 */
-	bool isEmpty() const;
+	bool isEmpty() const override;
 
 private:
+	enum DynamicType {
+		dataFunction,
+		dataString
+	};
+
 	std::size_t prefetchData(std::size_t count) const;
+
+	DynamicType dynamicType;
 
 	mutable std::function<std::size_t(char*, std::size_t)> getDataFunction;
 	mutable std::size_t fetchedDirectSize = 0;
@@ -66,4 +72,4 @@ private:
 } /* namespace http */
 } /* namespace esl */
 
-#endif /* SRC_ESL_HTTP_CLIENT_REQUESTDYNAMIC_H_ */
+#endif /* ESL_HTTP_CLIENT_REQUESTHANDLERDYNAMIC_H_ */

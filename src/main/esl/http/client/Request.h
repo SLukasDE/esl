@@ -20,43 +20,69 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef SRC_MAIN_C___RSM_SERVICE_CLIENT_REQUEST_H_
-#define SRC_MAIN_C___RSM_SERVICE_CLIENT_REQUEST_H_
+#ifndef ESL_HTTP_CLIENT_REQUEST_H_
+#define ESL_HTTP_CLIENT_REQUEST_H_
 
 #include <esl/utility/HttpMethod.h>
-#include <esl/utility/MIME.h>
+#include <esl/http/client/RequestHandler.h>
+#include <esl/http/client/Interface.h>
 
 #include <string>
 #include <map>
+#include <initializer_list>
+#include <memory>
+#include <functional>
 
 namespace esl {
 namespace http {
 namespace client {
 
-class Request {
+class Response;
+class ResponseHandler;
+
+class Request final {
+friend class Interface::Connection;
+
 public:
-	virtual ~Request() = default;
+	Request(std::string path, utility::HttpMethod method,
+			ResponseHandler* responseHandler,
+			std::unique_ptr<RequestHandler> requestHandler,
+			std::initializer_list<std::pair<const std::string, std::string>> requestHeaders = {});
+	Request(std::string path, utility::HttpMethod method,
+			ResponseHandler* responseHandler,
+			std::unique_ptr<RequestHandler> requestHandler,
+			std::map<std::string, std::string> requestHeaders);
+	Request(const Request&) = delete;
+	Request(Request&& other);
+
+	~Request();
+
+	Request& operator=(const Request&) = delete;
+	Request& operator=(Request&& other);
 
 	const std::string& getPath() const noexcept;
 	const utility::HttpMethod& getMethod() const noexcept;
-	const utility::MIME& getContentType() const noexcept;
+
+	RequestHandler* getRequestHandler() const noexcept;
+	ResponseHandler* getResponseHandler() const noexcept;
 
 	const std::map<std::string, std::string>& getHeaders() const noexcept;
 	void addHeader(const std::string& key, const std::string& value);
 
-protected:
-	Request(std::string path, utility::HttpMethod method, utility::MIME contentType);
-
 private:
+	void setResponse(const Response& response);
+
 	std::string path;
 	utility::HttpMethod method;
-	utility::MIME contentType;
 
-	std::map<std::string, std::string> headers;
+	ResponseHandler* responseHandler = nullptr;
+
+	std::unique_ptr<RequestHandler> requestHandler;
+	std::map<std::string, std::string> requestHeaders;
 };
 
 } /* namespace client */
 } /* namespace http */
 } /* namespace esl */
 
-#endif /* SRC_MAIN_C___RSM_SERVICE_CLIENT_REQUEST_H_ */
+#endif /* ESL_HTTP_CLIENT_REQUEST_H_ */

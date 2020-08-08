@@ -20,35 +20,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef SRC_ESL_HTTP_CLIENT_REQUESTSTATIC_H_
-#define SRC_ESL_HTTP_CLIENT_REQUESTSTATIC_H_
-
+#include <esl/http/client/ResponseHandler.h>
 #include <esl/http/client/Request.h>
-#include <esl/utility/HttpMethod.h>
-#include <esl/utility/MIME.h>
-
-#include <string>
+#include <esl/http/client/Response.h>
 
 namespace esl {
 namespace http {
 namespace client {
 
-class RequestStatic : public Request {
-public:
-	RequestStatic(utility::MIME contentType, const char* data, std::size_t size);
+namespace {
+const Request defaultRequest("", utility::HttpMethod(), nullptr, nullptr, {});
+const Response defaultResponse(0, {});
+}
 
-	//std::size_t getData(char* buffer, std::size_t count);
-	const char* getData() const;
-	std::size_t getSize() const;
+ResponseHandler::ResponseHandler()
+: request(std::cref(defaultRequest)),
+  response(std::cref(defaultResponse))
+{ }
 
-private:
-	const char* data;
-	std::size_t size;
-	//std::size_t dataPos = 0;
-};
+const Request& ResponseHandler::getRequest() const noexcept {
+	return request.get();
+}
+
+const Response& ResponseHandler::getResponse() const noexcept {
+	return response.get();
+}
+
+void ResponseHandler::consumeStart(const Request& aRequest, const Response& aResponse) noexcept {
+	request = std::cref(aRequest);
+	response = std::cref(aResponse);
+}
+
+void ResponseHandler::consumeStop() noexcept {
+	request = std::cref(defaultRequest);
+	response = std::cref(defaultResponse);
+}
 
 } /* namespace client */
 } /* namespace http */
 } /* namespace esl */
-
-#endif /* SRC_ESL_HTTP_CLIENT_REQUESTSTATIC_H_ */

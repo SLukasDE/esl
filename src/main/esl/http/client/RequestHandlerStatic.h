@@ -20,21 +20,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/client/RequestContentFile.h>
+#ifndef ESL_HTTP_CLIENT_REQUESTHANDLERSTATIC_H_
+#define ESL_HTTP_CLIENT_REQUESTHANDLERSTATIC_H_
+
+#include <esl/http/client/RequestHandler.h>
+#include <esl/utility/MIME.h>
+
+#include <string>
 
 namespace esl {
 namespace http {
 namespace client {
 
-RequestContentFile::RequestContentFile(utility::MIME contentType, std::string aFilename)
-: RequestContent(std::move(contentType)),
-  filename(std::move(aFilename))
-{ }
+class RequestHandlerStatic: public RequestHandler {
+public:
+	RequestHandlerStatic(utility::MIME contentType, const char* data, std::size_t size);
 
-const std::string& RequestContentFile::getFilename() const {
-	return filename;
-}
+	std::size_t producer(char* buffer, std::size_t count) override;
+
+	bool hasSize() const override;
+	std::size_t getSize() const override;
+	bool isEmpty() const override;
+
+	const char* getData() const noexcept;
+
+private:
+	const char* data;
+	std::size_t size;
+	std::size_t dataPos = 0;
+};
 
 } /* namespace client */
 } /* namespace http */
 } /* namespace esl */
+
+#endif /* ESL_HTTP_CLIENT_REQUESTHANDLERSTATIC_H_ */

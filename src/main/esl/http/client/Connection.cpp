@@ -21,9 +21,9 @@ SOFTWARE.
 */
 
 #include <esl/http/client/Connection.h>
-#include <esl/http/client/Interface.h>
 #include <esl/Module.h>
 #include <esl/object/ValueSettings.h>
+#include <esl/http/client/ResponseHandler.h>
 
 namespace esl {
 namespace http {
@@ -34,14 +34,6 @@ module::Implementation& Connection::getDefault() {
 	return implementation;
 }
 
-namespace {
-object::ValueSettings settings;
-}
-Connection::Connection(const utility::URL& hostUrl)
-: Interface::Connection(),
-  connection(esl::getModule().getInterface<Interface>().createConnection(hostUrl, settings))
-{ }
-
 Connection::Connection(const utility::URL& hostUrl,
 		std::initializer_list<std::pair<std::string, std::string>> setting,
 		const std::string& implementation)
@@ -50,22 +42,14 @@ Connection::Connection(const utility::URL& hostUrl,
 { }
 
 Connection::Connection(const utility::URL& hostUrl,
-		const object::Values<std::string>& setting,
+		const object::Values<std::string>& settings,
 		const std::string& implementation)
 : Interface::Connection(),
-  connection(esl::getModule().getInterface<Interface>(implementation).createConnection(hostUrl, setting))
+  connection(esl::getModule().getInterface<Interface>(implementation).createConnection(hostUrl, settings))
 { }
 
-Response Connection::send(RequestDynamic& request, ResponseHandler* responseHandler) const {
-	return connection->send(request, responseHandler);
-}
-
-Response Connection::send(const RequestStatic& request, ResponseHandler* responseHandler) const {
-	return connection->send(request, responseHandler);
-}
-
-Response Connection::send(const RequestFile& request, ResponseHandler* responseHandler) const {
-	return connection->send(request, responseHandler);
+Response Connection::send(Request request) const {
+	return connection->send(std::move(request));
 }
 
 } /* namespace client */

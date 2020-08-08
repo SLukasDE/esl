@@ -20,8 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef SRC_MAIN_C___RSM_SERVICE_CLIENT_RESPONSE_H_
-#define SRC_MAIN_C___RSM_SERVICE_CLIENT_RESPONSE_H_
+#ifndef ESL_HTTP_CLIENT_RESPONSE_H_
+#define ESL_HTTP_CLIENT_RESPONSE_H_
+
+#include <esl/utility/MIME.h>
 
 #include <string>
 #include <map>
@@ -30,20 +32,23 @@ namespace esl {
 namespace http {
 namespace client {
 
-class Response {
+class Response final {
 public:
+	Response() = default;
 	Response(unsigned short statusCode, std::map<std::string, std::string> headers);
 
 	const std::map<std::string, std::string>& getHeaders() const noexcept;
+	const utility::MIME& getContentType() const noexcept;
 	unsigned short getStatusCode() const noexcept;
 
 private:
-	unsigned short statusCode = 0;
 	std::map<std::string, std::string> headers;
+	utility::MIME contentType;
+	unsigned short statusCode = 0;
 };
 
 } /* namespace client */
 } /* namespace http */
 } /* namespace esl */
 
-#endif /* SRC_MAIN_C___RSM_SERVICE_CLIENT_RESPONSE_H_ */
+#endif /* ESL_HTTP_CLIENT_RESPONSE_H_ */

@@ -20,31 +20,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef SRC_ESL_HTTP_CLIENT_REQUESTFILE_H_
-#define SRC_ESL_HTTP_CLIENT_REQUESTFILE_H_
-
-#include <esl/http/client/Request.h>
-#include <esl/utility/HttpMethod.h>
-#include <esl/utility/MIME.h>
-
-#include <string>
+#include <esl/http/client/ResponseHandlerDynamic.h>
 
 namespace esl {
 namespace http {
 namespace client {
 
-class RequestFile : public Request {
-public:
-	RequestFile(std::string path, utility::HttpMethod method, utility::MIME contentType, std::string filename);
+bool ResponseHandlerDynamic::consumer(const char* contentData, std::size_t contentDataSize) {
+	data.append(contentData, contentDataSize);
+	return true;
+}
 
-	const std::string& getFilename() const;
-
-private:
-	std::string filename;
-};
+const std::string& ResponseHandlerDynamic::getData() const noexcept {
+	return data;
+}
 
 } /* namespace client */
 } /* namespace http */
 } /* namespace esl */
-
-#endif /* SRC_ESL_HTTP_CLIENT_REQUESTFILE_H_ */

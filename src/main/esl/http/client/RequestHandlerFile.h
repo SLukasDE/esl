@@ -20,26 +20,45 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/client/RequestContentStatic.h>
+#ifndef ESL_HTTP_CLIENT_REQUESTHANDLERFILE_H_
+#define ESL_HTTP_CLIENT_REQUESTHANDLERFILE_H_
+
+#include <esl/http/client/RequestHandler.h>
+#include <esl/utility/MIME.h>
+
+#include <string>
+#include <fstream>
+#include <memory>
 
 namespace esl {
 namespace http {
 namespace client {
 
-RequestContentStatic::RequestContentStatic(utility::MIME contentType, const char* aData, std::size_t aSize)
-: RequestContent(contentType),
-  data(aData),
-  size(aSize)
-{ }
+class RequestHandlerFile: public RequestHandler {
+public:
+	RequestHandlerFile(utility::MIME contentType, std::string filename);
 
-const char* RequestContentStatic::getData() const noexcept {
-	return data;
-}
+	std::size_t producer(char* buffer, std::size_t count) override;
 
-std::size_t RequestContentStatic::getSize() const noexcept {
-	return size;
-}
+	bool hasSize() const override;
+	std::size_t getSize() const override;
+	bool isEmpty() const override;
+
+	const std::string& getFilename() const noexcept;
+
+private:
+	std::ifstream& getFileStream() const;
+
+	std::string filename;
+
+	mutable std::unique_ptr<std::ifstream> file;
+	mutable std::size_t size = 0;
+
+	std::size_t pos = 0;
+};
 
 } /* namespace client */
 } /* namespace http */
 } /* namespace esl */
+
+#endif /* ESL_HTTP_CLIENT_REQUESTHANDLERFILE_H_ */

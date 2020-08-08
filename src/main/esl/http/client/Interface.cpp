@@ -20,22 +20,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/client/RequestFile.h>
-#include <esl/http/client/Connection.h>
+#include <esl/http/client/Interface.h>
+#include <esl/http/client/Request.h>
+#include <esl/http/client/ResponseHandler.h>
 
 namespace esl {
 namespace http {
 namespace client {
 
-RequestFile::RequestFile(std::string path, utility::HttpMethod method, utility::MIME contentType, std::string aFilename)
-: Request(std::move(path), std::move(method), std::move(contentType)),
-  filename(std::move(aFilename))
-{ }
-
-const std::string& RequestFile::getFilename() const {
-	return filename;
+void Interface::Connection::request__setResponse(Request& request, const Response& response) {
+	request.setResponse(response);
 }
-
+bool Interface::Connection::responseHandler__consumer(ResponseHandler& responseHandler, const char* contentData, std::size_t contentSize) {
+	return responseHandler.consumer(contentData, contentSize);
+}
 
 } /* namespace client */
 } /* namespace http */

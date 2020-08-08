@@ -20,21 +20,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/client/ResponseHandlerData.h>
+#ifndef ESL_HTTP_CLIENT_REQUESTHANDLER_H_
+#define ESL_HTTP_CLIENT_REQUESTHANDLER_H_
+
+#include <esl/utility/MIME.h>
 
 namespace esl {
 namespace http {
 namespace client {
 
-bool ResponseHandlerData::process(const char* contentData, std::size_t contentDataSize) {
-	data.append(contentData, contentDataSize);
-	return true;
-}
+class RequestHandler {
+public:
+	RequestHandler(utility::MIME contentType);
+	virtual ~RequestHandler() = default;
 
-const std::string& ResponseHandlerData::getData() const noexcept {
-	return data;
-}
+	const utility::MIME& getContentType() const noexcept;
+
+	virtual std::size_t producer(char* buffer, std::size_t count) = 0;
+
+	/* return true if size is available already. if not, getSize() still works, but might be a very expensive call */
+	virtual bool hasSize() const = 0;
+	virtual std::size_t getSize() const = 0;
+	virtual bool isEmpty() const = 0;
+
+private:
+	utility::MIME contentType;
+};
 
 } /* namespace client */
 } /* namespace http */
 } /* namespace esl */
+
+#endif /* ESL_HTTP_CLIENT_REQUESTHANDLER_H_ */

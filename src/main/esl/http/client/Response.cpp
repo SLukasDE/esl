@@ -28,11 +28,32 @@ SOFTWARE.
 namespace esl {
 namespace http {
 namespace client {
+namespace {
 
+utility::MIME findContentType(const std::map<std::string, std::string>& headers) {
+	for(const auto& entry : headers) {
+		if(entry.first == "Content-Type") {
+			// Value could be "text/html; charset=UTF-8", so we have to split for ';' character and we take first element
+			std::vector<std::string> contentTypes = esl::utility::String::split(esl::utility::String::trim(entry.second), ';');
+			if(!contentTypes.empty()) {
+				return esl::utility::MIME(esl::utility::String::trim(contentTypes.front()));
+			}
+			break;
+		}
+	}
+	return utility::MIME();
+}
+
+}
 Response::Response(unsigned short aStatusCode, std::map<std::string, std::string> aHeaders)
-: statusCode(aStatusCode),
-  headers(std::move(aHeaders))
+: headers(std::move(aHeaders)),
+  contentType(findContentType(headers)),
+  statusCode(aStatusCode)
 { }
+
+const utility::MIME& Response::getContentType() const noexcept {
+	return contentType;
+}
 
 const std::map<std::string, std::string>& Response::getHeaders() const noexcept {
 	return headers;

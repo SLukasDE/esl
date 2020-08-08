@@ -23,36 +23,48 @@ SOFTWARE.
 #ifndef ESL_HTTP_CLIENT_RESPONSEHANDLER_H_
 #define ESL_HTTP_CLIENT_RESPONSEHANDLER_H_
 
+//#include <esl/http/client/Request.h>
+//#include <esl/http/client/Response.h>
+#include <esl/http/client/Interface.h>
+
 #include <string>
+#include <functional>
 
 namespace esl {
 namespace http {
 namespace client {
 
-class Connection;
 class Request;
 class Response;
 
 class ResponseHandler {
+/* to allow calling 'void consumeStart(...)' and 'void consumeStop()' */
+friend class Request;
+
+friend class RequestHandler;
+
+/* to allow calling 'bool consumer(...)' */
+friend class Interface::Connection;
+
 public:
-	class Context {
-	public:
-		Context(Connection& connection, std::string path, const Request& request, const Response& response);
-
-		Connection& getConnection() const;
-		const std::string& getPath() const;
-		const Request& getRequest() const;
-		const Response& getResponse() const;
-
-	private:
-		Connection& connection;
-		std::string path;
-		const Request& request;
-		const Response& response;
-	};
-
+	ResponseHandler();
 	virtual ~ResponseHandler() = default;
-	virtual bool process(const char* contentData, std::size_t contentSize) = 0;
+
+protected:
+	virtual bool consumer(const char* contentData, std::size_t contentSize) = 0;
+
+	/* should be used only from method 'bool consumer(...)' */
+	const Request& getRequest() const noexcept;
+
+	/* should be used only from method 'bool consumer(...)' */
+	const Response& getResponse() const noexcept;
+
+private:
+	void consumeStart(const Request& request, const Response& response) noexcept;
+	void consumeStop() noexcept;
+
+	std::reference_wrapper<const Request> request;
+	std::reference_wrapper<const Response> response;
 };
 
 } /* namespace client */

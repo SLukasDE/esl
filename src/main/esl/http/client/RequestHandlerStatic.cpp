@@ -20,28 +20,53 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_HTTP_CLIENT_RESPONSEHANDLERDATA_H_
-#define ESL_HTTP_CLIENT_RESPONSEHANDLERDATA_H_
+#include <esl/http/client/RequestHandlerStatic.h>
 
-#include <esl/http/client/ResponseHandler.h>
-
-#include <string>
+#include <cstring>
 
 namespace esl {
 namespace http {
 namespace client {
 
-class ResponseHandlerData : public ResponseHandler {
-public:
-	bool process(const char* contentData, std::size_t contentDataSize) override;
-	const std::string& getData() const noexcept;
+RequestHandlerStatic::RequestHandlerStatic(utility::MIME contentType, const char* aData, std::size_t aSize)
+: RequestHandler(contentType),
+  data(aData),
+  size(aSize)
+{ }
 
-protected:
-	std::string data;
-};
+std::size_t RequestHandlerStatic::producer(char* buffer, std::size_t count) {
+	std::size_t remainingSize = size - dataPos;
+
+	if(remainingSize == 0) {
+		return 0;
+	}
+
+	if(count > remainingSize) {
+		count = remainingSize;
+	}
+
+	std::memcpy(buffer, &data[dataPos], count);
+	dataPos += count;
+
+	return count;
+}
+
+std::size_t RequestHandlerStatic::getSize() const {
+	return size;
+}
+
+bool RequestHandlerStatic::hasSize() const {
+	return true;
+}
+
+bool RequestHandlerStatic::isEmpty() const {
+	return size == 0;
+}
+
+const char* RequestHandlerStatic::getData() const noexcept {
+	return data;
+}
 
 } /* namespace client */
 } /* namespace http */
 } /* namespace esl */
-
-#endif /* ESL_HTTP_CLIENT_RESPONSEHANDLERDATA_H_ */

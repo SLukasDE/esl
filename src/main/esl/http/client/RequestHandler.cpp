@@ -20,40 +20,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/client/RequestStatic.h>
-#include <esl/http/client/Connection.h>
-
-#include <string.h>
+#include <esl/http/client/RequestHandler.h>
 
 namespace esl {
 namespace http {
 namespace client {
 
-RequestStatic::RequestStatic(std::string path, utility::HttpMethod method, utility::MIME contentType, const char* aData, std::size_t aSize)
-: Request(std::move(path), std::move(method), std::move(contentType)),
-  data(aData),
-  size(aSize)
+RequestHandler::RequestHandler(utility::MIME aContentType)
+: contentType(std::move(aContentType))
 { }
 
-/*
-std::size_t RequestStatic::getData(char* buffer, std::size_t count) {
-	std::size_t remainingSize = size - dataPos;
-
-	if(count > remainingSize) {
-		count = remainingSize;
-	}
-	std::memcpy(buffer, &data[dataPos], count);
-	dataPos += count;
-
-	return count;
-}
-*/
-const char* RequestStatic::getData() const {
-	return data;
-}
-
-std::size_t RequestStatic::getSize() const {
-	return size;
+const utility::MIME& RequestHandler::getContentType() const noexcept {
+	return contentType;
 }
 
 } /* namespace client */

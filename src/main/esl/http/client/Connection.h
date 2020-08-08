@@ -20,15 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef SRC_MAIN_C___ESL_SERVICE_CLIENT_CONNECTION_H_
-#define SRC_MAIN_C___ESL_SERVICE_CLIENT_CONNECTION_H_
+#ifndef ESL_HTTP_CLIENT_CONNECTION_H_
+#define ESL_HTTP_CLIENT_CONNECTION_H_
 
 #include <esl/http/client/Interface.h>
-#include <esl/http/client/RequestDynamic.h>
-#include <esl/http/client/RequestStatic.h>
-#include <esl/http/client/RequestFile.h>
+#include <esl/http/client/Request.h>
 #include <esl/http/client/Response.h>
-#include <esl/http/client/ResponseHandler.h>
 #include <esl/object/Values.h>
 #include <esl/utility/URL.h>
 #include <esl/module/Implementation.h>
@@ -48,27 +45,12 @@ public:
 	Connection(const utility::URL& hostUrl,
 			std::initializer_list<std::pair<std::string, std::string>> settings,
 			const std::string& implementation = getDefault().getImplementation());
-#if 0
+
 	Connection(const utility::URL& hostUrl,
 			const object::Values<std::string>& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
-#else
-	Connection(const utility::URL& hostUrl);
-	Connection(const utility::URL& hostUrl,
-			const object::Values<std::string>& settings,
-			const std::string& implementation);
-#endif
-	Response send(std::string path, utility::HttpMethod method) const;
-	Response send(std::string path, utility::HttpMethod method, ResponseHandler& responseHandler) const;
-	Response send(std::string path, utility::HttpMethod method, Request& request) const;
-	Response send(std::string path, utility::HttpMethod method, Request& request, ResponseHandler& responseHandler) const;
-/*
-	Response send(std::string path, utility::HttpMethod method, utility::MIME contentType, RequestDynamic& request, ResponseHandler* responseHandler = nullptr) const override;
-	Response send(std::string path, utility::HttpMethod method, utility::MIME contentType, const RequestStatic& request, ResponseHandler* responseHandler = nullptr) const override;
-	Response send(std::string path, utility::HttpMethod method, utility::MIME contentType, const RequestFile& request, ResponseHandler* responseHandler = nullptr) const override;
-*/
-protected:
-	Response send(std::string path, utility::HttpMethod method, Request* request, ResponseHandler* responseHandler) const override;
+
+	Response send(Request request) const override;
 
 private:
 	std::unique_ptr<Interface::Connection> connection;
@@ -78,4 +60,4 @@ private:
 } /* namespace http */
 } /* namespace esl */
 
-#endif /* SRC_MAIN_C___ESL_SERVICE_CLIENT_CONNECTION_H_ */
+#endif /* ESL_HTTP_CLIENT_CONNECTION_H_ */

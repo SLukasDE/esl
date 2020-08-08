@@ -68,11 +68,7 @@ struct Interface : esl::module::Interface {
 
 		virtual std::size_t read(FileDescriptor& fileDescriptor) = 0;
 	};
-/*
-	class ConsumerFile : public Consumer {
-	public:
-	};
-*/
+
 	class Producer {
 	public:
 		Producer() = default;

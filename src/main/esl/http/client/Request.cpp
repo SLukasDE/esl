@@ -21,16 +21,59 @@ SOFTWARE.
 */
 
 #include <esl/http/client/Request.h>
+#include <esl/http/client/ResponseHandler.h>
 
 namespace esl {
 namespace http {
 namespace client {
 
-Request::Request(std::string aPath, utility::HttpMethod aMethod, utility::MIME aContentType)
+Request::Request(std::string aPath, utility::HttpMethod aMethod,
+		ResponseHandler* aResponseHandler,
+		std::unique_ptr<RequestHandler> aRequestHandler,
+		std::initializer_list<std::pair<const std::string, std::string>> aRequestHeaders)
 : path(std::move(aPath)),
   method(std::move(aMethod)),
-  contentType(std::move(aContentType))
+  responseHandler(aResponseHandler),
+  requestHandler(std::move(aRequestHandler)),
+  requestHeaders(aRequestHeaders)
 { }
+
+Request::Request(std::string aPath, utility::HttpMethod aMethod,
+		ResponseHandler* aResponseHandler,
+		std::unique_ptr<RequestHandler> aRequestHandler,
+		std::map<std::string, std::string> aRequestHeaders)
+: path(std::move(aPath)),
+  method(std::move(aMethod)),
+  responseHandler(aResponseHandler),
+  requestHandler(std::move(aRequestHandler)),
+  requestHeaders(std::move(aRequestHeaders))
+{ }
+
+Request::Request(Request&& other)
+: path(std::move(other.path)),
+  method(std::move(other.method)),
+  responseHandler(other.responseHandler),
+  requestHandler(std::move(other.requestHandler)),
+  requestHeaders(std::move(other.requestHeaders))
+{
+}
+
+Request::~Request() {
+	if(responseHandler) {
+		responseHandler->consumeStop();
+	}
+}
+
+Request& Request::operator=(Request&& other) {
+	path = std::move(other.path);
+	method = std::move(other.method);
+	responseHandler = other.responseHandler;
+	other.responseHandler = nullptr;
+	requestHandler = std::move(other.requestHandler);
+	requestHeaders = std::move(other.requestHeaders);
+
+	return *this;
+}
 
 const std::string& Request::getPath() const noexcept {
 	return path;
@@ -40,16 +83,26 @@ const utility::HttpMethod& Request::getMethod() const noexcept {
 	return method;
 }
 
-const utility::MIME& Request::getContentType() const noexcept {
-	return contentType;
+RequestHandler* Request::getRequestHandler() const noexcept {
+	return requestHandler.get();
+}
+
+ResponseHandler* Request::getResponseHandler() const noexcept {
+	return responseHandler;
 }
 
 const std::map<std::string, std::string>& Request::getHeaders() const noexcept {
-	return headers;
+	return requestHeaders;
 }
 
 void Request::addHeader(const std::string& key, const std::string& value) {
-	headers[key] = value;
+	requestHeaders[key] = value;
+}
+
+void Request::setResponse(const Response& response) {
+	if(responseHandler) {
+		responseHandler->consumeStart(*this, response);
+	}
 }
 
 } /* namespace client */

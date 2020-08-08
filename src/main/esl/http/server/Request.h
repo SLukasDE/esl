@@ -23,6 +23,9 @@ SOFTWARE.
 #ifndef ESL_HTTP_SERVER_REQUEST_H_
 #define ESL_HTTP_SERVER_REQUEST_H_
 
+#include <esl/utility/MIME.h>
+
+#include <map>
 #include <string>
 #include <cstdint>
 
@@ -49,6 +52,9 @@ public:
 
 	virtual const std::string& getPath() const noexcept = 0;
 	virtual const std::string& getMethod() const noexcept = 0;
+	virtual const std::map<std::string, std::string>& getHeaders() const noexcept = 0;
+	virtual const utility::MIME& getContentType() const noexcept = 0;
+
 	virtual bool hasArgument(const std::string& key) const noexcept = 0;
 	virtual const std::string& getArgument(const std::string& key) const = 0;
 };

@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/client/RequestConentDynamic.h>
+#include <esl/http/client/RequestHandlerDynamic.h>
 
 #include <algorithm>
 #include <cstring>
@@ -29,17 +29,19 @@ namespace esl {
 namespace http {
 namespace client {
 
-RequestConentDynamic::RequestConentDynamic(utility::MIME contentType, std::function<std::size_t(char*, std::size_t)> aGetDataFunction)
-: RequestContent(std::move(contentType)),
+RequestHandlerDynamic::RequestHandlerDynamic(utility::MIME contentType, std::function<std::size_t(char*, std::size_t)> aGetDataFunction)
+: RequestHandler(std::move(contentType)),
+  dynamicType(dataFunction),
   getDataFunction(aGetDataFunction)
 { }
 
-RequestConentDynamic::RequestConentDynamic(utility::MIME contentType, std::string aData)
-: RequestContent(std::move(contentType)),
+RequestHandlerDynamic::RequestHandlerDynamic(utility::MIME contentType, std::string aData)
+: RequestHandler(std::move(contentType)),
+  dynamicType(dataString),
   data(std::move(aData))
 { }
 
-std::size_t RequestConentDynamic::produceData(char* buffer, std::size_t count) {
+std::size_t RequestHandlerDynamic::producer(char* buffer, std::size_t count) {
 	std::size_t remainingSize = data.size() - dataPos;
 
 	if(remainingSize == 0 && getDataFunction) {
@@ -57,28 +59,24 @@ std::size_t RequestConentDynamic::produceData(char* buffer, std::size_t count) {
 	return count;
 }
 
-bool RequestConentDynamic::hasSize() const {
-// TODO: what is about "data" from 2nd constructor?
-
+bool RequestHandlerDynamic::hasSize() const {
 	/* as long getDataFunction is not nullptr, there
 	 * are more data to fetch and a final size is
 	 * currently not available */
 	return !(getDataFunction);
 }
 
-std::size_t RequestConentDynamic::getSize() const {
-	while(prefetchData(1024) > 0) { }
+std::size_t RequestHandlerDynamic::getSize() const {
+	if(!getDataFunction) {
+		return data.size();
+	}
 
+	while(prefetchData(1024) > 0) { }
 	return data.size() + fetchedDirectSize;
 }
 
-bool RequestConentDynamic::isEmpty() const {
-	if(getDataFunction) {
-		/* return false if there are already prefetched data available */
-		if(data.empty() == false) {
-			return false;
-		}
-
+bool RequestHandlerDynamic::isEmpty() const {
+	if(getDataFunction && data.empty()) {
 		/* prefetch up to 1024 byte if possible */
 		prefetchData(1024);
 	}
@@ -86,7 +84,7 @@ bool RequestConentDynamic::isEmpty() const {
 	return data.empty();
 }
 
-std::size_t RequestConentDynamic::prefetchData(std::size_t count) const {
+std::size_t RequestHandlerDynamic::prefetchData(std::size_t count) const {
 	std::size_t result = 0;
 	char buffer[1024];
 

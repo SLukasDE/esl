@@ -27,8 +27,7 @@ SOFTWARE.
 #include <esl/Module.h>
 #include <esl/object/Values.h>
 #include <esl/utility/URL.h>
-#include <esl/http/client/Response.h>
-#include <esl/http/client/ResponseHandler.h>
+//#include <esl/http/client/Response.h>
 
 #include <string>
 #include <memory>
@@ -37,9 +36,9 @@ namespace esl {
 namespace http {
 namespace client {
 
-class RequestDynamic;
-class RequestStatic;
-class RequestFile;
+class Request;
+class Response;
+class ResponseHandler;
 
 struct Interface : esl::module::Interface {
 	/* *************************************** *
@@ -49,14 +48,13 @@ struct Interface : esl::module::Interface {
 	public:
 		virtual ~Connection() = default;
 
-		//virtual Response send(RequestDynamic& request, ResponseHandler* responseHandler) const = 0;
-		//virtual Response send(const RequestStatic& request, ResponseHandler* responseHandler) const = 0;
-		//virtual Response send(const RequestFile& request, ResponseHandler* responseHandler) const = 0;
+		virtual Response send(Request request) const = 0;
 
 	protected:
 		Connection() = default;
 
-		virtual Response send(std::string path, utility::HttpMethod method, Request* request, ResponseHandler* responseHandler) const = 0;
+		static void request__setResponse(Request& request, const Response& response);
+		static bool responseHandler__consumer(ResponseHandler& responseHandler, const char* contentData, std::size_t contentSize);
 	};
 
 	using CreateConnection = std::unique_ptr<Connection> (*)(const utility::URL& hostUrl, const object::Values<std::string>& settings);
