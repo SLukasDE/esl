@@ -20,41 +20,41 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_SYSTEM_PROCESS_CONSUMERFILE_H_
-#define ESL_SYSTEM_PROCESS_CONSUMERFILE_H_
 
-#include <esl/system/Interface.h>
-#include <esl/object/Values.h>
+#ifndef ESL_IO_FILEREADER_H_
+#define ESL_IO_FILEREADER_H_
+
+#include <esl/utility/Reader.h>
 #include <esl/module/Implementation.h>
 
-#include <initializer_list>
 #include <string>
+#include <initializer_list>
 #include <memory>
 
 namespace esl {
-namespace system {
-namespace process {
+namespace io {
 
-class ConsumerFile final : public Interface::Consumer {
+class FileReader : public utility::Reader {
 public:
 	static module::Implementation& getDefault();
 
-	ConsumerFile(std::string filename,
+	FileReader(const std::string& filename,
 			std::initializer_list<std::pair<std::string, std::string>> settings,
 			const std::string& implementation = getDefault().getImplementation());
 
-	ConsumerFile(std::string filename,
+	FileReader(const std::string& filename,
 			const object::Values<std::string>& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
-	std::size_t read(Interface::FileDescriptor& fileDescriptor) override;
+	std::size_t read(void* data, std::size_t size) override;
+
+	utility::Reader* getBaseImplementation() const noexcept;
 
 private:
-	std::unique_ptr<Interface::Consumer> consumerFile;
+	std::unique_ptr<utility::Reader> fileReader;
 };
 
-} /* namespace process */
-} /* namespace system */
+} /* namespace io */
 } /* namespace esl */
 
-#endif /* ESL_SYSTEM_PROCESS_CONSUMERFILE_H_ */
+#endif /* ESL_IO_FILEREADER_H_ */

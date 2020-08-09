@@ -20,38 +20,49 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/system/process/ConsumerFile.h>
-#include <esl/object/ValueSettings.h>
+
+#include <esl/io/FileWriter.h>
+#include <esl/io/Interface.h>
 
 namespace esl {
-namespace system {
-namespace process {
+namespace io {
 
-module::Implementation& ConsumerFile::getDefault() {
+namespace {
+std::unique_ptr<utility::Writer> createFileWriter(const std::string& filename, const std::string& implementation, const object::Values<std::string>& settings) {
+	std::unique_ptr<utility::Writer> rv;
+
+	if(esl::getModule().getInterface<Interface>(implementation).createFileWriter) {
+		rv = esl::getModule().getInterface<Interface>(implementation).createFileWriter(filename, settings);
+	}
+
+	return rv;
+}
+}
+
+module::Implementation& FileWriter::getDefault() {
 	static module::Implementation implementation;
 	return implementation;
 }
 
-ConsumerFile::ConsumerFile(std::string filename,
+FileWriter::FileWriter(const std::string& filename,
 		std::initializer_list<std::pair<std::string, std::string>> settings,
 		const std::string& implementation)
-: consumerFile(esl::getModule().getInterface<Interface>(implementation).createConsumerFile(std::move(filename), object::ValueSettings(std::move(settings))))
+: fileWriter(createFileWriter(filename, implementation, object::ValueSettings(std::move(settings))))
 { }
 
-ConsumerFile::ConsumerFile(std::string filename,
+FileWriter::FileWriter(const std::string& filename,
 		const object::Values<std::string>& settings,
 		const std::string& implementation)
-: consumerFile(esl::getModule().getInterface<Interface>(implementation).createConsumerFile(std::move(filename), settings))
+: fileWriter(createFileWriter(filename, implementation, settings))
 { }
 
-std::size_t ConsumerFile::read(Interface::FileDescriptor& fileDescriptor) {
-	return consumerFile->read(fileDescriptor);
+std::size_t FileWriter::write(const void* data, std::size_t size) {
+	return npos;
 }
-/*
-Interface::FileDescriptor::Handle ConsumerFile::getFileDescriptorHandle() {
-	return consumerFile->getFileDescriptorHandle();
+
+utility::Writer* FileWriter::getBaseImplementation() const noexcept {
+	return fileWriter.get();
 }
-*/
-} /* namespace process */
-} /* namespace system */
+
+} /* namespace io */
 } /* namespace esl */

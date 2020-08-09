@@ -34,9 +34,36 @@ ProducerDynamic::ProducerDynamic(std::function<std::size_t(char*, std::size_t)> 
 ProducerDynamic::ProducerDynamic(std::string aContent)
 : data(std::move(aContent)),
   bufferRead(data.data()),
-  currentSize(data.size() == 0 ? Interface::FileDescriptor::npos : data.size())
+  currentSize(data.size() == 0 ? utility::Writer::npos : data.size())
 { }
 
+std::size_t ProducerDynamic::write(utility::Writer& writer) {
+	if(currentPos >= currentSize) {
+		if(getDataFunction) {
+			currentPos = 0;
+			currentSize = getDataFunction(buffer, sizeof(buffer));
+
+			if(currentSize == 0) {
+				currentSize = utility::Writer::npos;
+			}
+		}
+		else {
+			currentSize = utility::Writer::npos;
+		}
+	}
+
+	if(currentSize == utility::Writer::npos) {
+		return utility::Writer::npos;
+	}
+
+	std::size_t count = writer.write(&bufferRead[currentPos], currentSize - currentPos);
+	if(count != utility::Writer::npos) {
+		currentPos += count;
+	}
+
+	return count;
+}
+/*
 std::size_t ProducerDynamic::write(Interface::FileDescriptor& fileDescriptor) {
 	if(currentPos >= currentSize) {
 		if(getDataFunction) {
@@ -63,7 +90,7 @@ std::size_t ProducerDynamic::write(Interface::FileDescriptor& fileDescriptor) {
 
 	return count;
 }
-
+*/
 } /* namespace process */
 } /* namespace system */
 } /* namespace esl */

@@ -20,38 +20,49 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/system/process/ProducerFile.h>
-#include <esl/object/ValueSettings.h>
+
+#include <esl/io/FileReader.h>
+#include <esl/io/Interface.h>
 
 namespace esl {
-namespace system {
-namespace process {
+namespace io {
 
-module::Implementation& ProducerFile::getDefault() {
+namespace {
+std::unique_ptr<utility::Reader> createFileReader(const std::string& filename, const std::string& implementation, const object::Values<std::string>& settings) {
+	std::unique_ptr<utility::Reader> rv;
+
+	if(esl::getModule().getInterface<Interface>(implementation).createFileReader) {
+		rv = esl::getModule().getInterface<Interface>(implementation).createFileReader(filename, settings);
+	}
+
+	return rv;
+}
+}
+
+module::Implementation& FileReader::getDefault() {
 	static module::Implementation implementation;
 	return implementation;
 }
 
-ProducerFile::ProducerFile(std::string filename,
+FileReader::FileReader(const std::string& filename,
 		std::initializer_list<std::pair<std::string, std::string>> settings,
 		const std::string& implementation)
-: producerFile(esl::getModule().getInterface<Interface>(implementation).createProducerFile(std::move(filename), object::ValueSettings(std::move(settings))))
+: fileReader(createFileReader(filename, implementation, object::ValueSettings(std::move(settings))))
 { }
 
-ProducerFile::ProducerFile(std::string filename,
+FileReader::FileReader(const std::string& filename,
 		const object::Values<std::string>& settings,
 		const std::string& implementation)
-: producerFile(esl::getModule().getInterface<Interface>(implementation).createProducerFile(std::move(filename), settings))
+: fileReader(createFileReader(filename, implementation, settings))
 { }
 
-std::size_t ProducerFile::write(Interface::FileDescriptor& fileDescriptor) {
-	return producerFile->write(fileDescriptor);
+std::size_t FileReader::read(void* data, std::size_t size) {
+	return npos;
 }
 
-std::size_t ProducerFile::getFileSize() const {
-	return producerFile->getFileSize();
+utility::Reader* FileReader::getBaseImplementation() const noexcept {
+	return fileReader.get();
 }
 
-} /* namespace process */
-} /* namespace system */
+} /* namespace io */
 } /* namespace esl */

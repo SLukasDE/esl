@@ -20,39 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_SYSTEM_PROCESS_PRODUCERDYNAMIC_H_
-#define ESL_SYSTEM_PROCESS_PRODUCERDYNAMIC_H_
-
-#include <esl/system/Interface.h>
-#include <esl/utility/Writer.h>
+#ifndef ESL_UTILITY_READER_H_
+#define ESL_UTILITY_READER_H_
 
 #include <string>
-#include <functional>
 
 namespace esl {
-namespace system {
-namespace process {
+namespace utility {
 
-class ProducerDynamic : public Interface::Producer {
+class Reader {
 public:
-	ProducerDynamic(std::function<std::size_t(char*, std::size_t)> getDataFunction);
-	ProducerDynamic(std::string content);
+	static const std::size_t npos = static_cast<std::size_t>(-1);
 
-	std::size_t write(utility::Writer& writer) override;
-	//std::size_t write(Interface::FileDescriptor& fileDescriptor) override;
+	Reader() = default;
+	virtual ~Reader() = default;
 
-private:
-	std::function<std::size_t(char*, std::size_t)> getDataFunction;
-	std::string data;
-
-	char buffer[4096];
-	const char *bufferRead;
-	std::size_t currentPos = 0;
-	std::size_t currentSize = 0;
+	virtual std::size_t read(void* data, std::size_t size) = 0;
 };
 
-} /* namespace process */
-} /* namespace system */
+} /* namespace utility */
 } /* namespace esl */
 
-#endif /* ESL_SYSTEM_PROCESS_PRODUCERDYNAMIC_H_ */
+#endif /* ESL_UTILITY_READER_H_ */

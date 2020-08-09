@@ -29,6 +29,8 @@ SOFTWARE.
 #include <esl/system/process/Arguments.h>
 #include <esl/system/process/Environment.h>
 #include <esl/object/Values.h>
+#include <esl/utility/Reader.h>
+#include <esl/utility/Writer.h>
 
 #include <string>
 #include <vector>
@@ -43,31 +45,12 @@ struct Interface : esl::module::Interface {
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class FileDescriptor {
-	public:
-		/*
-		using Handle = int;
-
-		static const Handle noHandle = -1;
-		static const Handle stdInHandle = 0;
-		static const Handle stdOutHandle = 1;
-		static const Handle stdErrHandle = 2;
-*/
-		static const std::size_t npos = static_cast<std::size_t>(-1);
-
-		FileDescriptor() = default;
-		virtual ~FileDescriptor() = default;
-
-		virtual std::size_t read(void* data, std::size_t size) = 0;
-		virtual std::size_t write(const void* data, std::size_t size) = 0;
-	};
-
 	class Consumer {
 	public:
 		Consumer() = default;
 		virtual ~Consumer() = default;
 
-		virtual std::size_t read(FileDescriptor& fileDescriptor) = 0;
+		virtual std::size_t read(utility::Reader& reader) = 0;
 	};
 
 	class Producer {
@@ -81,12 +64,7 @@ struct Interface : esl::module::Interface {
 		 *         Number of characters written to fileDescriptor
 		 *           if there are data available to write to fileDescripor
 		 *           (produced now or queued from previous call). */
-		virtual std::size_t write(FileDescriptor& fileDescriptor) = 0;
-	};
-
-	class ProducerFile : public Producer {
-	public:
-		virtual std::size_t getFileSize() const = 0;
+		virtual std::size_t write(utility::Writer& writer) = 0;
 	};
 
 	class Feature {
@@ -98,10 +76,10 @@ struct Interface : esl::module::Interface {
 	public:
 		using FileDescriptorHandle = int;
 
-		static const FileDescriptorHandle noHandle = -1;
-		static const FileDescriptorHandle stdInHandle = 0;
-		static const FileDescriptorHandle stdOutHandle = 1;
-		static const FileDescriptorHandle stdErrHandle = 2;
+		static const FileDescriptorHandle noHandle;
+		static const FileDescriptorHandle stdInHandle;
+		static const FileDescriptorHandle stdOutHandle;
+		static const FileDescriptorHandle stdErrHandle;
 
 		struct ParameterStream {
 			Producer* producer = nullptr;
@@ -139,8 +117,6 @@ struct Interface : esl::module::Interface {
 
 	using CreateProcess = std::unique_ptr<Process>(*)(process::Arguments arguments, std::string workingDir, const object::Values<std::string>& setting);
 	using CreateProcessWithEnvironment = std::unique_ptr<Process>(*)(process::Arguments arguments, process::Environment environment, std::string workingDir, const object::Values<std::string>& setting);
-	using CreateConsumerFile = std::unique_ptr<Consumer>(*)(std::string filename, const object::Values<std::string>& settings);
-	using CreateProducerFile = std::unique_ptr<ProducerFile>(*)(std::string filename, const object::Values<std::string>& setting);
 
 	using InstallSignalHandler = void (*)(SignalType signalType, std::function<void()> handler, const object::Values<std::string>& setting);
 	using RemoveSignalHandler = void (*)(SignalType signalType, std::function<void()> handler, const object::Values<std::string>& setting);
@@ -164,23 +140,17 @@ struct Interface : esl::module::Interface {
 	Interface(std::string module, std::string implementation,
 			CreateProcess aCreateProcess,
 			CreateProcessWithEnvironment aCreateProcessWithEnvironment,
-			CreateConsumerFile aCreateConsumerFile,
-			CreateProducerFile aCreateProducerFile,
 			InstallSignalHandler aInstallSignalHandler,
 			RemoveSignalHandler aRemoveSignalHandler)
 	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
 	  createProcess(aCreateProcess),
 	  createProcessWithEnvironment(aCreateProcessWithEnvironment),
-	  createConsumerFile(aCreateConsumerFile),
-	  createProducerFile(aCreateProducerFile),
 	  installSignalHandler(aInstallSignalHandler),
 	  removeSignalHandler(aRemoveSignalHandler)
 	{ }
 
 	CreateProcess createProcess;
 	CreateProcessWithEnvironment createProcessWithEnvironment;
-	CreateConsumerFile createConsumerFile;
-	CreateProducerFile createProducerFile;
 
 	InstallSignalHandler installSignalHandler;
 	RemoveSignalHandler removeSignalHandler;

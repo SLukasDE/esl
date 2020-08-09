@@ -20,42 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_SYSTEM_PROCESS_PRODUCERFILE_H_
-#define ESL_SYSTEM_PROCESS_PRODUCERFILE_H_
+#ifndef ESL_UTILITY_WRITER_H_
+#define ESL_UTILITY_WRITER_H_
 
-#include <esl/system/Interface.h>
-#include <esl/object/Values.h>
-#include <esl/module/Implementation.h>
-
-#include <initializer_list>
 #include <string>
-#include <memory>
 
 namespace esl {
-namespace system {
-namespace process {
+namespace utility {
 
-class ProducerFile : public Interface::ProducerFile {
+class Writer {
 public:
-	static module::Implementation& getDefault();
+	static const std::size_t npos = static_cast<std::size_t>(-1);
 
-	ProducerFile(std::string filename,
-			std::initializer_list<std::pair<std::string, std::string>> settings,
-			const std::string& implementation = getDefault().getImplementation());
+	Writer() = default;
+	virtual ~Writer() = default;
 
-	ProducerFile(std::string filename,
-			const object::Values<std::string>& settings = getDefault().getSettings(),
-			const std::string& implementation = getDefault().getImplementation());
-
-	std::size_t write(Interface::FileDescriptor& fileDescriptor) override;
-	std::size_t getFileSize() const override;
-
-private:
-	std::unique_ptr<Interface::ProducerFile> producerFile;
+	virtual std::size_t write(const void* data, std::size_t size) = 0;
 };
 
-} /* namespace process */
-} /* namespace system */
+} /* namespace utility */
 } /* namespace esl */
 
-#endif /* ESL_SYSTEM_PROCESS_PRODUCERFILE_H_ */
+#endif /* ESL_UTILITY_WRITER_H_ */

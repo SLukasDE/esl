@@ -22,6 +22,7 @@ SOFTWARE.
 
 #include <esl/logging/appender/OStream.h>
 #include <esl/logging/Logger.h>
+
 #include <iostream>
 #include <cstdio>
 

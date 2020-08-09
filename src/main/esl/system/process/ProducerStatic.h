@@ -24,6 +24,7 @@ SOFTWARE.
 #define ESL_SYSTEM_PROCESS_PRODUCERSTATIC_H_
 
 #include <esl/system/Interface.h>
+#include <esl/utility/Writer.h>
 
 #include <string>
 
@@ -35,7 +36,8 @@ class ProducerStatic : public Interface::Producer {
 public:
 	ProducerStatic(const char* data, std::size_t size);
 
-	std::size_t write(Interface::FileDescriptor& fileDescriptor) override;
+	std::size_t write(utility::Writer& writer) override;
+	//std::size_t write(Interface::FileDescriptor& fileDescriptor) override;
 
 	const char* getData() const noexcept;
 	std::size_t getSize() const noexcept;

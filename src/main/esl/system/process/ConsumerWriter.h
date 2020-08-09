@@ -20,39 +20,50 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_SYSTEM_PROCESS_PRODUCERDYNAMIC_H_
-#define ESL_SYSTEM_PROCESS_PRODUCERDYNAMIC_H_
+#ifndef ESL_SYSTEM_PROCESS_CONSUMERWRITER_H_
+#define ESL_SYSTEM_PROCESS_CONSUMERWRITER_H_
 
 #include <esl/system/Interface.h>
+#include <esl/object/Values.h>
+#include <esl/utility/Reader.h>
 #include <esl/utility/Writer.h>
+#include <esl/module/Implementation.h>
 
+#include <initializer_list>
 #include <string>
-#include <functional>
+#include <memory>
 
 namespace esl {
 namespace system {
 namespace process {
 
-class ProducerDynamic : public Interface::Producer {
+class ConsumerWriter final : public Interface::Consumer {
 public:
-	ProducerDynamic(std::function<std::size_t(char*, std::size_t)> getDataFunction);
-	ProducerDynamic(std::string content);
+	static module::Implementation& getDefault();
 
-	std::size_t write(utility::Writer& writer) override;
-	//std::size_t write(Interface::FileDescriptor& fileDescriptor) override;
+	ConsumerWriter(utility::Writer& writer,
+			std::initializer_list<std::pair<std::string, std::string>> settings,
+			const std::string& implementation = getDefault().getImplementation());
+
+	ConsumerWriter(utility::Writer& writer,
+			const object::Values<std::string>& settings = getDefault().getSettings(),
+			const std::string& implementation = getDefault().getImplementation());
+
+	std::size_t read(utility::Reader& reader) override;
+
+	utility::Writer* getWriter() const noexcept;
+	std::size_t getCurrentBufferSize() const noexcept;
+	void flushBuffer();
 
 private:
-	std::function<std::size_t(char*, std::size_t)> getDataFunction;
-	std::string data;
-
-	char buffer[4096];
-	const char *bufferRead;
-	std::size_t currentPos = 0;
-	std::size_t currentSize = 0;
+	static constexpr std::size_t maxBufferSize = 4096;
+	std::size_t currentBufferSize = 0;
+	char buffer[maxBufferSize];
+	utility::Writer* writer;
 };
 
 } /* namespace process */
 } /* namespace system */
 } /* namespace esl */
 
-#endif /* ESL_SYSTEM_PROCESS_PRODUCERDYNAMIC_H_ */
+#endif /* ESL_SYSTEM_PROCESS_CONSUMERWRITER_H_ */

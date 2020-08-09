@@ -21,7 +21,6 @@ SOFTWARE.
 */
 
 #include <esl/http/server/Response.h>
-#include <iostream>
 
 namespace esl {
 namespace http {

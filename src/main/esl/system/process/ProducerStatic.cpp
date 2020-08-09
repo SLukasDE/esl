@@ -31,12 +31,28 @@ ProducerStatic::ProducerStatic(const char* aData, std::size_t aSize)
   size(aSize)
 { }
 
+std::size_t ProducerStatic::write(utility::Writer& writer) {
+	std::size_t count = writer.write(getData(), getSize() - currentPos);
+
+	if(count != 0) {
+		if(count == utility::Writer::npos) {
+			/* error occurred. set currentPos to the end of the content */
+			currentPos = getSize();
+		}
+		else {
+			currentPos += count;
+		}
+	}
+
+	return (currentPos < getSize()) ? count : utility::Writer::npos;
+}
+/*
 std::size_t ProducerStatic::write(Interface::FileDescriptor& fileDescriptor) {
 	std::size_t count = fileDescriptor.write(getData(), getSize() - currentPos);
 
 	if(count != 0) {
 		if(count == Interface::FileDescriptor::npos) {
-			/* error occurred. set currentPos to the end of the content */
+			// error occurred. set currentPos to the end of the content
 			currentPos = getSize();
 		}
 		else {
@@ -46,7 +62,7 @@ std::size_t ProducerStatic::write(Interface::FileDescriptor& fileDescriptor) {
 
 	return (currentPos < getSize()) ? count : Interface::FileDescriptor::npos;
 }
-
+*/
 const char* ProducerStatic::getData() const noexcept {
 	return data;
 }

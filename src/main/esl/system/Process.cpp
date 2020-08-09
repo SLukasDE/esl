@@ -27,6 +27,11 @@ SOFTWARE.
 namespace esl {
 namespace system {
 
+const Interface::Process::FileDescriptorHandle Interface::Process::noHandle = -1;
+const Interface::Process::FileDescriptorHandle Interface::Process::stdInHandle = 0;
+const Interface::Process::FileDescriptorHandle Interface::Process::stdOutHandle = 1;
+const Interface::Process::FileDescriptorHandle Interface::Process::stdErrHandle = 2;
+
 module::Implementation& Process::getDefault() {
 	static module::Implementation implementation;
 	return implementation;
