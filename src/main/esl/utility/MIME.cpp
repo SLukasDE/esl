@@ -33,6 +33,7 @@ const std::string strEmpty;
 const std::string strTextPlain = "text/plain";
 const std::string strTextHtml = "text/html";
 const std::string strTextXml = "text/xml";
+const std::string strTextCsv = "text/comma-separated-values";
 const std::string strApplicationXml = "application/xml";
 const std::string strApplicationJson = "application/json";
 
@@ -86,6 +87,8 @@ const std::string& MIME::toString(MIME::Type mimeType) noexcept {
 		return strTextHtml;
 	case textXml:
 		return strTextXml;
+	case textCsv:
+		return strTextCsv;
 	case applicationXml:
 		return strApplicationXml;
 	case applicationJson:

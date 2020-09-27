@@ -36,6 +36,8 @@ module::Implementation& ProducerReader::getDefault() {
 	return implementation;
 }
 
+constexpr std::size_t ProducerReader::maxBufferSize;
+
 ProducerReader::ProducerReader(utility::Reader& aReader,
 		std::initializer_list<std::pair<std::string, std::string>> settings,
 		const std::string& implementation)

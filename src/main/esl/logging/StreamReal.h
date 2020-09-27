@@ -55,6 +55,9 @@ public:
 		return level;
 	}
 
+	explicit operator bool() const;
+
+    /* deprecated: use "operator bool()" instead */
 	bool isEnabled() const;
 
 private:

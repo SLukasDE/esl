@@ -53,6 +53,11 @@ public:
     	return *this;
     }
 
+    inline constexpr explicit operator bool() const noexcept {
+    	return false;
+    }
+
+    /* deprecated: use "operator bool()" instead */
 	inline constexpr bool isEnabled() const {
 		return false;
 	}

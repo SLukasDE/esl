@@ -36,6 +36,8 @@ module::Implementation& ConsumerWriter::getDefault() {
 	return implementation;
 }
 
+constexpr std::size_t ConsumerWriter::maxBufferSize;
+
 ConsumerWriter::ConsumerWriter(utility::Writer& aWriter,
 		std::initializer_list<std::pair<std::string, std::string>> settings,
 		const std::string& implementation)

@@ -34,6 +34,7 @@ public:
 		textPlain,
 		textHtml,
 		textXml,
+		textCsv,
 		applicationXml,
 		applicationJson
 	};

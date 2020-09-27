@@ -52,6 +52,10 @@ StreamWriter StreamReal::operator<<(std::ostream& (*pf)(std::ostream&)) {
     return streamWriter;
 }
 
+StreamReal::operator bool() const {
+	return isEnabled();
+}
+
 bool StreamReal::isEnabled() const {
 	const Interface* interface = esl::getModule().findInterface<Interface>();
 

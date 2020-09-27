@@ -32,11 +32,11 @@ namespace server {
 
 class ObjectContext : public virtual esl::object::Interface::Object {
 public:
-	virtual esl::object::Interface::Object* getObject(const std::string& id = "") const = 0;
+	virtual esl::object::Interface::Object* findObject(const std::string& id = "") const = 0;
 
 	template<typename T>
-	T* getObject(const std::string& id = "") const {
-		return dynamic_cast<T*>(getObject(id));
+	T* findObject(const std::string& id = "") const {
+		return dynamic_cast<T*>(findObject(id));
 	}
 };
 
