@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,6 @@ public:
 	}
 
 	std::string toString(const Location& location) const override;
-	//void addSetting(const std::string& key, const std::string& value) override;
 
 	bool getShowTimestamp() const;
 	void setShowTimestamp(bool showTimestamp = true);

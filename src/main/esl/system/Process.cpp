@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -87,7 +87,7 @@ int Process::execute(Interface::Process::FileDescriptorHandle handle) {
 	return execute(parameterStream, parameterFeatures);
 }
 
-int Process::execute(Interface::Producer& producer, Interface::Process::FileDescriptorHandle handle) {
+int Process::execute(utility::Producer& producer, Interface::Process::FileDescriptorHandle handle) {
 	ParameterStreams parameterStream;
 	ParameterFeatures parameterFeatures;
 
@@ -95,7 +95,7 @@ int Process::execute(Interface::Producer& producer, Interface::Process::FileDesc
 	return execute(parameterStream, parameterFeatures);
 }
 
-int Process::execute(Interface::Consumer& consumer, Interface::Process::FileDescriptorHandle handle) {
+int Process::execute(utility::Consumer& consumer, Interface::Process::FileDescriptorHandle handle) {
 	ParameterStreams parameterStream;
 	ParameterFeatures parameterFeatures;
 
@@ -114,7 +114,7 @@ int Process::execute(const ParameterStreams& parameterStreams, ParameterFeatures
 	return process->execute(parameterStreams, parameterFeatures);
 }
 
-void Process::addParameterStream(ParameterStreams& parameterStreams, Interface::Process::FileDescriptorHandle handle, Interface::Producer* producer, Interface::Consumer* consumer) {
+void Process::addParameterStream(ParameterStreams& parameterStreams, Interface::Process::FileDescriptorHandle handle, utility::Producer* producer, utility::Consumer* consumer) {
 	ParameterStream& parameterStream = parameterStreams[handle];
 
 	if(producer == nullptr && consumer == nullptr) {

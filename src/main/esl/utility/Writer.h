@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -36,6 +36,12 @@ public:
 	virtual ~Writer() = default;
 
 	virtual std::size_t write(const void* data, std::size_t size) = 0;
+
+	// returns consumable bytes to write.
+	// npos is returned if available size is unknown.
+	virtual std::size_t getSizeWritable() const {
+		return npos;
+	}
 };
 
 } /* namespace utility */

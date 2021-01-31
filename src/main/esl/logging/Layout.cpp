@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -62,15 +62,5 @@ std::string Layout::toString(const Location& location) const {
 	return "";
 }
 
-#if 0
-void Layout::addSetting(const std::string& key, const std::string& value) {
-	if(!layout) {
-		layout = createLayout(implementation);
-	}
-	if(layout) {
-		layout->addSetting(key, value);
-	}
-}
-#endif
 } /* namespace esl */
 } /* namespace logging */

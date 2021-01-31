@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,28 +20,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_HTTP_SERVER_OBJECTCONTEXT_H_
-#define ESL_HTTP_SERVER_OBJECTCONTEXT_H_
+#ifndef ESL_MESSAGING_MESSAGE_H_
+#define ESL_MESSAGING_MESSAGE_H_
 
-#include <esl/object/Interface.h>
+#include <esl/object/Values.h>
+#include <esl/utility/Reader.h>
+
 #include <string>
 
 namespace esl {
-namespace http {
-namespace server {
+namespace messaging {
 
-class ObjectContext : public virtual esl::object::Interface::Object {
+class Message : public object::Values<std::string> {
 public:
-	virtual esl::object::Interface::Object* findObject(const std::string& id = "") const = 0;
+	Message(std::string id);
 
-	template<typename T>
-	T* findObject(const std::string& id = "") const {
-		return dynamic_cast<T*>(findObject(id));
-	}
+	const std::string& getId() const noexcept;
+
+	std::string getValue(const std::string& key) const override;
+
+	virtual utility::Reader& getReader() = 0;
+
+private:
+	std::string id;
 };
 
-} /* namespace server */
-} /* namespace http */
+} /* namespace messaging */
 } /* namespace esl */
 
-#endif /* ESL_HTTP_SERVER_OBJECTCONTEXT_H_ */
+#endif /* ESL_MESSAGING_MESSAGE_H_ */

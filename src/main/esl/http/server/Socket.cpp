@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -51,8 +51,8 @@ void Socket::addTLSHost(const std::string& hostname, std::vector<unsigned char> 
 	return socket->addTLSHost(hostname, certificate, key);
 }
 
-void Socket::setObject(const std::string& id, GetObject getObject) {
-	return socket->setObject(id, getObject);
+void Socket::addObjectFactory(const std::string& id, ObjectFactory objectFactory) {
+	return socket->addObjectFactory(id, objectFactory);
 }
 
 bool Socket::listen() {

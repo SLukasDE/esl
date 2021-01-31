@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,10 +20,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/object/Values.h>
+#include <esl/messaging/Message.h>
+
+#include <memory>
 
 namespace esl {
-namespace object {
+namespace messaging {
 
-} /* namespace object */
+Message::Message(std::string aId)
+: object::Values<std::string>(),
+  id(std::move(aId))
+{ }
+
+const std::string& Message::getId() const noexcept {
+	return id;
+}
+
+std::string Message::getValue(const std::string& key) const {
+	if(key == "id") {
+		return id;
+	}
+
+	return object::Values<std::string>::getValue(key);
+}
+
+} /* namespace messaging */
 } /* namespace esl */

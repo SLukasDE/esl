@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,8 @@ SOFTWARE.
 #include <esl/system/process/Arguments.h>
 #include <esl/system/process/Environment.h>
 #include <esl/object/Values.h>
-#include <esl/utility/Reader.h>
-#include <esl/utility/Writer.h>
+#include <esl/utility/Consumer.h>
+#include <esl/utility/Producer.h>
 
 #include <string>
 #include <vector>
@@ -44,28 +44,6 @@ struct Interface : esl::module::Interface {
 	/* ******************************************** *
 	 * type definitions required for this interface *
 	 * ******************************************** */
-
-	class Consumer {
-	public:
-		Consumer() = default;
-		virtual ~Consumer() = default;
-
-		virtual std::size_t read(utility::Reader& reader) = 0;
-	};
-
-	class Producer {
-	public:
-		Producer() = default;
-		virtual ~Producer() = default;
-
-		/* return: FileDescriptor::npos
-		 *           if there is no more data to produce (IMPORTANT)
-		 *
-		 *         Number of characters written to fileDescriptor
-		 *           if there are data available to write to fileDescripor
-		 *           (produced now or queued from previous call). */
-		virtual std::size_t write(utility::Writer& writer) = 0;
-	};
 
 	class Feature {
 	public:
@@ -82,8 +60,8 @@ struct Interface : esl::module::Interface {
 		static const FileDescriptorHandle stdErrHandle;
 
 		struct ParameterStream {
-			Producer* producer = nullptr;
-			Consumer* consumer = nullptr;
+			utility::Producer* producer = nullptr;
+			utility::Consumer* consumer = nullptr;
 		};
 		using ParameterStreams = std::map<FileDescriptorHandle, ParameterStream>;
 

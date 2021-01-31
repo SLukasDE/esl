@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@ SOFTWARE.
 #ifndef ESL_SYSTEM_PROCESS_PRODUCERSTATIC_H_
 #define ESL_SYSTEM_PROCESS_PRODUCERSTATIC_H_
 
-#include <esl/system/Interface.h>
+#include <esl/utility/Producer.h>
 #include <esl/utility/Writer.h>
 
 #include <string>
@@ -32,12 +32,11 @@ namespace esl {
 namespace system {
 namespace process {
 
-class ProducerStatic : public Interface::Producer {
+class ProducerStatic : public utility::Producer {
 public:
 	ProducerStatic(const char* data, std::size_t size);
 
 	std::size_t write(utility::Writer& writer) override;
-	//std::size_t write(Interface::FileDescriptor& fileDescriptor) override;
 
 	const char* getData() const noexcept;
 	std::size_t getSize() const noexcept;

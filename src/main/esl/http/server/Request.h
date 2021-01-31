@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,7 @@ public:
 	virtual const std::string& getUsername() const noexcept = 0;
 	virtual const std::string& getPassword() const noexcept = 0;
 
-	virtual const std::string& getHost() const noexcept = 0;
+	virtual const std::string& getHostName() const noexcept = 0;
 	virtual const std::string& getHostAddress() const noexcept = 0;
 	virtual uint16_t getHostPort() const noexcept = 0;
 

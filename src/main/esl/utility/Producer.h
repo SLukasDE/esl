@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,23 +20,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_HTTP_SERVER_INITIALIZECONTEXT_H_
-#define ESL_HTTP_SERVER_INITIALIZECONTEXT_H_
+#ifndef ESL_UTILITY_PRODUCER_H_
+#define ESL_UTILITY_PRODUCER_H_
 
-#include <esl/object/Interface.h>
-#include <esl/http/server/ObjectContext.h>
+#include <esl/utility/Writer.h>
 
 namespace esl {
-namespace http {
-namespace server {
+namespace utility {
 
-class InitializeContext : public virtual esl::object::Interface::Object {
+class Producer {
 public:
-	virtual void initializeContext(ObjectContext& objectContext) = 0;
+	Producer() = default;
+	virtual ~Producer() = default;
+
+	/* return: Writer::npos
+	 *           if there is no more data to produce (IMPORTANT)
+	 *
+	 *         Number of characters written to fileDescriptor
+	 *           if there are data available to write to fileDescripor
+	 *           (produced now or queued from previous call). */
+	virtual std::size_t write(Writer& writer) = 0;
 };
 
-} /* namespace server */
-} /* namespace http */
+} /* namespace utility */
 } /* namespace esl */
 
-#endif /* ESL_HTTP_SERVER_INITIALIZECONTEXT_H_ */
+#endif /* ESL_UTILITY_PRODUCER_H_ */

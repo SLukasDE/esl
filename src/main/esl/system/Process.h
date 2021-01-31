@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,8 @@ SOFTWARE.
 #include <esl/system/process/Arguments.h>
 #include <esl/system/process/Environment.h>
 #include <esl/object/Values.h>
+#include <esl/utility/Consumer.h>
+#include <esl/utility/Producer.h>
 #include <esl/module/Implementation.h>
 
 #include <initializer_list>
@@ -61,8 +63,8 @@ public:
 
 	int execute();
 	int execute(Interface::Process::FileDescriptorHandle handle);
-	int execute(Interface::Producer& producer, Interface::Process::FileDescriptorHandle handle);
-	int execute(Interface::Consumer& consumer, Interface::Process::FileDescriptorHandle handle);
+	int execute(utility::Producer& producer, Interface::Process::FileDescriptorHandle handle);
+	int execute(utility::Consumer& consumer, Interface::Process::FileDescriptorHandle handle);
 	int execute(Interface::Feature& feature);
 	int execute(const ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures) override;
 
@@ -76,7 +78,7 @@ public:
 	}
 
 	template<typename... Args>
-	int execute(Interface::Producer& producer, Interface::Process::FileDescriptorHandle handle, Args&... args) {
+	int execute(utility::Producer& producer, Interface::Process::FileDescriptorHandle handle, Args&... args) {
     	ParameterStreams parameterStreams;
     	ParameterFeatures parameterFeatures;
 
@@ -85,7 +87,7 @@ public:
 	}
 
 	template<typename... Args>
-	int execute(Interface::Consumer& consumer, Interface::Process::FileDescriptorHandle handle, Args&... args) {
+	int execute(utility::Consumer& consumer, Interface::Process::FileDescriptorHandle handle, Args&... args) {
 		ParameterStreams parameterStreams;
 		ParameterFeatures parameterFeatures;
 
@@ -109,13 +111,13 @@ private:
 	}
 
 	template<typename... Args>
-	int execute(ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures, Interface::Producer& producer, Interface::Process::FileDescriptorHandle handle, Args&... args) {
+	int execute(ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures, utility::Producer& producer, Interface::Process::FileDescriptorHandle handle, Args&... args) {
 		addParameterStream(parameterStreams, handle, &producer, nullptr);
 		return execute(parameterStreams, parameterFeatures, args...);
 	}
 
 	template<typename... Args>
-	int execute(ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures, Interface::Consumer& consumer, Interface::Process::FileDescriptorHandle handle, Args&... args) {
+	int execute(ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures, utility::Consumer& consumer, Interface::Process::FileDescriptorHandle handle, Args&... args) {
 		addParameterStream(parameterStreams, handle, nullptr, &consumer);
 		return execute(parameterStreams, parameterFeatures, args...);
 	}
@@ -126,7 +128,7 @@ private:
     	return execute(ParameterStreams(), parameterFeatures, args...);
 	}
 
-	static void addParameterStream(ParameterStreams& parameterStreams, Interface::Process::FileDescriptorHandle handle, Interface::Producer* producer, Interface::Consumer* consumer);
+	static void addParameterStream(ParameterStreams& parameterStreams, Interface::Process::FileDescriptorHandle handle, utility::Producer* producer, utility::Consumer* consumer);
 
 	std::unique_ptr<Interface::Process> process;
 };

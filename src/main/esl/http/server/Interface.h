@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -47,14 +47,17 @@ struct Interface : esl::module::Interface {
 
 	class Socket {
 	public:
-		using GetObject = std::function<esl::object::Interface::Object*(const RequestContext&)>;
+		using ObjectFactory = std::function<esl::object::Interface::Object*(const RequestContext&)>;
 
 		Socket() = default;
 		virtual ~Socket() = default;
 
 		virtual void addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) = 0;
-		virtual void setObject(const std::string& id, GetObject getObject) = 0;
+		virtual void addObjectFactory(const std::string& id, ObjectFactory objectFactory) = 0;
+
+		/* this method is non-blocking. A seperate thread will be opened to listen */
 		virtual bool listen() = 0;
+
 		virtual void release() = 0;
 	};
 

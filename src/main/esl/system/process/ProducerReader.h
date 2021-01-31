@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@ SOFTWARE.
 #ifndef ESL_SYSTEM_PROCESS_PRODUCERREADER_H_
 #define ESL_SYSTEM_PROCESS_PRODUCERREADER_H_
 
-#include <esl/system/Interface.h>
+#include <esl/utility/Producer.h>
 #include <esl/object/Values.h>
 #include <esl/utility/Reader.h>
 #include <esl/utility/Writer.h>
@@ -37,7 +37,7 @@ namespace esl {
 namespace system {
 namespace process {
 
-class ProducerReader : public Interface::Producer {
+class ProducerReader : public utility::Producer {
 public:
 	static module::Implementation& getDefault();
 

@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -46,23 +46,7 @@ std::size_t ProducerStatic::write(utility::Writer& writer) {
 
 	return (currentPos < getSize()) ? count : utility::Writer::npos;
 }
-/*
-std::size_t ProducerStatic::write(Interface::FileDescriptor& fileDescriptor) {
-	std::size_t count = fileDescriptor.write(getData(), getSize() - currentPos);
 
-	if(count != 0) {
-		if(count == Interface::FileDescriptor::npos) {
-			// error occurred. set currentPos to the end of the content
-			currentPos = getSize();
-		}
-		else {
-			currentPos += count;
-		}
-	}
-
-	return (currentPos < getSize()) ? count : Interface::FileDescriptor::npos;
-}
-*/
 const char* ProducerStatic::getData() const noexcept {
 	return data;
 }

@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -57,14 +57,14 @@ Field::Type toFieldType(Column::Type columnType) {
 	case Column::Type::sqlDate:
 	case Column::Type::sqlTime:
 	case Column::Type::sqlTimestamp:
-	case Column::Type::sqlTimestampWithTimezone:
+//	case Column::Type::sqlTimestampWithTimezone:
 		return Field::Type::storageString;
 
-	case Column::Type::sqlRow:
+//	case Column::Type::sqlRow:
 	case Column::Type::sqlWChar:
 	case Column::Type::sqlWVarChar:
 	case Column::Type::sqlWLongVarChar:
-	case Column::Type::sqlDecFloat:
+//	case Column::Type::sqlDecFloat:
 		return Field::Type::storageString;
 
 	case Column::Type::sqlUnknown:

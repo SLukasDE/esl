@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -71,7 +71,7 @@ struct Interface : esl::module::Interface {
 	 * ************************************ */
 
 	Interface(std::string module, std::string implementation,
-			SetUnblocked aSetUnblocked, SetLevel aSetLevel, AddAppender aAddAppender, RemoveAppender aRemoveAppender,// GetAppenders aGetAppenders,
+			SetUnblocked aSetUnblocked, SetLevel aSetLevel, AddAppender aAddAppender, RemoveAppender aRemoveAppender,
 			IsEnabled aIsEnabled, CreateOStream aCreateOStream, GetThreadNo aGetThreadNo)
 	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
 	  setUnblocked(aSetUnblocked),

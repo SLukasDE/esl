@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -46,13 +46,13 @@ const std::string typeNameDateTime = "SQL_DATETIME";
 const std::string typeNameDate = "SQL_TYPE_DATE";
 const std::string typeNameTime = "SQL_TYPE_TIME";
 const std::string typeNameTimestamp = "SQL_TYPE_TIMESTAMP";
-const std::string typeNameTimestampWithTimezone = "SQL_TYPE_TIMESTAMP_WITH_TIMEZONE";
+//const std::string typeNameTimestampWithTimezone = "SQL_TYPE_TIMESTAMP_WITH_TIMEZONE";
 
-const std::string typeNameRow = "SQL_ROW";
+//const std::string typeNameRow = "SQL_ROW";
 const std::string typeNameWChar = "SQL_WCHAR";
 const std::string typeNameWVarChar = "SQL_WVARCHAR";
 const std::string typeNameWLongVarChar = "SQL_WLONGVARCHAR";
-const std::string typeNameDecFloat = "SQL_DECFLOAT";
+//const std::string typeNameDecFloat = "SQL_DECFLOAT";
 
 const std::string typeNameUnknown = "unknown";
 
@@ -90,19 +90,19 @@ const std::string& columnType2String(Column::Type columnType) {
 		return typeNameTime;
 	case Column::Type::sqlTimestamp:
 		return typeNameTimestamp;
-	case Column::Type::sqlTimestampWithTimezone:
-		return typeNameTimestampWithTimezone;
+//	case Column::Type::sqlTimestampWithTimezone:
+//		return typeNameTimestampWithTimezone;
 
-	case Column::Type::sqlRow:
-		return typeNameRow;
+//	case Column::Type::sqlRow:
+//		return typeNameRow;
 	case Column::Type::sqlWChar:
 		return typeNameWChar;
 	case Column::Type::sqlWVarChar:
 		return typeNameWVarChar;
 	case Column::Type::sqlWLongVarChar:
 		return typeNameWLongVarChar;
-	case Column::Type::sqlDecFloat:
-		return typeNameDecFloat;
+//	case Column::Type::sqlDecFloat:
+//		return typeNameDecFloat;
 	default:
 		break;
 	}

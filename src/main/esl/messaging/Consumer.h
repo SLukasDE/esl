@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,24 +20,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/server/Request.h>
+#ifndef ESL_MESSAGING_CONSUMER_H_
+#define ESL_MESSAGING_CONSUMER_H_
+
+#include <esl/messaging/messagehandler/Interface.h>
+
+#include <string>
+#include <set>
+#include <cstdint>
 
 namespace esl {
-namespace http {
-namespace server {
-/*
-const std::string& Request::getSubPath() const {
-	if(isSetToSubPath) {
-		return subPath;
-	}
-	return getFullPath();
-}
+namespace messaging {
 
-void Request::getSubPath(std::string aSubPath) {
-	isSetToSubPath = true;
-	subPath = std::move(aSubPath);
-}
-*/
-} /* namespace server */
-} /* namespace http */
+class Consumer {
+public:
+	Consumer() = default;
+	virtual ~Consumer() = default;
+
+	/* this method is non-blocking. A separate thread will be opened to listen */
+	virtual void start(const std::set<std::string>& queues, messagehandler::Interface::CreateMessageHandler createMessageHandler, std::uint16_t numThreads = 4, bool stopIfEmpty = false) = 0;
+
+	virtual void stop() = 0;
+
+	virtual bool wait(std::uint32_t ms) = 0;
+};
+
+} /* namespace messaging */
 } /* namespace esl */
+
+#endif /* ESL_MESSAGING_CONSUMER_H_ */

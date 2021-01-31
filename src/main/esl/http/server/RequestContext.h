@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,9 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/server/ObjectContext.h>
+#include <esl/object/ObjectContext.h>
 #include <esl/http/server/Connection.h>
 #include <esl/http/server/Request.h>
+
 #include <string>
 
 #ifndef ESL_HTTP_SERVER_REQUESTCONTEXT_H_
@@ -32,7 +33,7 @@ namespace esl {
 namespace http {
 namespace server {
 
-class RequestContext : public ObjectContext {
+class RequestContext : public object::ObjectContext {
 public:
 	virtual Connection& getConnection() const = 0;
 	virtual const Request& getRequest() const = 0;

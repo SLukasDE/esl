@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -153,10 +153,17 @@ void ResultSet::next() {
 	}
 
 	save();
+
+#if 1
+	if(binding->fetch(fields) == false) {
+		binding.reset();
+	}
+#else
 	std::unique_ptr<Binding> tmpBinding = std::move(binding);
 	if(tmpBinding->fetch(fields)) {
 		binding = std::move(tmpBinding);
 	}
+#endif
 	valuesChanged = false;
 }
 

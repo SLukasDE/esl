@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@ SOFTWARE.
 #ifndef ESL_SYSTEM_PROCESS_PRODUCERDYNAMIC_H_
 #define ESL_SYSTEM_PROCESS_PRODUCERDYNAMIC_H_
 
-#include <esl/system/Interface.h>
+#include <esl/utility/Producer.h>
 #include <esl/utility/Writer.h>
 
 #include <string>
@@ -33,13 +33,12 @@ namespace esl {
 namespace system {
 namespace process {
 
-class ProducerDynamic : public Interface::Producer {
+class ProducerDynamic : public utility::Producer {
 public:
 	ProducerDynamic(std::function<std::size_t(char*, std::size_t)> getDataFunction);
 	ProducerDynamic(std::string content);
 
 	std::size_t write(utility::Writer& writer) override;
-	//std::size_t write(Interface::FileDescriptor& fileDescriptor) override;
 
 private:
 	std::function<std::size_t(char*, std::size_t)> getDataFunction;

@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,12 +20,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/http/server/SessionContext.h>
+#ifndef ESL_OBJECT_INITIALIZECONTEXT_H_
+#define ESL_OBJECT_INITIALIZECONTEXT_H_
+
+#include <esl/object/Interface.h>
+#include <esl/object/ObjectContext.h>
 
 namespace esl {
-namespace http {
-namespace server {
+namespace object {
 
-} /* namespace server */
-} /* namespace http */
+class InitializeContext : public virtual Interface::Object {
+public:
+	virtual void initializeContext(ObjectContext& objectContext) = 0;
+};
+
+} /* namespace object */
 } /* namespace esl */
+
+#endif /* ESL_OBJECT_INITIALIZECONTEXT_H_ */

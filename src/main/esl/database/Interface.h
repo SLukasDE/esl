@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,8 @@ SOFTWARE.
 #define ESL_DATABASE_INTERFACE_H_
 
 #include <esl/module/Interface.h>
-//#include <esl/object/Settings.h>
 #include <esl/Module.h>
+#include <esl/object/Interface.h>
 #include <esl/object/Values.h>
 #include <esl/database/Connection.h>
 
@@ -43,9 +43,9 @@ struct Interface : esl::module::Interface {
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class ConnectionFactory { // : public esl::object::Settings {
+	class ConnectionFactory : public esl::object::Interface::Object {
 	public:
-		virtual ~ConnectionFactory() = default;
+		//virtual ~ConnectionFactory() = default;
 	    virtual std::unique_ptr<Connection> createConnection() = 0;
 	};
 

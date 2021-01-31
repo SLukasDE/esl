@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019, 2020 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -63,34 +63,7 @@ std::size_t ProducerDynamic::write(utility::Writer& writer) {
 
 	return count;
 }
-/*
-std::size_t ProducerDynamic::write(Interface::FileDescriptor& fileDescriptor) {
-	if(currentPos >= currentSize) {
-		if(getDataFunction) {
-			currentPos = 0;
-			currentSize = getDataFunction(buffer, sizeof(buffer));
 
-			if(currentSize == 0) {
-				currentSize = Interface::FileDescriptor::npos;
-			}
-		}
-		else {
-			currentSize = Interface::FileDescriptor::npos;
-		}
-	}
-
-	if(currentSize == Interface::FileDescriptor::npos) {
-		return Interface::FileDescriptor::npos;
-	}
-
-	std::size_t count = fileDescriptor.write(&bufferRead[currentPos], currentSize - currentPos);
-	if(count != Interface::FileDescriptor::npos) {
-		currentPos += count;
-	}
-
-	return count;
-}
-*/
 } /* namespace process */
 } /* namespace system */
 } /* namespace esl */
