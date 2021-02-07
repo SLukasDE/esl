@@ -43,7 +43,7 @@ struct Interface : esl::module::Interface {
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class ConnectionFactory : public esl::object::Interface::Object {
+	class ConnectionFactory : public virtual esl::object::Interface::Object {
 	public:
 		//virtual ~ConnectionFactory() = default;
 	    virtual std::unique_ptr<Connection> createConnection() = 0;
