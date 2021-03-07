@@ -78,5 +78,12 @@ void PreparedStatement::executeBulk(const std::vector<std::vector<Field>>& field
 	}
 }
 
+void* PreparedStatement::getNativeHandle() const {
+	if(binding) {
+		return binding->getNativeHandle();
+	}
+	return nullptr;
+}
+
 } /* namespace database */
 } /* namespace esl */

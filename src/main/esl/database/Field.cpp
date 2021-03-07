@@ -23,11 +23,12 @@ SOFTWARE.
 #include <esl/database/Field.h>
 #include <esl/database/Column.h>
 #include <esl/database/ResultSet.h>
-#include <esl/database/exception/RuntimeError.h>
 #include <esl/Stacktrace.h>
-#include <vector>
+
 #include <cctype>
 #include <algorithm>
+#include <vector>
+#include <stdexcept>
 
 namespace esl {
 namespace database {
@@ -308,7 +309,7 @@ bool Field::isNull() const {
 
 bool Field::asBoolean() const {
 	if(isNull()) {
-        throw esl::addStacktrace(exception::RuntimeError("null value"));
+        throw esl::addStacktrace(std::runtime_error("null value"));
 	}
 
 	switch(columnType) {
@@ -342,7 +343,7 @@ bool Field::asBoolean() const {
 
 std::int64_t Field::asInteger() const {
 	if(isNull()) {
-        throw esl::addStacktrace(exception::RuntimeError("null value"));
+        throw esl::addStacktrace(std::runtime_error("null value"));
 	}
 
 	switch(columnType) {
@@ -372,7 +373,7 @@ std::int64_t Field::asInteger() const {
 
 double Field::asDouble() const {
 	if(isNull()) {
-        throw esl::addStacktrace(exception::RuntimeError("null value"));
+        throw esl::addStacktrace(std::runtime_error("null value"));
 	}
 
 	switch(columnType) {
@@ -402,7 +403,7 @@ double Field::asDouble() const {
 
 std::string Field::asString() const {
 	if(isNull()) {
-        throw esl::addStacktrace(exception::RuntimeError("null value"));
+        throw esl::addStacktrace(std::runtime_error("null value"));
 	}
 
 	switch(columnType) {
@@ -588,7 +589,7 @@ void Field::setValue(bool value) {
 		case Column::Type::sqlBoolean:
 			break;
 		default:
-	        throw esl::addStacktrace(exception::RuntimeError("column is not boolean"));
+	        throw esl::addStacktrace(std::runtime_error("column is not boolean"));
 		}
 
 		if(valueIsNull == false && valueBoolean == value) {
@@ -613,7 +614,7 @@ void Field::setValue(std::int64_t value) {
 		case Column::Type::sqlSmallInt:
 			break;
 		default:
-	        throw esl::addStacktrace(exception::RuntimeError("column is not integer"));
+	        throw esl::addStacktrace(std::runtime_error("column is not integer"));
 		}
 
 		if(valueIsNull == false && valueInteger == value) {
@@ -641,7 +642,7 @@ void Field::setValue(double value) {
 		case Column::Type::sqlReal:
 			break;
 		default:
-	        throw esl::addStacktrace(exception::RuntimeError("column is not double"));
+	        throw esl::addStacktrace(std::runtime_error("column is not double"));
 		}
 
 		if(valueIsNull == false && valueDouble == value) {
@@ -666,7 +667,7 @@ void Field::setValue(const std::string& value) {
 		case Column::Type::sqlChar:
 			break;
 		default:
-	        throw esl::addStacktrace(exception::RuntimeError("column is not string"));
+	        throw esl::addStacktrace(std::runtime_error("column is not string"));
 		}
 
 		if(valueIsNull == false && valueString == value) {

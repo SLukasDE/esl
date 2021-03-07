@@ -83,6 +83,7 @@ private:
 	std::vector<Field> fields;
 	std::map<std::string, std::size_t> nameToIndex;
 	bool valuesChanged = false;
+	bool fetching = false;
 };
 
 } /* namespace database */

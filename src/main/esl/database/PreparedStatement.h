@@ -43,6 +43,8 @@ public:
 		virtual const std::vector<Column>& getResultColumns() const = 0;
 		virtual ResultSet execute(const std::vector<Field>& fields) = 0;
 		virtual void executeBulk(const std::vector<std::vector<Field>>& fieldArrays) = 0;
+
+		virtual void* getNativeHandle() const = 0;
 	};
 
 	PreparedStatement() = default;
@@ -79,6 +81,8 @@ public:
 	    addArrayArguments(fieldArrays, args...);
 	    executeBulk(fieldArrays);
     }
+
+	void* getNativeHandle() const;
 
 private:
 	template<typename T>

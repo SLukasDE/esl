@@ -44,6 +44,8 @@ public:
 //    virtual void close() = 0;
 	virtual bool isClosed() const = 0;
 
+	virtual void* getNativeHandle() const = 0;
+
 };
 
 } /* namespace database */

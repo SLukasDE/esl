@@ -94,31 +94,31 @@ ResultSet& ResultSet::operator=(ResultSet&& other) {
 
 const Field& ResultSet::operator[](const std::string& name) const {
 	if(!binding) {
-        throw esl::addStacktrace(exception::RuntimeError(std::string("cannot access field \"") + name + "\" because record set it empty."));
+        throw esl::addStacktrace(std::runtime_error("cannot access field \"" + name + "\" because record set it empty."));
 	}
 
 	auto iter = nameToIndex.find(name);
 	if(iter == nameToIndex.end()) {
-        throw esl::addStacktrace(exception::RuntimeError(std::string("unknown field \"") + name + "\" requested."));
+        throw esl::addStacktrace(std::runtime_error("unknown field \"" + name + "\" requested."));
 	}
 	return fields[iter->second];
 }
 
 Field& ResultSet::operator[](const std::string& name) {
 	if(!binding) {
-        throw esl::addStacktrace(exception::RuntimeError(std::string("cannot access field \"") + name + "\" because record set it empty."));
+        throw esl::addStacktrace(std::runtime_error("cannot access field \"" + name + "\" because record set it empty."));
 	}
 
 	auto iter = nameToIndex.find(name);
 	if(iter == nameToIndex.end()) {
-        throw esl::addStacktrace(exception::RuntimeError(std::string("unknown field \"") + name + "\" requested."));
+        throw esl::addStacktrace(std::runtime_error("unknown field \"" + name + "\" requested."));
 	}
 	return fields[iter->second];
 }
 
 const Field& ResultSet::operator[](std::size_t index) const {
 	if(!binding) {
-        throw esl::addStacktrace(exception::RuntimeError(std::string("cannot access field at index \"") + std::to_string(index) + "\" because record set it empty."));
+        throw esl::addStacktrace(std::runtime_error("cannot access field at index \"" + std::to_string(index) + "\" because record set it empty."));
 	}
 
 	return fields[index];
@@ -126,7 +126,7 @@ const Field& ResultSet::operator[](std::size_t index) const {
 
 Field& ResultSet::operator[](std::size_t index) {
 	if(!binding) {
-        throw esl::addStacktrace(exception::RuntimeError(std::string("cannot access field at index \"") + std::to_string(index) + "\" because record set it empty."));
+        throw esl::addStacktrace(std::runtime_error("cannot access field at index \"" + std::to_string(index) + "\" because record set it empty."));
 	}
 
 	return fields[index];
@@ -149,15 +149,17 @@ const std::vector<Column>* ResultSet::getColumns() const {
 
 void ResultSet::next() {
 	if(!binding) {
-        throw esl::addStacktrace(exception::RuntimeError("cannot go to next result set because result set is already at the end."));
+        throw esl::addStacktrace(std::runtime_error("cannot go to next result set because result set is already at the end."));
 	}
 
 	save();
 
 #if 1
+	fetching = true;
 	if(binding->fetch(fields) == false) {
 		binding.reset();
 	}
+	fetching = false;
 #else
 	std::unique_ptr<Binding> tmpBinding = std::move(binding);
 	if(tmpBinding->fetch(fields)) {
@@ -169,7 +171,7 @@ void ResultSet::next() {
 
 void ResultSet::add() {
 	if(!binding) {
-        throw esl::addStacktrace(exception::RuntimeError("cannot add a new row because result set is already at the end."));
+        throw esl::addStacktrace(std::runtime_error("cannot add a new row because result set is already at the end."));
 	}
 
 	save();
@@ -182,7 +184,7 @@ void ResultSet::save() {
 	}
 
 	if(!binding) {
-        throw esl::addStacktrace(exception::RuntimeError("cannot save current result set because it is already at the end."));
+        throw esl::addStacktrace(std::runtime_error("cannot save current result set because it is already at the end."));
 	}
 
 	binding->save(fields);
@@ -190,10 +192,12 @@ void ResultSet::save() {
 }
 
 void ResultSet::setChanged(std::size_t index) {
-	if(binding && binding->isEditable(index) == false) {
-        throw esl::addStacktrace(exception::RuntimeError("cannot edit field."));
+	if(binding && fetching == false && binding->isEditable(index) == false) {
+        throw esl::addStacktrace(std::runtime_error("cannot edit field."));
 	}
-	valuesChanged = true;
+	if(fetching == false) {
+		valuesChanged = true;
+	}
 }
 
 } /* namespace database */

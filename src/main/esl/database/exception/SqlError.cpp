@@ -31,19 +31,22 @@ static constexpr const char* defaultMessage = "sql error";
 }
 
 SqlError::SqlError(database::Diagnostics aDiagnostics, short int aSqlReturnCode)
-: Exception(defaultMessage),
+//: Exception(defaultMessage),
+: std::runtime_error(defaultMessage),
   diagnostics(std::move(aDiagnostics)),
   sqlReturnCode(aSqlReturnCode)
 { }
 
 SqlError::SqlError(database::Diagnostics aDiagnostics, short int aSqlReturnCode, const char* message)
-: Exception(message),
+//: Exception(message),
+: std::runtime_error(message),
   diagnostics(std::move(aDiagnostics)),
   sqlReturnCode(aSqlReturnCode)
 { }
 
 SqlError::SqlError(database::Diagnostics aDiagnostics, short int aSqlReturnCode, const std::string& message)
-: Exception(message),
+//: Exception(message),
+: std::runtime_error(message),
   diagnostics(std::move(aDiagnostics)),
   sqlReturnCode(aSqlReturnCode)
 { }

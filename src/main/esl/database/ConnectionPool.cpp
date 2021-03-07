@@ -21,8 +21,9 @@ SOFTWARE.
 */
 
 #include <esl/database/ConnectionPool.h>
-#include <esl/database/Exception.h>
 #include <esl/Stacktrace.h>
+
+#include <stdexcept>
 
 namespace esl {
 namespace database {
@@ -43,6 +44,8 @@ public:
 
     bool isClosed() const override;
 
+	void* getNativeHandle() const override;
+
 private:
     esl::utility::ObjectPool<Connection>::unique_ptr connection;
 };
@@ -51,7 +54,7 @@ CPConnection::CPConnection(esl::utility::ObjectPool<Connection>::unique_ptr aCon
 : connection(std::move(aConnection))
 {
     if(!connection) {
-    	throw esl::addStacktrace(Exception("connection is empty"));
+    	throw esl::addStacktrace(std::runtime_error("connection is empty"));
     }
 }
 
@@ -68,6 +71,11 @@ void CPConnection::rollback() const {
 
 bool CPConnection::isClosed() const {
 	return connection->isClosed();
+}
+
+
+void* CPConnection::getNativeHandle() const {
+	return connection->getNativeHandle();
 }
 
 //PreparedStatement& CPConnection::prepare(const std::string& sql) const {
