@@ -22,9 +22,10 @@ SOFTWARE.
 
 #include <esl/database/ResultSet.h>
 #include <esl/database/PreparedStatement.h>
-#include <esl/database/exception/RuntimeError.h>
 #include <esl/Stacktrace.h>
 #include <esl/logging/Logger.h>
+
+#include <stdexcept>
 
 namespace esl {
 namespace database {

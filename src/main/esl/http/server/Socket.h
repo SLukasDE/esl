@@ -40,11 +40,11 @@ class Socket final : public Interface::Socket {
 public:
 	static module::Implementation& getDefault();
 
-	Socket(std::uint16_t port, requesthandler::Interface::CreateRequestHandler createRequestHandler,
+	Socket(std::uint16_t port, requesthandler::Interface::CreateInput createInput,
 			std::initializer_list<std::pair<std::string, std::string>> settings,
 			const std::string& implementation = getDefault().getImplementation());
 
-	Socket(std::uint16_t port, requesthandler::Interface::CreateRequestHandler createRequestHandler,
+	Socket(std::uint16_t port, requesthandler::Interface::CreateInput createInput,
 			const object::Values<std::string>& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 

@@ -32,14 +32,15 @@ namespace utility {
 
 class URL {
 public:
-	URL(const std::string& url);
+	URL(std::string url);
 
-	const Protocol& getScheme() const;
-	const std::string& getHostname() const;
-	const std::string& getPort() const;
-	const std::string& getPath() const;
-	const std::string& getQuery() const;
-	const std::string& getTag() const;
+	const std::string& toString() const noexcept;
+	const Protocol& getScheme() const noexcept;
+	const std::string& getHostname() const noexcept;
+	const std::string& getPort() const noexcept;
+	const std::string& getPath() const noexcept;
+	const std::string& getQuery() const noexcept;
+	const std::string& getTag() const noexcept;
 
 private:
 	enum class NextFragment {
@@ -57,6 +58,8 @@ private:
 	NextFragment parsePath(size_t& pos, const char* str, const size_t len);
 	NextFragment parseQuery(size_t& pos, const char* str, const size_t len);
 	NextFragment parseTag(size_t& pos, const char* str, const size_t len);
+
+	std::string url;
 
 	Protocol scheme;
 	std::string hostname;

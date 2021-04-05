@@ -26,10 +26,12 @@ namespace esl {
 namespace http {
 namespace server {
 
-Response::Response(unsigned short aStatusCode, const std::string& contentType) noexcept
-: statusCode(aStatusCode)
+Response::Response(unsigned short aStatusCode, const utility::MIME& contentType, std::string aRealmId) noexcept
+: statusCode(aStatusCode),
+  headers{{"Content-Type", contentType.toString()}},
+  realmId(std::move(aRealmId))
 {
-	headers["Content-Type"] = contentType;
+//	headers["Content-Type"] = contentType.toString();
 }
 
 
@@ -39,6 +41,10 @@ bool Response::isValid() const noexcept {
 
 unsigned short Response::getStatusCode() const noexcept {
 	return statusCode;
+}
+
+const std::string& Response::getRealmId() const noexcept {
+	return realmId;
 }
 
 void Response::addHeader(const std::string& key, const std::string& value) {

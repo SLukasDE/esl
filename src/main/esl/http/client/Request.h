@@ -24,8 +24,7 @@ SOFTWARE.
 #define ESL_HTTP_CLIENT_REQUEST_H_
 
 #include <esl/utility/HttpMethod.h>
-#include <esl/http/client/RequestHandler.h>
-#include <esl/http/client/Interface.h>
+#include <esl/utility/MIME.h>
 
 #include <string>
 #include <map>
@@ -37,47 +36,30 @@ namespace esl {
 namespace http {
 namespace client {
 
-class Response;
-class ResponseHandler;
-
 class Request final {
-friend class Interface::Connection;
-
 public:
-	Request(std::string path, utility::HttpMethod method,
-			ResponseHandler* responseHandler,
-			std::unique_ptr<RequestHandler> requestHandler,
+	Request(std::string path, utility::HttpMethod method, utility::MIME contentType,
 			std::initializer_list<std::pair<const std::string, std::string>> requestHeaders = {});
-	Request(std::string path, utility::HttpMethod method,
-			ResponseHandler* responseHandler,
-			std::unique_ptr<RequestHandler> requestHandler,
+	Request(std::string path, utility::HttpMethod method, utility::MIME contentType,
 			std::map<std::string, std::string> requestHeaders);
-	Request(const Request&) = delete;
-	Request(Request&& other);
+	Request(const Request&) = default;
+	Request(Request&& other) = default;
 
-	~Request();
-
-	Request& operator=(const Request&) = delete;
-	Request& operator=(Request&& other);
+	Request& operator=(const Request&) = default;
+	Request& operator=(Request&& other) = default;
 
 	const std::string& getPath() const noexcept;
 	const utility::HttpMethod& getMethod() const noexcept;
-
-	RequestHandler* getRequestHandler() const noexcept;
-	ResponseHandler* getResponseHandler() const noexcept;
+	const utility::MIME& getContentType() const noexcept;
 
 	const std::map<std::string, std::string>& getHeaders() const noexcept;
 	void addHeader(const std::string& key, const std::string& value);
 
 private:
-	void setResponse(const Response& response);
-
 	std::string path;
 	utility::HttpMethod method;
+	utility::MIME contentType;
 
-	ResponseHandler* responseHandler = nullptr;
-
-	std::unique_ptr<RequestHandler> requestHandler;
 	std::map<std::string, std::string> requestHeaders;
 };
 

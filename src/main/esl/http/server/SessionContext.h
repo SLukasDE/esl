@@ -26,7 +26,6 @@ SOFTWARE.
 #include <esl/object/Interface.h>
 #include <esl/object/Settings.h>
 #include <esl/http/server/RequestContext.h>
-//#include <esl/http/server/ObjectContext.h>
 
 namespace esl {
 namespace http {
@@ -35,7 +34,6 @@ namespace server {
 class SessionContext : public esl::object::Settings {
 public:
 	virtual esl::object::Interface::Object& getSession(RequestContext& requestContext) const = 0;
-//	virtual ObjectContext& getSession(RequestContext& requestContext) const = 0;
 };
 
 } /* namespace server */

@@ -23,11 +23,11 @@ SOFTWARE.
 #ifndef ESL_HTTP_CLIENT_INTERFACE_H_
 #define ESL_HTTP_CLIENT_INTERFACE_H_
 
+#include <esl/http/client/PreparedRequest.h>
+#include <esl/utility/URL.h>
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
 #include <esl/object/Values.h>
-#include <esl/utility/URL.h>
-//#include <esl/http/client/Response.h>
 
 #include <string>
 #include <memory>
@@ -36,25 +36,22 @@ namespace esl {
 namespace http {
 namespace client {
 
+class Connection;
 class Request;
 class Response;
-class ResponseHandler;
 
 struct Interface : esl::module::Interface {
 	/* *************************************** *
 	 * definitions required for this interface *
 	 * *************************************** */
 	class Connection {
+	friend class client::Connection;
 	public:
+		Connection() = default;
 		virtual ~Connection() = default;
 
-		virtual Response send(Request request) const = 0;
-
-	protected:
-		Connection() = default;
-
-		static void request__setResponse(Request& request, const Response& response);
-		static bool responseHandler__consumer(ResponseHandler& responseHandler, const char* contentData, std::size_t contentSize);
+		virtual PreparedRequest prepare(Request&& request) const = 0;
+		virtual PreparedRequest prepare(const Request& request) const = 0;
 	};
 
 	using CreateConnection = std::unique_ptr<Connection> (*)(const utility::URL& hostUrl, const object::Values<std::string>& settings);

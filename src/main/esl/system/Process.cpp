@@ -37,112 +37,53 @@ module::Implementation& Process::getDefault() {
 	return implementation;
 }
 
-Process::Process(process::Arguments arguments,
+Process::Process(Arguments arguments,
 		std::initializer_list<std::pair<std::string, std::string>> settings,
 		const std::string& implementation)
-: process(esl::getModule().getInterface<Interface>(implementation).createProcess(std::move(arguments), "", object::ValueSettings(std::move(settings))))
+: process(esl::getModule().getInterface<Interface>(implementation).createProcess(std::move(arguments), object::ValueSettings(std::move(settings))))
 { }
 
-Process::Process(process::Arguments arguments, std::string workingDir,
-		std::initializer_list<std::pair<std::string, std::string>> settings,
-		const std::string& implementation)
-: process(esl::getModule().getInterface<Interface>(implementation).createProcess(std::move(arguments), std::move(workingDir), object::ValueSettings(std::move(settings))))
-{ }
-
-Process::Process(process::Arguments arguments, std::string workingDir,
+Process::Process(Arguments arguments,
 		const object::Values<std::string>& settings,
 		const std::string& implementation)
-: process(esl::getModule().getInterface<Interface>(implementation).createProcess(std::move(arguments), std::move(workingDir), settings))
+: process(esl::getModule().getInterface<Interface>(implementation).createProcess(std::move(arguments), settings))
 { }
 
-Process::Process(process::Arguments arguments, process::Environment environment,
-		std::initializer_list<std::pair<std::string, std::string>> settings,
-		const std::string& implementation)
-: process(esl::getModule().getInterface<Interface>(implementation).createProcessWithEnvironment(std::move(arguments), std::move(environment), "", object::ValueSettings(std::move(settings))))
-{ }
+void Process::setWorkingDir(std::string workingDir) {
+	process->setWorkingDir(std::move(workingDir));
+}
 
-Process::Process(process::Arguments arguments, process::Environment environment, std::string workingDir,
-		std::initializer_list<std::pair<std::string, std::string>> settings,
-		const std::string& implementation)
-: process(esl::getModule().getInterface<Interface>(implementation).createProcessWithEnvironment(std::move(arguments), std::move(environment), std::move(workingDir), object::ValueSettings(std::move(settings))))
-{ }
+void Process::setEnvironment(std::unique_ptr<Environment> environment) {
+	process->setEnvironment(std::move(environment));
+}
 
-Process::Process(process::Arguments arguments, process::Environment environment, std::string workingDir,
-		const object::Values<std::string>& settings,
-		const std::string& implementation)
-: process(esl::getModule().getInterface<Interface>(implementation).createProcessWithEnvironment(std::move(arguments), std::move(environment), std::move(workingDir), settings))
-{ }
+const Environment* Process::getEnvironment() const {
+	return process->getEnvironment();
+}
+
+void Process::sendSignal(Interface::SignalType signal) {
+	process->sendSignal(signal);
+}
+
+const void* Process::getNativeHandle() const {
+	return process->getNativeHandle();
+}
 
 int Process::execute() {
-	ParameterFeatures parameterFeatures;
+	Interface::Process::ParameterFeatures parameterFeatures;
 
-	return execute(ParameterStreams(), parameterFeatures);
-}
-
-int Process::execute(Interface::Process::FileDescriptorHandle handle) {
-	ParameterStreams parameterStream;
-	ParameterFeatures parameterFeatures;
-
-	addParameterStream(parameterStream, handle, nullptr, nullptr);
-	return execute(parameterStream, parameterFeatures);
-}
-
-int Process::execute(utility::Producer& producer, Interface::Process::FileDescriptorHandle handle) {
-	ParameterStreams parameterStream;
-	ParameterFeatures parameterFeatures;
-
-	addParameterStream(parameterStream, handle, &producer, nullptr);
-	return execute(parameterStream, parameterFeatures);
-}
-
-int Process::execute(utility::Consumer& consumer, Interface::Process::FileDescriptorHandle handle) {
-	ParameterStreams parameterStream;
-	ParameterFeatures parameterFeatures;
-
-	addParameterStream(parameterStream, handle, nullptr, &consumer);
-	return execute(parameterStream, parameterFeatures);
+	return process->execute(transceivers, parameterFeatures);
 }
 
 int Process::execute(Interface::Feature& feature) {
-	ParameterFeatures parameterFeatures;
+	Interface::Process::ParameterFeatures parameterFeatures;
 
 	parameterFeatures.emplace_back(std::ref(feature));
-	return execute(ParameterStreams(), parameterFeatures);
+	return process->execute(transceivers, parameterFeatures);
 }
 
-int Process::execute(const ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures) {
-	return process->execute(parameterStreams, parameterFeatures);
-}
-
-void Process::addParameterStream(ParameterStreams& parameterStreams, Interface::Process::FileDescriptorHandle handle, utility::Producer* producer, utility::Consumer* consumer) {
-	ParameterStream& parameterStream = parameterStreams[handle];
-
-	if(producer == nullptr && consumer == nullptr) {
-    	if(parameterStream.producer && parameterStream.consumer) {
-    		throw esl::addStacktrace(std::runtime_error("Conflicting parameters: Flag defined to close handle " + std::to_string(handle) + " for child process, but there is already a producer and a consumer defined for this handle."));
-    	}
-    	else if(parameterStream.producer && parameterStream.consumer == nullptr) {
-    		throw esl::addStacktrace(std::runtime_error("Conflicting parameters: Flag defined to close handle " + std::to_string(handle) + " for child process, but there is already a producer defined for this handle."));
-    	}
-    	else if(parameterStream.producer == nullptr && parameterStream.consumer) {
-    		throw esl::addStacktrace(std::runtime_error("Conflicting parameters: Flag defined to close handle " + std::to_string(handle) + " for child process, but there is already a consumer defined for this handle."));
-    	}
-	}
-	else {
-    	if(producer) {
-        	if(parameterStream.producer) {
-        		throw esl::addStacktrace(std::runtime_error("Conflicting parameters: Multiple producer defined for handle " + std::to_string(handle) + " for child process."));
-        	}
-        	parameterStream.producer = producer;
-    	}
-
-    	if(consumer) {
-        	if(parameterStream.consumer) {
-        		throw esl::addStacktrace(std::runtime_error("Conflicting parameters: Multiple producer defined for handle " + std::to_string(handle) + " for child process."));
-        	}
-        	parameterStream.consumer = consumer;
-    	}
-	}
+int Process::execute(Interface::Process::ParameterFeatures& parameterFeatures) {
+	return process->execute(transceivers, parameterFeatures);
 }
 
 } /* namespace system */

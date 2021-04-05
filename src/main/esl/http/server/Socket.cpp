@@ -33,18 +33,18 @@ module::Implementation& Socket::getDefault() {
 	return implementation;
 }
 
-Socket::Socket(std::uint16_t port, requesthandler::Interface::CreateRequestHandler createRequestHandler,
+Socket::Socket(std::uint16_t port, requesthandler::Interface::CreateInput createInput,
 		std::initializer_list<std::pair<std::string, std::string>> settings,
 		const std::string& implementation)
 : Interface::Socket(),
-  socket(esl::getModule().getInterface<Interface>(implementation).createSocket(port, createRequestHandler, object::ValueSettings(std::move(settings))))
+  socket(esl::getModule().getInterface<Interface>(implementation).createSocket(port, createInput, object::ValueSettings(std::move(settings))))
 { }
 
-Socket::Socket(std::uint16_t port, requesthandler::Interface::CreateRequestHandler createRequestHandler,
+Socket::Socket(std::uint16_t port, requesthandler::Interface::CreateInput createInput,
 		const object::Values<std::string>& settings,
 		const std::string& implementation)
 : Interface::Socket(),
-  socket(esl::getModule().getInterface<Interface>(implementation).createSocket(port, createRequestHandler, settings))
+  socket(esl::getModule().getInterface<Interface>(implementation).createSocket(port, createInput, settings))
 { }
 
 void Socket::addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) {

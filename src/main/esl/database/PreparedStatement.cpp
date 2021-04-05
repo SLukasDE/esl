@@ -29,12 +29,11 @@ namespace {
 std::vector<Column> emptyColumns;
 esl::logging::Logger<esl::logging::Level::TRACE> logger;
 }
-
+/*
 PreparedStatement::PreparedStatement(PreparedStatement&& other)
 : binding(std::move(other.binding))
-{
-}
-
+{ }
+*/
 PreparedStatement::PreparedStatement(std::unique_ptr<Binding> aBinding)
 : binding(std::move(aBinding))
 { }
@@ -42,14 +41,14 @@ PreparedStatement::PreparedStatement(std::unique_ptr<Binding> aBinding)
 PreparedStatement::operator bool() const noexcept {
 	return binding ? true : false;
 }
-
+/*
 PreparedStatement& PreparedStatement::operator=(PreparedStatement&& other) {
 	if(this != &other) {
 		binding = std::move(other.binding);
 	}
 	return *this;
 }
-
+*/
 const std::vector<Column>& PreparedStatement::getResultColumns() const {
 	if(binding) {
 		return binding->getResultColumns();

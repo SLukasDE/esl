@@ -38,37 +38,37 @@ static constexpr const char* message5xx = "server error";
 }
 
 StatusCode::StatusCode(unsigned short aStatusCode)
-: Exception(getMessage(aStatusCode)),
+: std::runtime_error(getMessage(aStatusCode)),
   statusCode(aStatusCode),
   mimeType(utility::MIME::textHtml)
 { }
 
 StatusCode::StatusCode(unsigned short aStatusCode, const char* message)
-: Exception(message),
+: std::runtime_error(message),
   statusCode(aStatusCode),
   mimeType(utility::MIME::textHtml)
 { }
 
 StatusCode::StatusCode(unsigned short aStatusCode, const std::string& message)
-: Exception(message),
+: std::runtime_error(message),
   statusCode(aStatusCode),
   mimeType(utility::MIME::textHtml)
 { }
 
 StatusCode::StatusCode(unsigned short aStatusCode, utility::MIME aMimeType)
-: Exception(getMessage(aStatusCode)),
+: std::runtime_error(getMessage(aStatusCode)),
   statusCode(aStatusCode),
   mimeType(std::move(aMimeType))
 { }
 
 StatusCode::StatusCode(unsigned short aStatusCode, utility::MIME aMimeType, const char* message)
-: Exception(message),
+: std::runtime_error(message),
   statusCode(aStatusCode),
   mimeType(std::move(aMimeType))
 { }
 
 StatusCode::StatusCode(unsigned short aStatusCode, utility::MIME aMimeType, const std::string& message)
-: Exception(message),
+: std::runtime_error(message),
   statusCode(aStatusCode),
   mimeType(std::move(aMimeType))
 { }

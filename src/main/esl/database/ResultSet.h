@@ -25,6 +25,7 @@ SOFTWARE.
 
 #include <esl/database/Column.h>
 #include <esl/database/Field.h>
+
 #include <cstddef>
 #include <string>
 #include <map>

@@ -25,12 +25,13 @@ SOFTWARE.
 
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
-
-#include <esl/system/process/Arguments.h>
-#include <esl/system/process/Environment.h>
+#include <esl/system/Transceiver.h>
+#include <esl/system/Arguments.h>
+#include <esl/system/Environment.h>
+#include <esl/object/Interface.h>
 #include <esl/object/Values.h>
-#include <esl/utility/Consumer.h>
-#include <esl/utility/Producer.h>
+
+#include <boost/filesystem.hpp>
 
 #include <string>
 #include <vector>
@@ -45,39 +46,11 @@ struct Interface : esl::module::Interface {
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class Feature {
-	public:
-		virtual ~Feature() = default;
-	};
-
-	class Process {
-	public:
-		using FileDescriptorHandle = int;
-
-		static const FileDescriptorHandle noHandle;
-		static const FileDescriptorHandle stdInHandle;
-		static const FileDescriptorHandle stdOutHandle;
-		static const FileDescriptorHandle stdErrHandle;
-
-		struct ParameterStream {
-			utility::Producer* producer = nullptr;
-			utility::Consumer* consumer = nullptr;
-		};
-		using ParameterStreams = std::map<FileDescriptorHandle, ParameterStream>;
-
-		using ParameterFeatures = std::vector<std::reference_wrapper<Feature>>;
-
-		Process() = default;
-	    virtual ~Process() = default;
-
-		virtual int execute(const ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures) = 0;
-	};
-
 	enum class SignalType {
 	    unknown,
-		hangUp,
-	    interrupt,
-	    quit,
+		hangUp, // ?, controlling terminal closed
+	    interrupt, // interrupt process stream, ctrl-C
+	    quit,      // like ctrl-C but with a core dump, interruption by error in code, ctl-/
 		ill,
 		trap,
 		abort,
@@ -89,12 +62,38 @@ struct Interface : esl::module::Interface {
 		alarm,
 		child,
 		stackFault,
-	    terminate,
-	    pipe
+	    terminate, // terminate whenever/soft kill, typically sends SIGHUP as well?
+	    pipe,
+		kill       // terminate immediately/hard kill, use when 15 doesn't work or when something disasterous might happen if process is allowed to cont., kill -9
 	};
 
-	using CreateProcess = std::unique_ptr<Process>(*)(process::Arguments arguments, std::string workingDir, const object::Values<std::string>& setting);
-	using CreateProcessWithEnvironment = std::unique_ptr<Process>(*)(process::Arguments arguments, process::Environment environment, std::string workingDir, const object::Values<std::string>& setting);
+	using Feature = object::Interface::Object;
+
+	class Process {
+	public:
+		using FileDescriptorHandle = int;
+
+		static const FileDescriptorHandle noHandle;
+		static const FileDescriptorHandle stdInHandle;
+		static const FileDescriptorHandle stdOutHandle;
+		static const FileDescriptorHandle stdErrHandle;
+
+		Process() = default;
+	    virtual ~Process() = default;
+
+		virtual void setWorkingDir(std::string workingDir) = 0;
+		virtual void setEnvironment(std::unique_ptr<Environment> environment) = 0;
+		virtual const Environment* getEnvironment() const = 0;
+
+		virtual void sendSignal(SignalType signal) = 0;
+		virtual const void* getNativeHandle() const = 0;
+
+		using ParameterStreams = std::map<FileDescriptorHandle, Transceiver>;
+		using ParameterFeatures = std::vector<std::reference_wrapper<object::Interface::Object>>;
+		virtual int execute(ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures) = 0;
+	};
+
+	using CreateProcess = std::unique_ptr<Process>(*)(Arguments arguments, const object::Values<std::string>& setting);
 
 	using InstallSignalHandler = void (*)(SignalType signalType, std::function<void()> handler, const object::Values<std::string>& setting);
 	using RemoveSignalHandler = void (*)(SignalType signalType, std::function<void()> handler, const object::Values<std::string>& setting);
@@ -117,18 +116,15 @@ struct Interface : esl::module::Interface {
 
 	Interface(std::string module, std::string implementation,
 			CreateProcess aCreateProcess,
-			CreateProcessWithEnvironment aCreateProcessWithEnvironment,
 			InstallSignalHandler aInstallSignalHandler,
 			RemoveSignalHandler aRemoveSignalHandler)
 	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
 	  createProcess(aCreateProcess),
-	  createProcessWithEnvironment(aCreateProcessWithEnvironment),
 	  installSignalHandler(aInstallSignalHandler),
 	  removeSignalHandler(aRemoveSignalHandler)
 	{ }
 
 	CreateProcess createProcess;
-	CreateProcessWithEnvironment createProcessWithEnvironment;
 
 	InstallSignalHandler installSignalHandler;
 	RemoveSignalHandler removeSignalHandler;

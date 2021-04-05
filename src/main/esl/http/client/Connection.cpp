@@ -21,13 +21,17 @@ SOFTWARE.
 */
 
 #include <esl/http/client/Connection.h>
-#include <esl/Module.h>
 #include <esl/object/ValueSettings.h>
-#include <esl/http/client/ResponseHandler.h>
+#include <esl/logging/Logger.h>
+#include <esl/Module.h>
 
 namespace esl {
 namespace http {
 namespace client {
+
+namespace {
+esl::logging::Logger<> logger("esl::http::client::Connection");
+}
 
 module::Implementation& Connection::getDefault() {
 	static module::Implementation implementation;
@@ -48,10 +52,31 @@ Connection::Connection(const utility::URL& hostUrl,
   connection(esl::getModule().getInterface<Interface>(implementation).createConnection(hostUrl, settings))
 { }
 
-Response Connection::send(Request request) const {
-	return connection->send(std::move(request));
+PreparedRequest Connection::prepare(Request&& request) const {
+	return connection->prepare(std::move(request));
 }
 
+PreparedRequest Connection::prepare(const Request& request) const {
+	return connection->prepare(request);
+}
+/*
+Response Connection::send(Request request) const {
+	Data data;
+    return send(std::move(request), data);
+}
+
+Response Connection::send(Request&& request, Data& data) const {
+	return connection->send(std::move(request), data);
+}
+
+void Connection::addArguments(Data& data, Input&& input) {
+	data.input = std::move(input);
+}
+
+void Connection::addArguments(Data& data, utility::io::Output&& output) {
+	data.output = std::move(output);
+}
+*/
 } /* namespace client */
 } /* namespace http */
 } /* namespace esl */

@@ -26,6 +26,7 @@ SOFTWARE.
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
 #include <esl/http/server/RequestContext.h>
+#include <esl/io/Input.h>
 
 #include <string>
 #include <memory>
@@ -40,22 +41,7 @@ struct Interface : esl::module::Interface {
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class RequestHandler {
-	public:
-		RequestHandler() = default;
-		virtual ~RequestHandler() = default;
-
-	// must be public to be able to implement a proxy request handle that can call this method
-	//protected:
-		// return true for every kind of success and get called again for more content data
-		// return false for failure and/or get not called again for more content data
-		// virtual bool process(Connection& connection, const char* contentData, std::size_t contentDataSize) = 0;
-		virtual bool process(const char* contentData, std::size_t contentDataSize) {
-			return false;
-		}
-	};
-
-	using CreateRequestHandler = std::unique_ptr<RequestHandler> (*)(RequestContext&);
+	using CreateInput = esl::io::Input (*)(RequestContext&);
 
 	/* ************************************ *
 	 * standard API definition of interface *
@@ -74,12 +60,12 @@ struct Interface : esl::module::Interface {
 	 * ************************************ */
 
 	Interface(std::string module, std::string implementation,
-			CreateRequestHandler aCreateRequestHandler)
+			CreateInput aCreateInput)
 	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
-	  createRequestHandler(aCreateRequestHandler)
+	  createInput(aCreateInput)
 	{ }
 
-	CreateRequestHandler createRequestHandler;
+	CreateInput createInput;
 };
 
 } /* namespace requesthandler */

@@ -24,113 +24,62 @@ SOFTWARE.
 #define ESL_SYSTEM_PROCESS_H_
 
 #include <esl/system/Interface.h>
-#include <esl/system/process/Arguments.h>
-#include <esl/system/process/Environment.h>
+#include <esl/system/Transceiver.h>
+#include <esl/system/Arguments.h>
+#include <esl/system/Environment.h>
 #include <esl/object/Values.h>
-#include <esl/utility/Consumer.h>
-#include <esl/utility/Producer.h>
 #include <esl/module/Implementation.h>
 
 #include <initializer_list>
 #include <string>
 #include <memory>
+#include <map>
 
 namespace esl {
 namespace system {
 
-class Process final : public Interface::Process {
+class Process final {
 public:
 	static module::Implementation& getDefault();
 
-	Process(process::Arguments arguments,
+	Process(Arguments arguments,
 			std::initializer_list<std::pair<std::string, std::string>> settings,
 			const std::string& implementation = getDefault().getImplementation());
-	Process(process::Arguments arguments, std::string workingDir,
-			std::initializer_list<std::pair<std::string, std::string>> settings,
-			const std::string& implementation = getDefault().getImplementation());
-	Process(process::Arguments arguments, std::string workingDir = "",
+	Process(Arguments arguments,
 			const object::Values<std::string>& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
-	Process(process::Arguments arguments, process::Environment environment,
-			std::initializer_list<std::pair<std::string, std::string>> settings,
-			const std::string& implementation = getDefault().getImplementation());
-	Process(process::Arguments arguments, process::Environment environment, std::string workingDir,
-			std::initializer_list<std::pair<std::string, std::string>> settings,
-			const std::string& implementation = getDefault().getImplementation());
-	Process(process::Arguments arguments, process::Environment environment, std::string workingDir = "",
-			const object::Values<std::string>& settings = getDefault().getSettings(),
-			const std::string& implementation = getDefault().getImplementation());
+
+	std::map<Interface::Process::FileDescriptorHandle, Transceiver> transceivers;
+
+	void setWorkingDir(std::string workingDir);
+	void setEnvironment(std::unique_ptr<Environment> environment);
+	const Environment* getEnvironment() const;
+
+	void sendSignal(Interface::SignalType signal);
+	const void* getNativeHandle() const;
 
 	int execute();
-	int execute(Interface::Process::FileDescriptorHandle handle);
-	int execute(utility::Producer& producer, Interface::Process::FileDescriptorHandle handle);
-	int execute(utility::Consumer& consumer, Interface::Process::FileDescriptorHandle handle);
 	int execute(Interface::Feature& feature);
-	int execute(const ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures) override;
-
-	template<typename... Args>
-	int execute(Interface::Process::FileDescriptorHandle handle, Args&... args) {
-    	ParameterStreams parameterStreams;
-    	ParameterFeatures parameterFeatures;
-
-    	addParameterStream(parameterStreams, handle, nullptr, nullptr);
-    	return execute(parameterStreams, parameterFeatures, args...);
-	}
-
-	template<typename... Args>
-	int execute(utility::Producer& producer, Interface::Process::FileDescriptorHandle handle, Args&... args) {
-    	ParameterStreams parameterStreams;
-    	ParameterFeatures parameterFeatures;
-
-    	addParameterStream(parameterStreams, handle, &producer, nullptr);
-    	return execute(parameterStreams, parameterFeatures, args...);
-	}
-
-	template<typename... Args>
-	int execute(utility::Consumer& consumer, Interface::Process::FileDescriptorHandle handle, Args&... args) {
-		ParameterStreams parameterStreams;
-		ParameterFeatures parameterFeatures;
-
-		addParameterStream(parameterStreams, handle, nullptr, &consumer);
-    	return execute(parameterStreams, parameterFeatures, args...);
-	}
 
 	template<typename... Args>
 	int execute(Interface::Feature& feature, Args&... args) {
-		ParameterFeatures parameterFeatures;
+		Interface::Process::ParameterFeatures parameterFeatures;
 
 		parameterFeatures.emplace_back(std::ref(feature));
-    	return execute(ParameterStreams(), parameterFeatures, args...);
+    	return execute(parameterFeatures, args...);
 	}
 
 private:
-	template<typename... Args>
-	int execute(ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures, Interface::Process::FileDescriptorHandle handle, Args&... args) {
-		addParameterStream(parameterStreams, handle, nullptr, nullptr);
-		return execute(parameterStreams, parameterFeatures, args...);
-	}
+	int execute(Interface::Process::ParameterFeatures& parameterFeatures);
 
 	template<typename... Args>
-	int execute(ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures, utility::Producer& producer, Interface::Process::FileDescriptorHandle handle, Args&... args) {
-		addParameterStream(parameterStreams, handle, &producer, nullptr);
-		return execute(parameterStreams, parameterFeatures, args...);
-	}
-
-	template<typename... Args>
-	int execute(ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures, utility::Consumer& consumer, Interface::Process::FileDescriptorHandle handle, Args&... args) {
-		addParameterStream(parameterStreams, handle, nullptr, &consumer);
-		return execute(parameterStreams, parameterFeatures, args...);
-	}
-
-	template<typename... Args>
-	int execute(ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures, Interface::Feature& feature, Args&... args) {
+	int execute(Interface::Process::ParameterFeatures& parameterFeatures, Interface::Feature& feature, Args&... args) {
 		parameterFeatures.emplace_back(std::ref(feature));
-    	return execute(ParameterStreams(), parameterFeatures, args...);
+    	return execute(parameterFeatures, args...);
 	}
-
-	static void addParameterStream(ParameterStreams& parameterStreams, Interface::Process::FileDescriptorHandle handle, utility::Producer* producer, utility::Consumer* consumer);
 
 	std::unique_ptr<Interface::Process> process;
+	std::vector<std::reference_wrapper<object::Interface::Object>> parameterFeatures;
 };
 
 } /* namespace system */

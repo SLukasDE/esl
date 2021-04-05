@@ -23,27 +23,24 @@ SOFTWARE.
 #ifndef ESL_HTTP_SERVER_CONNECTION_H_
 #define ESL_HTTP_SERVER_CONNECTION_H_
 
-#include <esl/http/server/Request.h>
+#include <esl/http/server/Response.h>
+#include <esl/io/Output.h>
+
+#include <boost/filesystem.hpp>
+
 #include <memory>
 
 namespace esl {
 namespace http {
 namespace server {
 
-class ResponseBasicAuth;
-class ResponseDynamic;
-class ResponseFile;
-class ResponseStatic;
-
 class Connection {
 public:
 	Connection() = default;
 	virtual ~Connection() = default;
 
-	virtual bool sendResponse(std::unique_ptr<ResponseBasicAuth> response) noexcept = 0;
-	virtual bool sendResponse(std::unique_ptr<ResponseDynamic> response) noexcept = 0;
-	virtual bool sendResponse(std::unique_ptr<ResponseFile> response) noexcept = 0;
-	virtual bool sendResponse(std::unique_ptr<ResponseStatic> response) noexcept = 0;
+	virtual bool sendResponse(const Response& response, esl::io::Output output) noexcept = 0;
+	virtual bool sendResponse(const Response& response, boost::filesystem::path path) noexcept = 0;
 };
 
 } /* namespace server */

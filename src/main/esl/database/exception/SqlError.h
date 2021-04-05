@@ -23,16 +23,15 @@ SOFTWARE.
 #ifndef ESL_DATABASE_EXCEPTION_SQLERROR_H_
 #define ESL_DATABASE_EXCEPTION_SQLERROR_H_
 
-//#include <esl/database/Exception.h>
 #include <esl/database/Diagnostics.h>
 
+#include <string>
 #include <stdexcept>
 
 namespace esl {
 namespace database {
 namespace exception {
 
-//class SqlError : public Exception {
 class SqlError : public std::runtime_error {
 public:
 	explicit SqlError(database::Diagnostics diagnostics, short int sqlReturnCode);

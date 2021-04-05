@@ -49,7 +49,7 @@ public:
 
 	PreparedStatement() = default;
 	PreparedStatement(const PreparedStatement&) = delete;
-	PreparedStatement(PreparedStatement&&);
+	PreparedStatement(PreparedStatement&&) = default;
 	PreparedStatement(std::unique_ptr<Binding> binding);
 
 	~PreparedStatement() = default;
@@ -57,7 +57,7 @@ public:
 	explicit operator bool() const noexcept;
 
 	PreparedStatement& operator=(const PreparedStatement&) = delete;
-	PreparedStatement& operator=(PreparedStatement&& other);
+	PreparedStatement& operator=(PreparedStatement&& other) = default;
 
 	const std::vector<Column>& getParameterColumns() const;
 	const std::vector<Column>& getResultColumns() const;

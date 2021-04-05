@@ -23,15 +23,16 @@ SOFTWARE.
 #ifndef ESL_HTTP_SERVER_EXCEPTION_STATUSCODE_H_
 #define ESL_HTTP_SERVER_EXCEPTION_STATUSCODE_H_
 
-#include <esl/http/server/Exception.h>
 #include <esl/utility/MIME.h>
+
+#include <stdexcept>
 
 namespace esl {
 namespace http {
 namespace server {
 namespace exception {
 
-class StatusCode : public Exception {
+class StatusCode : public std::runtime_error {
 public:
 	explicit StatusCode(unsigned short statusCode);
 	explicit StatusCode(unsigned short statusCode, const char* message);

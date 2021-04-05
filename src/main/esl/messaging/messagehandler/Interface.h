@@ -26,7 +26,7 @@ SOFTWARE.
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
 #include <esl/messaging/MessageContext.h>
-#include <esl/utility/Consumer.h>
+#include <esl/io/Consumer.h>
 
 #include <string>
 #include <memory>
@@ -40,7 +40,7 @@ struct Interface : esl::module::Interface {
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	using CreateMessageHandler = std::unique_ptr<utility::Consumer> (*)(MessageContext&);
+	using CreateMessageHandler = std::unique_ptr<io::Consumer> (*)(MessageContext&);
 
 	/* ************************************ *
 	 * standard API definition of interface *

@@ -24,7 +24,7 @@ SOFTWARE.
 #define ESL_MESSAGING_MESSAGE_H_
 
 #include <esl/object/Values.h>
-#include <esl/utility/Reader.h>
+#include <esl/io/Reader.h>
 
 #include <string>
 
@@ -39,7 +39,7 @@ public:
 
 	std::string getValue(const std::string& key) const override;
 
-	virtual utility::Reader& getReader() = 0;
+	virtual io::Reader& getReader() = 0;
 
 private:
 	std::string id;

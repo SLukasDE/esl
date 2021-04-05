@@ -27,11 +27,13 @@ SOFTWARE.
 namespace esl {
 namespace utility {
 
-URL::URL(const std::string& aURL)  {
-	const char *str = aURL.c_str();
+URL::URL(std::string aURL)
+: url(std::move(aURL))
+{
+	const char *str = url.c_str();
 
 	size_t pos = 0;
-	const size_t len = aURL.size();
+	const size_t len = url.size();
 
 	for(NextFragment nextFragment = NextFragment::SCHEME; nextFragment != NextFragment::EMPTY;) {
 		switch(nextFragment) {
@@ -60,27 +62,31 @@ URL::URL(const std::string& aURL)  {
 	}
 }
 
-const Protocol& URL::getScheme() const {
+const std::string& URL::toString() const noexcept {
+	return url;
+}
+
+const Protocol& URL::getScheme() const noexcept {
 	return scheme;
 }
 
-const std::string& URL::getHostname() const {
+const std::string& URL::getHostname() const noexcept {
 	return hostname;
 }
 
-const std::string& URL::getPort() const {
+const std::string& URL::getPort() const noexcept {
 	return port;
 }
 
-const std::string& URL::getPath() const {
+const std::string& URL::getPath() const noexcept {
 	return path;
 }
 
-const std::string& URL::getQuery() const {
+const std::string& URL::getQuery() const noexcept {
 	return query;
 }
 
-const std::string& URL::getTag() const {
+const std::string& URL::getTag() const noexcept {
 	return tag;
 }
 
