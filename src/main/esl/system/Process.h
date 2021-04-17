@@ -27,59 +27,41 @@ SOFTWARE.
 #include <esl/system/Transceiver.h>
 #include <esl/system/Arguments.h>
 #include <esl/system/Environment.h>
+#include <esl/system/FileDescriptor.h>
 #include <esl/object/Values.h>
 #include <esl/module/Implementation.h>
 
 #include <initializer_list>
 #include <string>
 #include <memory>
-#include <map>
 
 namespace esl {
 namespace system {
 
-class Process final {
+class Process final : public Interface::Process {
 public:
 	static module::Implementation& getDefault();
 
-	Process(Arguments arguments,
-			std::initializer_list<std::pair<std::string, std::string>> settings,
+	Process(std::initializer_list<std::pair<std::string, std::string>> settings,
 			const std::string& implementation = getDefault().getImplementation());
-	Process(Arguments arguments,
-			const object::Values<std::string>& settings = getDefault().getSettings(),
+	Process(const object::Values<std::string>& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
-	std::map<Interface::Process::FileDescriptorHandle, Transceiver> transceivers;
+	Transceiver& operator[](const FileDescriptor& fd) override;
 
-	void setWorkingDir(std::string workingDir);
-	void setEnvironment(std::unique_ptr<Environment> environment);
-	const Environment* getEnvironment() const;
+	void setWorkingDir(std::string workingDir) override;
+	void setEnvironment(std::unique_ptr<Environment> environment) override;
+	const Environment* getEnvironment() const override;
 
-	void sendSignal(Interface::SignalType signal);
-	const void* getNativeHandle() const;
+	void addFeature(object::Interface::Object& feature) override;
 
-	int execute();
-	int execute(Interface::Feature& feature);
+	void sendSignal(Interface::SignalType signal) const override;
+	const void* getNativeHandle() const override;
 
-	template<typename... Args>
-	int execute(Interface::Feature& feature, Args&... args) {
-		Interface::Process::ParameterFeatures parameterFeatures;
-
-		parameterFeatures.emplace_back(std::ref(feature));
-    	return execute(parameterFeatures, args...);
-	}
+	int execute(Arguments arguments) const override;
 
 private:
-	int execute(Interface::Process::ParameterFeatures& parameterFeatures);
-
-	template<typename... Args>
-	int execute(Interface::Process::ParameterFeatures& parameterFeatures, Interface::Feature& feature, Args&... args) {
-		parameterFeatures.emplace_back(std::ref(feature));
-    	return execute(parameterFeatures, args...);
-	}
-
 	std::unique_ptr<Interface::Process> process;
-	std::vector<std::reference_wrapper<object::Interface::Object>> parameterFeatures;
 };
 
 } /* namespace system */

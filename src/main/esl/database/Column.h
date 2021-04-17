@@ -72,6 +72,8 @@ public:
 	/* translates type to a string */
 	const std::string& getTypeName() const;
 
+	static const std::string& toString(Type columnType);
+
 	/* returns true if this column is able to store NULL value */
 	bool isNullable() const;
 

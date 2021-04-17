@@ -20,31 +20,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_IO_STANDARD_H_
-#define ESL_IO_STANDARD_H_
-
-#include <esl/io/Reader.h>
-#include <esl/io/Writer.h>
+#ifndef ESL_SYSTEM_FILEDESCRIPTOR_H_
+#define ESL_SYSTEM_FILEDESCRIPTOR_H_
 
 namespace esl {
-namespace io {
+namespace system {
 
-class Standard {
+class FileDescriptor {
 public:
-	static Writer& getOut();
-	static Writer& getErr();
-	static Reader& getIn();
+	int getId() const noexcept;
 
-	static bool isOut(const Writer& writer) noexcept;
-	static bool isErr(const Writer& writer) noexcept;
-	static bool isIn(const Reader& reader) noexcept;
+	static FileDescriptor& getOut();
+	static FileDescriptor& getErr();
+	static FileDescriptor& getIn();
+
+	static bool isOut(const FileDescriptor& fileDescriptor) noexcept;
+	static bool isErr(const FileDescriptor& fileDescriptor) noexcept;
+	static bool isIn(const FileDescriptor& fileDescriptor) noexcept;
 
 private:
-	Standard() = delete;
-	~Standard() = delete;
+	FileDescriptor(int id);
+
+	int id = -1;
 };
 
-} /* namespace io */
+} /* namespace system */
 } /* namespace esl */
 
-#endif /* ESL_IO_STANDARD_H_ */
+#endif /* ESL_SYSTEM_FILEDESCRIPTOR_H_ */

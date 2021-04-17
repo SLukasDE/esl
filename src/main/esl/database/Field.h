@@ -80,9 +80,15 @@ public:
 	Field& operator=(const std::string& value);
 
 	const Column* getColumn() const;
+
+	/* this is the real type of this field */
 	Column::Type getColumnType() const;
 
-	Type getType() const;
+	/* translates real type to a string */
+	const std::string& getTypeName() const;
+
+	/* reduced type of this field that identifies the storage variable */
+	Type getSimpleType() const;
 
 private:
 	Field(Field&& field);

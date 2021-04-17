@@ -26,6 +26,7 @@ SOFTWARE.
 #include <utility>
 #include <algorithm>
 #include <iterator>
+#include <cctype>
 
 namespace esl {
 namespace utility {
@@ -54,6 +55,31 @@ std::map<std::string, char> asciiFromEscapeSequences = {
 		std::make_pair("\\\v", '\v'),
 		std::make_pair("\\\0", '\0')
 };
+
+std::string base64Chars("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
+
+std::string decodeBase64Buffer(std::size_t bufferIndex, unsigned char* buffer) {
+	std::string str;
+
+	for(std::size_t index = bufferIndex; index<4; ++index) {
+		buffer[index] = 0;
+	}
+
+	for(std::size_t index = 0; index<4; ++index) {
+		buffer[index] = base64Chars.find(buffer[index]);
+	}
+
+	unsigned char tmpBuffer[3];
+	tmpBuffer[0] = (buffer[0] << 2) + ((buffer[1] & 0x30) >> 4);
+	tmpBuffer[1] = ((buffer[1] & 0xf) << 4) + ((buffer[2] & 0x3c) >> 2);
+	tmpBuffer[2] = ((buffer[2] & 0x3) << 6) + buffer[3];
+
+	for(std::size_t index = 0; index<bufferIndex-1; ++index) {
+		str += tmpBuffer[index];
+	}
+
+	return str;
+}
 }
 
 std::vector<std::string> String::split(const std::string& str, const char separator) {
@@ -163,6 +189,67 @@ char String::fromEscapeSequence(std::string::const_iterator& escapeSequenceItera
 	char c = *escapeSequenceIterator;
 	++escapeSequenceIterator;
 	return c;
+}
+
+std::string String::toBase64(const std::string& str) {
+	std::string result;
+
+	for(std::size_t i = 0; i < str.size(); i += 3) {
+		int packed64 = (str[i] & 0xff) << 16;
+		std::size_t num64Chars = 2;
+
+		if(i + 1 < str.size()) {
+			packed64 = packed64 + ((str[i+1] & 0xff) << 8);
+			num64Chars = 3;
+		}
+
+		if(i + 2 < str.size()) {
+			packed64 = packed64 + (str[i+2] & 0xff);
+			num64Chars = 4;
+		}
+
+		for(std::size_t j = 0; j < 4; ++j) {
+			if(j < num64Chars) {
+				result += base64Chars[(packed64 >> (6 * (3 - j))) & 0x3f];
+			}
+			else {
+				result += "=";
+			}
+		}
+	}
+	return result;
+}
+
+std::string String::fromBase64(const std::string& base64str) {
+	std::string str;
+
+	std::size_t bufferIndex = 0;
+	unsigned char buffer[4];
+
+	for(std::size_t pos = 0; pos < base64str.size(); ++pos) {
+		// abort if characater base64str[pos] is end symbol
+		if(base64str[pos] == '=') {
+			break;
+		}
+		// abort if characater base64str[pos] is not base64
+		if(std::isalnum(base64str[pos]) == 0 && base64str[pos] != '+' && base64str[pos] != '/') {
+			break;
+		}
+
+		buffer[bufferIndex] = base64str[pos];
+		++bufferIndex;
+
+		if(bufferIndex==4) {
+			str += decodeBase64Buffer(bufferIndex, buffer);
+			bufferIndex = 0;
+		}
+	}
+
+	if(bufferIndex>0) {
+		str += decodeBase64Buffer(bufferIndex, buffer);
+	}
+
+	return str;
 }
 
 } /* namespace utility */

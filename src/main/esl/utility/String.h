@@ -59,6 +59,9 @@ public:
 	 */
 	static char fromEscapeSequence(std::string::const_iterator& escapeSequenceIterator, const std::string::const_iterator& escapeSequenceEnd);
 
+	static std::string toBase64(const std::string& str);
+	static std::string fromBase64(const std::string& base64str);
+
 private:
 	String() = default;
 	~String() = default;

@@ -97,12 +97,12 @@ Reader& Standard::getIn() {
 	return in;
 }
 
-bool Standard::isOut(Writer& writer) {
+bool Standard::isOut(const Writer& writer) noexcept {
 	if(&writer == &getOut()) {
 		return true;
 	}
 
-	WriterStandard* writerPtr = dynamic_cast<WriterStandard*>(&writer);
+	const WriterStandard* writerPtr = dynamic_cast<const WriterStandard*>(&writer);
 	if(writerPtr) {
 		return !writerPtr->isErr();
 	}
@@ -110,12 +110,12 @@ bool Standard::isOut(Writer& writer) {
 	return false;
 }
 
-bool Standard::isErr(Writer& writer) {
+bool Standard::isErr(const Writer& writer) noexcept {
 	if(&writer == &getErr()) {
 		return true;
 	}
 
-	WriterStandard* writerPtr = dynamic_cast<WriterStandard*>(&writer);
+	const WriterStandard* writerPtr = dynamic_cast<const WriterStandard*>(&writer);
 	if(writerPtr) {
 		return writerPtr->isErr();
 	}
@@ -123,12 +123,12 @@ bool Standard::isErr(Writer& writer) {
 	return false;
 }
 
-bool Standard::isIn(Reader& reader) {
+bool Standard::isIn(const Reader& reader) noexcept {
 	if(&reader == &getIn()) {
 		return true;
 	}
 
-	return dynamic_cast<ReaderStandard*>(&reader) != nullptr;
+	return dynamic_cast<const ReaderStandard*>(&reader) != nullptr;
 }
 
 } /* namespace io */

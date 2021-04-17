@@ -27,27 +27,24 @@ SOFTWARE.
 namespace esl {
 namespace system {
 
-const Interface::Process::FileDescriptorHandle Interface::Process::noHandle = -1;
-const Interface::Process::FileDescriptorHandle Interface::Process::stdInHandle = 0;
-const Interface::Process::FileDescriptorHandle Interface::Process::stdOutHandle = 1;
-const Interface::Process::FileDescriptorHandle Interface::Process::stdErrHandle = 2;
-
 module::Implementation& Process::getDefault() {
 	static module::Implementation implementation;
 	return implementation;
 }
 
-Process::Process(Arguments arguments,
-		std::initializer_list<std::pair<std::string, std::string>> settings,
+Process::Process(std::initializer_list<std::pair<std::string, std::string>> settings,
 		const std::string& implementation)
-: process(esl::getModule().getInterface<Interface>(implementation).createProcess(std::move(arguments), object::ValueSettings(std::move(settings))))
+: process(esl::getModule().getInterface<Interface>(implementation).createProcess(object::ValueSettings(std::move(settings))))
 { }
 
-Process::Process(Arguments arguments,
-		const object::Values<std::string>& settings,
+Process::Process(const object::Values<std::string>& settings,
 		const std::string& implementation)
-: process(esl::getModule().getInterface<Interface>(implementation).createProcess(std::move(arguments), settings))
+: process(esl::getModule().getInterface<Interface>(implementation).createProcess(settings))
 { }
+
+Transceiver& Process::operator[](const FileDescriptor& fd) {
+	return (*process)[fd];
+}
 
 void Process::setWorkingDir(std::string workingDir) {
 	process->setWorkingDir(std::move(workingDir));
@@ -61,7 +58,11 @@ const Environment* Process::getEnvironment() const {
 	return process->getEnvironment();
 }
 
-void Process::sendSignal(Interface::SignalType signal) {
+void Process::addFeature(esl::object::Interface::Object& feature) {
+	return process->addFeature(feature);
+}
+
+void Process::sendSignal(Interface::SignalType signal) const {
 	process->sendSignal(signal);
 }
 
@@ -69,21 +70,8 @@ const void* Process::getNativeHandle() const {
 	return process->getNativeHandle();
 }
 
-int Process::execute() {
-	Interface::Process::ParameterFeatures parameterFeatures;
-
-	return process->execute(transceivers, parameterFeatures);
-}
-
-int Process::execute(Interface::Feature& feature) {
-	Interface::Process::ParameterFeatures parameterFeatures;
-
-	parameterFeatures.emplace_back(std::ref(feature));
-	return process->execute(transceivers, parameterFeatures);
-}
-
-int Process::execute(Interface::Process::ParameterFeatures& parameterFeatures) {
-	return process->execute(transceivers, parameterFeatures);
+int Process::execute(Arguments arguments) const {
+	return process->execute(std::move(arguments));
 }
 
 } /* namespace system */

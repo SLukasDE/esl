@@ -188,7 +188,7 @@ Field::Field(const Field& aField)
 		(*this) = nullptr;
 	}
 	else {
-		switch(aField.getType()) {
+		switch(toFieldType(aField.getColumnType())) {
 
 		case Type::storageBoolean:
 			setValue(aField.valueBoolean);
@@ -440,7 +440,7 @@ Field& Field::operator=(const Field& aField) {
 		(*this) = nullptr;
 	}
 	else {
-		switch(aField.getType()) {
+		switch(toFieldType(aField.getColumnType())) {
 		case Type::storageBoolean:
 			setValue(aField.valueBoolean);
 			break;
@@ -476,20 +476,22 @@ Field& Field::operator=(std::nullptr_t) {
 	return *this;
 }
 
-Field& Field::operator=(Field&& aField) {
-	resultSet = aField.resultSet;
-	columnIndex = aField.columnIndex;
-	columnType = aField.columnType;
-	valueIsNull = aField.valueIsNull;
-	valueBoolean = aField.valueBoolean;
-	valueInteger = aField.valueInteger;
-	valueDouble = aField.valueDouble;
-	valueString = std::move(aField.valueString);
+Field& Field::operator=(Field&& other) {
+	if(&other != this) {
+		resultSet = other.resultSet;
+		columnIndex = other.columnIndex;
+		columnType = other.columnType;
+		valueIsNull = other.valueIsNull;
+		valueBoolean = other.valueBoolean;
+		valueInteger = other.valueInteger;
+		valueDouble = other.valueDouble;
+		valueString = std::move(other.valueString);
 
-	aField.resultSet = nullptr;
-	aField.columnIndex = 0;
-	aField.columnType = Column::Type::sqlUnknown;
-	aField.valueIsNull = true;
+		other.resultSet = nullptr;
+		other.columnIndex = 0;
+		other.columnType = Column::Type::sqlUnknown;
+		other.valueIsNull = true;
+	}
 
 	return *this;
 }
@@ -525,14 +527,11 @@ Field& Field::operator=(const std::string& value) {
 }
 
 const Column* Field::getColumn() const {
-	const std::vector<Column>* columns = nullptr;
-
-	if(resultSet) {
-		columns = resultSet->getColumns();
-	}
-
-	if(columns) {
-		return &(*columns)[columnIndex];
+	if(resultSet && resultSet->getColumns()) {
+		if(columnIndex >= resultSet->getColumns()->size()) {
+	        throw esl::addStacktrace(std::out_of_range("internal error: column index = " + std::to_string(columnIndex) + " but result set has only " + std::to_string(resultSet->getColumns()->size()) + " columns"));
+		}
+		return &(*resultSet->getColumns())[columnIndex];
 	}
 
 	return nullptr;
@@ -542,7 +541,11 @@ Column::Type Field::getColumnType() const {
 	return columnType;
 }
 
-Field::Type Field::getType() const {
+const std::string& Field::getTypeName() const {
+	return Column::toString(columnType);
+}
+
+Field::Type Field::getSimpleType() const {
 	return toFieldType(columnType);
 }
 

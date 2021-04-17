@@ -56,7 +56,32 @@ const std::string typeNameWLongVarChar = "SQL_WLONGVARCHAR";
 
 const std::string typeNameUnknown = "unknown";
 
-const std::string& columnType2String(Column::Type columnType) {
+} /* anonymous namespace */
+
+Column::Column(std::string aName, Column::Type aType, bool aNullable, std::size_t aDefaultBufferSize, std::size_t aMaximumBufferSize, std::size_t aDecimalDigits, std::size_t aCharacterLength, std::size_t aDisplayLength)
+: name(std::move(aName)),
+  type(aType),
+  nullable(aNullable),
+  defaultBufferSize(aDefaultBufferSize),
+  maximumBufferSize((aMaximumBufferSize > 0 && aMaximumBufferSize < aDefaultBufferSize) ? aDefaultBufferSize : aMaximumBufferSize),
+  characterLength(aCharacterLength),
+  decimalDigits(aDecimalDigits),
+  displayLength(aDisplayLength)
+{ }
+
+const std::string& Column::getName() const {
+	return name;
+}
+
+Column::Type Column::getType() const {
+	return type;
+}
+
+const std::string& Column::getTypeName() const {
+	return toString(getType());
+}
+
+const std::string& Column::toString(Column::Type columnType) {
 	switch(columnType) {
 	case Column::Type::sqlBoolean:
 		return typeNameBoolean;
@@ -108,31 +133,6 @@ const std::string& columnType2String(Column::Type columnType) {
 	}
 
 	return typeNameUnknown;
-}
-
-} /* anonymous namespace */
-
-Column::Column(std::string aName, Column::Type aType, bool aNullable, std::size_t aDefaultBufferSize, std::size_t aMaximumBufferSize, std::size_t aDecimalDigits, std::size_t aCharacterLength, std::size_t aDisplayLength)
-: name(std::move(aName)),
-  type(aType),
-  nullable(aNullable),
-  defaultBufferSize(aDefaultBufferSize),
-  maximumBufferSize((aMaximumBufferSize > 0 && aMaximumBufferSize < aDefaultBufferSize) ? aDefaultBufferSize : aMaximumBufferSize),
-  characterLength(aCharacterLength),
-  decimalDigits(aDecimalDigits),
-  displayLength(aDisplayLength)
-{ }
-
-const std::string& Column::getName() const {
-	return name;
-}
-
-Column::Type Column::getType() const {
-	return type;
-}
-
-const std::string& Column::getTypeName() const {
-	return columnType2String(getType());
 }
 
 bool Column::isNullable() const {

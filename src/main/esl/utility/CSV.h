@@ -20,31 +20,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_IO_STANDARD_H_
-#define ESL_IO_STANDARD_H_
+#ifndef ESL_UTILITY_CSV_H_
+#define ESL_UTILITY_CSV_H_
 
-#include <esl/io/Reader.h>
-#include <esl/io/Writer.h>
+#include <string>
+#include <vector>
 
 namespace esl {
-namespace io {
+namespace utility {
 
-class Standard {
+class CSV {
 public:
-	static Writer& getOut();
-	static Writer& getErr();
-	static Reader& getIn();
+	CSV(char separator = ',');
 
-	static bool isOut(const Writer& writer) noexcept;
-	static bool isErr(const Writer& writer) noexcept;
-	static bool isIn(const Reader& reader) noexcept;
+	std::vector<std::string> splitRow(const std::string& line);
+	std::string toRow(const std::vector<std::string>& columns);
 
 private:
-	Standard() = delete;
-	~Standard() = delete;
+	char separator;
 };
 
-} /* namespace io */
+} /* namespace utility */
 } /* namespace esl */
 
-#endif /* ESL_IO_STANDARD_H_ */
+#endif /* ESL_UTILITY_CSV_H_ */

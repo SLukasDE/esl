@@ -28,13 +28,11 @@ SOFTWARE.
 #include <esl/system/Transceiver.h>
 #include <esl/system/Arguments.h>
 #include <esl/system/Environment.h>
+#include <esl/system/FileDescriptor.h>
 #include <esl/object/Interface.h>
 #include <esl/object/Values.h>
 
-#include <boost/filesystem.hpp>
-
 #include <string>
-#include <vector>
 #include <functional>
 #include <memory>
 
@@ -67,34 +65,26 @@ struct Interface : esl::module::Interface {
 		kill       // terminate immediately/hard kill, use when 15 doesn't work or when something disasterous might happen if process is allowed to cont., kill -9
 	};
 
-	using Feature = object::Interface::Object;
-
 	class Process {
 	public:
-		using FileDescriptorHandle = int;
-
-		static const FileDescriptorHandle noHandle;
-		static const FileDescriptorHandle stdInHandle;
-		static const FileDescriptorHandle stdOutHandle;
-		static const FileDescriptorHandle stdErrHandle;
-
 		Process() = default;
 	    virtual ~Process() = default;
+
+		virtual Transceiver& operator[](const FileDescriptor& fd) = 0;
 
 		virtual void setWorkingDir(std::string workingDir) = 0;
 		virtual void setEnvironment(std::unique_ptr<Environment> environment) = 0;
 		virtual const Environment* getEnvironment() const = 0;
 
-		virtual void sendSignal(SignalType signal) = 0;
-		virtual const void* getNativeHandle() const = 0;
+		virtual void addFeature(object::Interface::Object& feature) = 0;
 
-		using ParameterStreams = std::map<FileDescriptorHandle, Transceiver>;
-		using ParameterFeatures = std::vector<std::reference_wrapper<object::Interface::Object>>;
-		virtual int execute(ParameterStreams& parameterStreams, ParameterFeatures& parameterFeatures) = 0;
+		virtual int execute(Arguments arguments) const = 0;
+
+		virtual void sendSignal(SignalType signal) const = 0;
+		virtual const void* getNativeHandle() const = 0;
 	};
 
-	using CreateProcess = std::unique_ptr<Process>(*)(Arguments arguments, const object::Values<std::string>& setting);
-
+	using CreateProcess = std::unique_ptr<Process>(*)(const object::Values<std::string>& setting);
 	using InstallSignalHandler = void (*)(SignalType signalType, std::function<void()> handler, const object::Values<std::string>& setting);
 	using RemoveSignalHandler = void (*)(SignalType signalType, std::function<void()> handler, const object::Values<std::string>& setting);
 
@@ -125,7 +115,6 @@ struct Interface : esl::module::Interface {
 	{ }
 
 	CreateProcess createProcess;
-
 	InstallSignalHandler installSignalHandler;
 	RemoveSignalHandler removeSignalHandler;
 };
