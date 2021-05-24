@@ -32,12 +32,13 @@ namespace object {
 
 class ObjectContext : public virtual Interface::Object {
 public:
-	virtual Interface::Object* findObject(const std::string& id = "") const = 0;
-
 	template<typename T>
 	T* findObject(const std::string& id = "") const {
 		return dynamic_cast<T*>(findObject(id));
 	}
+
+protected:
+	virtual Interface::Object* findObject(const std::string& id) const = 0;
 };
 
 } /* namespace object */

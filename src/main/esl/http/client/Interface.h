@@ -23,14 +23,17 @@ SOFTWARE.
 #ifndef ESL_HTTP_CLIENT_INTERFACE_H_
 #define ESL_HTTP_CLIENT_INTERFACE_H_
 
-#include <esl/http/client/PreparedRequest.h>
+#include <esl/http/client/Response.h>
+#include <esl/io/Input.h>
+#include <esl/io/Output.h>
+#include <esl/object/Values.h>
 #include <esl/utility/URL.h>
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
-#include <esl/object/Values.h>
 
 #include <string>
 #include <memory>
+#include <functional>
 
 namespace esl {
 namespace http {
@@ -38,20 +41,23 @@ namespace client {
 
 class Connection;
 class Request;
-class Response;
+//class Response;
 
 struct Interface : esl::module::Interface {
 	/* *************************************** *
 	 * definitions required for this interface *
 	 * *************************************** */
+	using CreateInput = std::function<esl::io::Input (const Response&)>;
+
 	class Connection {
-	friend class client::Connection;
+	//friend class client::Connection;
 	public:
 		Connection() = default;
 		virtual ~Connection() = default;
 
-		virtual PreparedRequest prepare(Request&& request) const = 0;
-		virtual PreparedRequest prepare(const Request& request) const = 0;
+		//virtual Response sendRequest(const Request& request, esl::io::Output output, CreateInput createInput) noexcept = 0;
+		virtual Response sendRequest(Request request, esl::io::Output output, CreateInput createInput) = 0;
+		virtual Response sendRequest(Request request, esl::io::Output output, esl::io::Input input) = 0;
 	};
 
 	using CreateConnection = std::unique_ptr<Connection> (*)(const utility::URL& hostUrl, const object::Values<std::string>& settings);

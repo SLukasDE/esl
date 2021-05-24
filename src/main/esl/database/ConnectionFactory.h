@@ -41,7 +41,7 @@ public:
 	ConnectionFactory(std::initializer_list<std::pair<std::string, std::string>> settings,
 			const std::string& implementation = getDefault().getImplementation());
 
-	ConnectionFactory(const object::Values<std::string>& settings = getDefault().getSettings(),
+	ConnectionFactory(const object::Values<std::string>& settings = getDefault().getProperties(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	std::unique_ptr<Connection> createConnection() override;

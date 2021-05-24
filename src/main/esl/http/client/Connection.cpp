@@ -21,7 +21,7 @@ SOFTWARE.
 */
 
 #include <esl/http/client/Connection.h>
-#include <esl/object/ValueSettings.h>
+#include <esl/object/Properties.h>
 #include <esl/logging/Logger.h>
 #include <esl/Module.h>
 
@@ -42,7 +42,7 @@ Connection::Connection(const utility::URL& hostUrl,
 		std::initializer_list<std::pair<std::string, std::string>> setting,
 		const std::string& implementation)
 : Interface::Connection(),
-  connection(esl::getModule().getInterface<Interface>(implementation).createConnection(hostUrl, object::ValueSettings(std::move(setting))))
+  connection(esl::getModule().getInterface<Interface>(implementation).createConnection(hostUrl, object::Properties(std::move(setting))))
 { }
 
 Connection::Connection(const utility::URL& hostUrl,
@@ -52,31 +52,14 @@ Connection::Connection(const utility::URL& hostUrl,
   connection(esl::getModule().getInterface<Interface>(implementation).createConnection(hostUrl, settings))
 { }
 
-PreparedRequest Connection::prepare(Request&& request) const {
-	return connection->prepare(std::move(request));
+Response Connection::sendRequest(Request request, esl::io::Output output, Interface::CreateInput createInput) {
+	return connection->sendRequest(std::move(request), std::move(output), createInput);
 }
 
-PreparedRequest Connection::prepare(const Request& request) const {
-	return connection->prepare(request);
-}
-/*
-Response Connection::send(Request request) const {
-	Data data;
-    return send(std::move(request), data);
+Response Connection::sendRequest(Request request, esl::io::Output output, esl::io::Input input) {
+	return connection->sendRequest(std::move(request), std::move(output), std::move(input));
 }
 
-Response Connection::send(Request&& request, Data& data) const {
-	return connection->send(std::move(request), data);
-}
-
-void Connection::addArguments(Data& data, Input&& input) {
-	data.input = std::move(input);
-}
-
-void Connection::addArguments(Data& data, utility::io::Output&& output) {
-	data.output = std::move(output);
-}
-*/
 } /* namespace client */
 } /* namespace http */
 } /* namespace esl */

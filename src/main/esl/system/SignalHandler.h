@@ -45,14 +45,14 @@ public:
 			std::initializer_list<std::pair<std::string, std::string>> settings,
 			const std::string& implementation = getDefault().getImplementation());
 	static void install(SignalType signalType, std::function<void()> handler,
-			const object::Values<std::string>& settings = getDefault().getSettings(),
+			const object::Values<std::string>& settings = getDefault().getProperties(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	static void remove(SignalType signalType, std::function<void()> handler,
 			std::initializer_list<std::pair<std::string, std::string>> settings,
 			const std::string& implementation = getDefault().getImplementation());
 	static void remove(SignalType signalType, std::function<void()> handler,
-			const object::Values<std::string>& settings = getDefault().getSettings(),
+			const object::Values<std::string>& settings = getDefault().getProperties(),
 			const std::string& implementation = getDefault().getImplementation());
 };
 

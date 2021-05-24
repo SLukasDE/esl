@@ -25,7 +25,6 @@ SOFTWARE.
 
 #include <esl/http/client/Interface.h>
 #include <esl/http/client/Request.h>
-#include <esl/http/client/PreparedRequest.h>
 #include <esl/utility/URL.h>
 #include <esl/object/Values.h>
 #include <esl/module/Implementation.h>
@@ -46,41 +45,13 @@ public:
 			const std::string& implementation = getDefault().getImplementation());
 
 	Connection(const utility::URL& hostUrl,
-			const object::Values<std::string>& settings = getDefault().getSettings(),
+			const object::Values<std::string>& settings = getDefault().getProperties(),
 			const std::string& implementation = getDefault().getImplementation());
 
-	PreparedRequest prepare(Request&& request) const override;
-	PreparedRequest prepare(const Request& request) const override;
-/*
-	Response send(Request request) const;
+	Response sendRequest(Request request, esl::io::Output output, Interface::CreateInput createInput) override;
+	Response sendRequest(Request request, esl::io::Output output, esl::io::Input input) override;
 
-    template<typename... Args>
-    Response send(Request&& request, Args... args) const {
-	    Data data;
-	    addArguments(data, std::forward<Args...>(args...));
-	    return send(std::move(request), data);
-    }
-
-protected:
-	Response send(Request&& request, Data& data) const override;
-*/
 private:
-/*
-	static void addArguments(Data& data, Input&& input);
-	static void addArguments(Data& data, utility::io::Output&& output);
-
-	template<typename... Args>
-	static inline void addArguments(Data& data, Input&& input, Args... args) {
-		addArguments(data, std::move(input));
-    	addArguments(data, std::forward<Args...>(args...));
-	}
-
-	template<typename... Args>
-	static inline void addArguments(Data& data, utility::io::Output&& output, Args... args) {
-		addArguments(data, std::move(output));
-    	addArguments(data, std::forward<Args...>(args...));
-	}
-*/
 	std::unique_ptr<Interface::Connection> connection;
 };
 

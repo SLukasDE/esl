@@ -21,7 +21,7 @@ SOFTWARE.
 */
 
 #include <esl/system/SignalHandler.h>
-//#include <esl/module/Interface.h>
+#include <esl/object/Properties.h>
 #include <esl/Module.h>
 
 
@@ -36,7 +36,7 @@ module::Implementation& SignalHandler::getDefault() {
 void SignalHandler::install(SignalType signalType, std::function<void()> handler,
 		std::initializer_list<std::pair<std::string, std::string>> settings,
 		const std::string& implementation) {
-	esl::getModule().getInterface<Interface>(implementation).installSignalHandler(signalType, handler, object::ValueSettings(std::move(settings)));
+	esl::getModule().getInterface<Interface>(implementation).installSignalHandler(signalType, handler, object::Properties(std::move(settings)));
 }
 
 void SignalHandler::install(SignalType signalType, std::function<void()> handler,
@@ -48,7 +48,7 @@ void SignalHandler::install(SignalType signalType, std::function<void()> handler
 void SignalHandler::remove(SignalType signalType, std::function<void()> handler,
 		std::initializer_list<std::pair<std::string, std::string>> settings,
 		const std::string& implementation) {
-	esl::getModule().getInterface<Interface>(implementation).removeSignalHandler(signalType, handler, object::ValueSettings(std::move(settings)));
+	esl::getModule().getInterface<Interface>(implementation).removeSignalHandler(signalType, handler, object::Properties(std::move(settings)));
 }
 
 void SignalHandler::remove(SignalType signalType, std::function<void()> handler,

@@ -24,6 +24,7 @@ SOFTWARE.
 #define ESL_LOGGING_LAYOUT_H_
 
 #include <esl/logging/layout/Interface.h>
+#include <esl/object/Properties.h>
 #include <esl/module/Implementation.h>
 
 #include <initializer_list>
@@ -40,14 +41,14 @@ public:
 	Layout(std::initializer_list<std::pair<std::string, std::string>> settings,
 			const std::string& implementation = getDefault().getImplementation());
 
-	Layout(const object::Values<std::string>& settings = getDefault().getSettings(),
+	Layout(const object::Values<std::string>& settings = getDefault().getProperties(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	std::string toString(const Location& location) const override;
 
 private:
 	const std::string implementation;
-	object::ValueSettings settings;
+	object::Properties settings;
 
 	mutable std::unique_ptr<layout::Interface::Layout> layout;
 };

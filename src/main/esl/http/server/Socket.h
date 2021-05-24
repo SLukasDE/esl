@@ -45,7 +45,7 @@ public:
 			const std::string& implementation = getDefault().getImplementation());
 
 	Socket(std::uint16_t port, requesthandler::Interface::CreateInput createInput,
-			const object::Values<std::string>& settings = getDefault().getSettings(),
+			const object::Values<std::string>& settings = getDefault().getProperties(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	void addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) override;

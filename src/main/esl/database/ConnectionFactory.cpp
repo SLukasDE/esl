@@ -21,7 +21,7 @@ SOFTWARE.
 */
 
 #include <esl/database/ConnectionFactory.h>
-#include <esl/object/ValueSettings.h>
+#include <esl/object/Properties.h>
 #include <esl/Module.h>
 
 namespace esl {
@@ -34,7 +34,7 @@ module::Implementation& ConnectionFactory::getDefault() {
 
 ConnectionFactory::ConnectionFactory(std::initializer_list<std::pair<std::string, std::string>> settings, const std::string& implementation)
 : Interface::ConnectionFactory(),
-  connectionFactory(esl::getModule().getInterface<Interface>(implementation).createConnectionFactory(object::ValueSettings(std::move(settings))))
+  connectionFactory(esl::getModule().getInterface<Interface>(implementation).createConnectionFactory(object::Properties(std::move(settings))))
 {
 	if(!connectionFactory) {
 		throw std::runtime_error(std::string("Connection-Factory not found for implementation \"") + implementation + "\"");
@@ -53,10 +53,6 @@ ConnectionFactory::ConnectionFactory(const object::Values<std::string>& settings
 std::unique_ptr<Connection> ConnectionFactory::createConnection() {
 	return connectionFactory->createConnection();
 }
-/*
-void ConnectionFactory::addSetting(const std::string& key, const std::string& value) {
-	return connectionFactory->addSetting(key, value);
-}
-*/
+
 } /* namespace database */
 } /* namespace esl */

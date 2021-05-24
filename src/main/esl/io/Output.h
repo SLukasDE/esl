@@ -41,8 +41,8 @@ public:
 	Output(Reader& reader);
 	Output(Producer& producer);
 
-	Output(std::unique_ptr<Reader> readerGenerated);
-	Output(std::unique_ptr<Producer> producerGenerated);
+	Output(std::unique_ptr<Reader> reader);
+	Output(std::unique_ptr<Producer> producer);
 
 	Output(const Output&) = delete;
 	Output(Output&& other);

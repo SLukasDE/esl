@@ -21,7 +21,7 @@ SOFTWARE.
 */
 
 #include <esl/http/server/Socket.h>
-#include <esl/object/ValueSettings.h>
+#include <esl/object/Properties.h>
 #include <esl/Module.h>
 
 namespace esl {
@@ -37,7 +37,7 @@ Socket::Socket(std::uint16_t port, requesthandler::Interface::CreateInput create
 		std::initializer_list<std::pair<std::string, std::string>> settings,
 		const std::string& implementation)
 : Interface::Socket(),
-  socket(esl::getModule().getInterface<Interface>(implementation).createSocket(port, createInput, object::ValueSettings(std::move(settings))))
+  socket(esl::getModule().getInterface<Interface>(implementation).createSocket(port, createInput, object::Properties(std::move(settings))))
 { }
 
 Socket::Socket(std::uint16_t port, requesthandler::Interface::CreateInput createInput,
@@ -48,11 +48,11 @@ Socket::Socket(std::uint16_t port, requesthandler::Interface::CreateInput create
 { }
 
 void Socket::addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) {
-	return socket->addTLSHost(hostname, certificate, key);
+	socket->addTLSHost(hostname, certificate, key);
 }
 
 void Socket::addObjectFactory(const std::string& id, ObjectFactory objectFactory) {
-	return socket->addObjectFactory(id, objectFactory);
+	socket->addObjectFactory(id, objectFactory);
 }
 
 bool Socket::listen() {

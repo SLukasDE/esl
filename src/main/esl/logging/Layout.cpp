@@ -21,7 +21,6 @@ SOFTWARE.
 */
 
 #include <esl/logging/Layout.h>
-#include <esl/object/ValueSettings.h>
 #include <esl/Module.h>
 
 namespace esl {

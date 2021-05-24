@@ -47,7 +47,7 @@ public:
 	Stacktrace(std::initializer_list<std::pair<std::string, std::string>> settings,
 			const std::string& implementation = getDefault().getImplementation());
 
-	Stacktrace(const object::Values<std::string>& settings = getDefault().getSettings(),
+	Stacktrace(const object::Values<std::string>& settings = getDefault().getProperties(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	//Stacktrace();

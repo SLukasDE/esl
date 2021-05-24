@@ -47,8 +47,8 @@ public:
 	const std::map<std::string, std::string>& getHeaders() const;
 
 private:
-	unsigned short statusCode;
 	std::map<std::string, std::string> headers;
+	unsigned short statusCode;
 	std::string realmId;
 };
 

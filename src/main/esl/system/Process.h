@@ -44,7 +44,7 @@ public:
 
 	Process(std::initializer_list<std::pair<std::string, std::string>> settings,
 			const std::string& implementation = getDefault().getImplementation());
-	Process(const object::Values<std::string>& settings = getDefault().getSettings(),
+	Process(const object::Values<std::string>& settings = getDefault().getProperties(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	Transceiver& operator[](const FileDescriptor& fd) override;

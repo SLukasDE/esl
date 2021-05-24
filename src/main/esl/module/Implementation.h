@@ -24,7 +24,7 @@ SOFTWARE.
 #define ESL_MODULE_IMPLEMENTATION_H_
 
 #include <esl/object/Values.h>
-#include <esl/object/ValueSettings.h>
+#include <esl/object/Properties.h>
 
 #include <string>
 #include <initializer_list>
@@ -39,12 +39,12 @@ public:
 	void setImplementation(std::string implementation, const object::Values<std::string>& settings);
 
 	const std::string& getImplementation() const noexcept;
-	const object::ValueSettings& getSettings() const noexcept;
-	object::ValueSettings& getSettings() noexcept;
+	const object::Properties& getProperties() const noexcept;
+	object::Properties& getProperties() noexcept;
 
 private:
 	std::string implementation;
-	object::ValueSettings settings;
+	object::Properties properties;
 };
 
 } /* namespace module */

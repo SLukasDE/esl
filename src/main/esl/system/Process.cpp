@@ -21,6 +21,7 @@ SOFTWARE.
 */
 
 #include <esl/system/Process.h>
+#include <esl/object/Properties.h>
 #include <esl/Stacktrace.h>
 #include <esl/Module.h>
 
@@ -34,7 +35,7 @@ module::Implementation& Process::getDefault() {
 
 Process::Process(std::initializer_list<std::pair<std::string, std::string>> settings,
 		const std::string& implementation)
-: process(esl::getModule().getInterface<Interface>(implementation).createProcess(object::ValueSettings(std::move(settings))))
+: process(esl::getModule().getInterface<Interface>(implementation).createProcess(object::Properties(std::move(settings))))
 { }
 
 Process::Process(const object::Values<std::string>& settings,

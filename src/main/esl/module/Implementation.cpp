@@ -27,24 +27,24 @@ namespace module {
 
 void Implementation::setImplementation(std::string aImplementation, std::initializer_list<std::pair<std::string, std::string>> aSettings) {
 	implementation = std::move(aImplementation);
-	settings = object::ValueSettings(std::move(aSettings));
+	properties = object::Properties(std::move(aSettings));
 }
 
 void Implementation::setImplementation(std::string aImplementation, const object::Values<std::string>& aSettings) {
 	implementation = std::move(aImplementation);
-	settings = object::ValueSettings(aSettings);
+	properties = object::Properties(aSettings);
 }
 
 const std::string& Implementation::getImplementation() const noexcept {
 	return implementation;
 }
 
-const object::ValueSettings& Implementation::getSettings() const noexcept {
-	return settings;
+const object::Properties& Implementation::getProperties() const noexcept {
+	return properties;
 }
 
-object::ValueSettings& Implementation::getSettings() noexcept {
-	return settings;
+object::Properties& Implementation::getProperties() noexcept {
+	return properties;
 }
 
 } /* namespace module */

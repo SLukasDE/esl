@@ -49,8 +49,11 @@ public:
 	}
 
 private:
-	std::vector<std::pair<std::string, T>> values;
+	static std::vector<std::pair<std::string, T>> values;
 };
+
+template<typename T>
+std::vector<std::pair<std::string, T>> Values<T>::values;
 
 } /* namespace object */
 } /* namespace esl */

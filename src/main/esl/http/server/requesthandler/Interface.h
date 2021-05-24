@@ -41,7 +41,7 @@ struct Interface : esl::module::Interface {
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	using CreateInput = esl::io::Input (*)(RequestContext&);
+	using CreateInput = io::Input (*)(RequestContext&);
 
 	/* ************************************ *
 	 * standard API definition of interface *

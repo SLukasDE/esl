@@ -21,14 +21,233 @@ SOFTWARE.
 */
 
 #include <esl/io/Input.h>
-#include <esl/io/ConsumerWriter.h>
-#include <esl/io/WriterConsumer.h>
+#include <esl/io/Reader.h>
 #include <esl/Stacktrace.h>
+#include <esl/logging/Logger.h>
 
+#include <string>
 #include <stdexcept>
+#include <cstdint>
+#include <cstring>
 
 namespace esl {
 namespace io {
+
+namespace {
+esl::logging::Logger<> logger("esl::io::Input");
+
+class ConsumerWriter : public Consumer {
+public:
+	ConsumerWriter(Writer& writer);
+
+	bool consume(Reader& reader) override;
+
+	Writer& getWriter() const noexcept;
+	std::size_t getCurrentBufferSize() const noexcept;
+	void flushBuffer();
+
+private:
+	static constexpr std::size_t maxBufferSize = 4096;
+	std::size_t currentBufferSize = 0;
+	char buffer[maxBufferSize];
+	Writer& writer;
+	bool isReaderEOF = false;
+	bool isWriterEOF = false;
+};
+
+constexpr std::size_t ConsumerWriter::maxBufferSize;
+
+ConsumerWriter::ConsumerWriter(Writer& aWriter)
+: writer(aWriter)
+{ }
+
+bool ConsumerWriter::consume(Reader& reader) {
+	if(isWriterEOF) {
+		return false;
+	}
+
+	if(currentBufferSize == 0 && isReaderEOF == false) {
+		std::size_t consumedSize = reader.read(buffer, maxBufferSize);
+
+		if(consumedSize == Reader::npos) {
+			isReaderEOF = true;
+		}
+		else {
+			if(consumedSize > maxBufferSize) {
+				logger.warn << "esl::utility::Reader says " << consumedSize << " bytes read but read at most " << maxBufferSize << " bytes.\n";
+				consumedSize = maxBufferSize;
+			}
+
+			currentBufferSize = consumedSize;
+		}
+	}
+
+	flushBuffer();
+
+	return isWriterEOF == false && (isReaderEOF == false || currentBufferSize > 0);
+}
+
+Writer& ConsumerWriter::getWriter() const noexcept {
+	return writer;
+}
+
+std::size_t ConsumerWriter::getCurrentBufferSize() const noexcept {
+	return currentBufferSize;
+}
+
+void ConsumerWriter::flushBuffer() {
+	if(currentBufferSize > 0 && isWriterEOF == false) {
+		std::size_t producedSize = writer.write(&buffer[maxBufferSize-currentBufferSize], currentBufferSize);
+
+		if(producedSize == Writer::npos) {
+			isWriterEOF = true;
+			return;
+		}
+
+		if(producedSize > currentBufferSize) {
+			logger.warn << "esl::utility::Writer has " << producedSize << " bytes written but only " << currentBufferSize << " bytes have been allowed to write.\n";
+			producedSize = currentBufferSize;
+		}
+
+		currentBufferSize -= producedSize;
+	}
+}
+
+
+
+
+class ReaderMemory : public Reader {
+public:
+	ReaderMemory(const void* data, std::size_t size);
+
+	std::size_t read(void* data, std::size_t size) override;
+	std::size_t getSizeReadable() const override;
+	bool hasSize() const override;
+	std::size_t getSize() const override;
+
+private:
+	const void* getData() const noexcept;
+
+	const void* data;
+	std::size_t size;
+	std::size_t currentPos = 0;
+};
+
+ReaderMemory::ReaderMemory(const void* aData, std::size_t aSize)
+: data(aData),
+  size(aSize)
+{ }
+
+std::size_t ReaderMemory::read(void* data, std::size_t size) {
+	if(currentPos >= getSize()) {
+		return getSize() == 0 ? Reader::npos : 0;
+	}
+
+	if(size > getSizeReadable()) {
+		size = getSizeReadable();
+	}
+
+	std::memcpy(data, static_cast<const char*>(getData()) + currentPos, size);
+	currentPos += size;
+
+	return size;
+}
+
+std::size_t ReaderMemory::getSizeReadable() const {
+	if(currentPos >= getSize()) {
+		return 0;
+	}
+
+	return getSize() - currentPos;
+}
+
+bool ReaderMemory::hasSize() const {
+	return true;
+}
+
+std::size_t ReaderMemory::getSize() const {
+	return size;
+}
+
+const void* ReaderMemory::getData() const noexcept {
+	return data;
+}
+
+
+
+class WriterConsumer : public Writer {
+public:
+	WriterConsumer(Consumer& consumer);
+
+	std::size_t write(const void* data, std::size_t size) override;
+
+	// returns consumable bytes to write.
+	// npos is returned if available size is unknown.
+	// Here: It's only npos returned or 0 if Consumer::consume returned false
+	std::size_t getSizeWritable() const override;
+
+private:
+	Consumer& consumer;
+	bool isConsumerEOF = false;
+};
+
+
+WriterConsumer::WriterConsumer(Consumer& aConsumer)
+: consumer(aConsumer)
+{ }
+
+std::size_t WriterConsumer::write(const void* aData, std::size_t size) {
+	const std::uint8_t* data = static_cast<const std::uint8_t*>(aData);
+
+	if(isConsumerEOF) {
+		return Writer::npos;
+	}
+
+	/* ***************************************************** *
+	 * Signal consumer that no more data will be transmitted *
+	 * ***************************************************** */
+	if(size == 0) {
+		ReaderMemory readerStatic(data, 0);
+		isConsumerEOF = !consumer.consume(readerStatic);
+		return 0;
+	}
+
+
+	/* *********************** *
+	 * Writer data to consumer *
+	 * *********************** */
+	std::size_t currentPos = 0;
+	while(currentPos < size) {
+		std::size_t sizeRemaining = size - currentPos;
+		ReaderMemory readerStatic(data + currentPos, sizeRemaining);
+		isConsumerEOF = !consumer.consume(readerStatic);
+
+		if(isConsumerEOF) {
+			return Writer::npos;
+		}
+
+		std::size_t sizeRead = sizeRemaining - readerStatic.getSizeReadable();
+
+		/* check if reader is stalled */
+		if(sizeRead == 0) {
+			break;
+		}
+
+		currentPos += sizeRead;
+	}
+
+	return currentPos;
+}
+
+// returns consumable bytes to write.
+std::size_t WriterConsumer::getSizeWritable() const {
+	if(isConsumerEOF) {
+		return 0;
+	}
+	return Writer::npos;
+}
+
+}
 
 Input::Input(Writer& aWriter)
 : consumerGenerated(new ConsumerWriter(aWriter)),

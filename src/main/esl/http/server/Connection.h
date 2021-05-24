@@ -39,7 +39,7 @@ public:
 	Connection() = default;
 	virtual ~Connection() = default;
 
-	virtual bool sendResponse(const Response& response, esl::io::Output output) noexcept = 0;
+	virtual bool sendResponse(const Response& response, io::Output output) noexcept = 0;
 	virtual bool sendResponse(const Response& response, boost::filesystem::path path) noexcept = 0;
 };
 

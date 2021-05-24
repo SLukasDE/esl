@@ -22,7 +22,7 @@ SOFTWARE.
 
 #include <esl/Stacktrace.h>
 #include <esl/stacktrace/Interface.h>
-#include <esl/object/ValueSettings.h>
+#include <esl/object/Properties.h>
 #include <esl/Module.h>
 
 namespace esl {
@@ -42,7 +42,7 @@ module::Implementation& Stacktrace::getDefault() {
 }
 
 Stacktrace::Stacktrace(std::initializer_list<std::pair<std::string, std::string>> settings, const std::string& implementation)
-: stacktrace(createStacktrace(implementation, object::ValueSettings(std::move(settings))))
+: stacktrace(createStacktrace(implementation, object::Properties(std::move(settings))))
 { }
 
 Stacktrace::Stacktrace(const object::Values<std::string>& settings, const std::string& implementation)

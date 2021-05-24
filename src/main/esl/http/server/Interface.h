@@ -55,7 +55,7 @@ struct Interface : esl::module::Interface {
 		virtual void addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) = 0;
 		virtual void addObjectFactory(const std::string& id, ObjectFactory objectFactory) = 0;
 
-		/* this method is non-blocking. A seperate thread will be opened to listen */
+		/* this method is non-blocking. A separate thread will be opened to listen */
 		virtual bool listen() = 0;
 
 		virtual void release() = 0;

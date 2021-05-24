@@ -21,6 +21,7 @@ SOFTWARE.
 */
 
 #include <esl/object/ValueSettings.h>
+#if 0
 #include <esl/Stacktrace.h>
 
 #include <stdexcept>
@@ -66,3 +67,4 @@ const std::vector<std::pair<std::string, std::string>>& ValueSettings::getValues
 
 } /* namespace object */
 } /* namespace esl */
+#endif

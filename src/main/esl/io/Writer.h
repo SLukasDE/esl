@@ -37,6 +37,8 @@ public:
 
 	// if function is called with size=0, this signals that writing is done, so write will not be called anymore.
 	// -> this can be used for cleanup stuff.
+	// returns consumed bytes.
+	// npos is returned if writer will not consume anymore.
 	virtual std::size_t write(const void* data, std::size_t size) = 0;
 
 	// returns consumable bytes to write.
