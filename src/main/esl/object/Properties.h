@@ -37,6 +37,7 @@ namespace object {
 class Properties : public object::Values<std::string>, public object::Settings {
 public:
 	Properties(std::initializer_list<std::pair<std::string, std::string>> settings = {});
+	Properties(std::vector<std::pair<std::string, std::string>> settings);
 	Properties(const object::Values<std::string>& settings);
 
 	void addSetting(const std::string& key, const std::string& value) override;

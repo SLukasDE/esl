@@ -27,14 +27,12 @@ SOFTWARE.
 #include <esl/Module.h>
 #include <esl/messaging/client/Interface.h>
 #include <esl/messaging/server/Interface.h>
-//#include <esl/messaging/server/MessageContext.h>
 #include <esl/object/Interface.h>
 #include <esl/object/Values.h>
 
 #include <string>
 #include <utility>
 #include <vector>
-//#include <functional>
 #include <memory>
 
 namespace esl {

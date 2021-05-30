@@ -20,11 +20,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_MESSAGING_SERVER_MESSAGEHANDLER_INTERFACE_H_
-#define ESL_MESSAGING_SERVER_MESSAGEHANDLER_INTERFACE_H_
+#ifndef ESL_MESSAGING_SERVER_REQUESTHANDLER_INTERFACE_H_
+#define ESL_MESSAGING_SERVER_REQUESTHANDLER_INTERFACE_H_
 
 #include <esl/io/Input.h>
-#include <esl/messaging/server/MessageContext.h>
+#include <esl/messaging/server/RequestContext.h>
 #include <esl/object/ObjectContext.h>
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
@@ -33,25 +33,26 @@ SOFTWARE.
 #include <set>
 #include <memory>
 
+
 namespace esl {
 namespace messaging {
 namespace server {
-namespace messagehandler {
+namespace requesthandler {
 
 struct Interface : esl::module::Interface {
 	/* ******************************************** *
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	using CreateMessageHandler = io::Input (*)(MessageContext&);
-	using GetNotifiers = const std::set<std::string>& (*)(object::ObjectContext&);
+	using CreateInput = io::Input (*)(RequestContext&);
+	using GetNotifiers = const std::set<std::string>& (*)(const object::ObjectContext&);
 
 	/* ************************************ *
 	 * standard API definition of interface *
 	 * ************************************ */
 
 	static inline const char* getType() {
-		return "esl-messaging-server-messagehandler";
+		return "esl-messaging-server-requesthandler";
 	}
 
 	static inline const std::string& getApiVersion() {
@@ -63,19 +64,19 @@ struct Interface : esl::module::Interface {
 	 * ************************************ */
 
 	Interface(std::string module, std::string implementation,
-			CreateMessageHandler aCreateMessageHandler, GetNotifiers aGetNotifiers)
+			CreateInput aCreateInput, GetNotifiers aGetNotifiers)
 	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
-	  createMessageHandler(aCreateMessageHandler),
+	  createInput(aCreateInput),
 	  getNotifiers(aGetNotifiers)
 	{ }
 
-	CreateMessageHandler createMessageHandler;
+	CreateInput createInput;
 	GetNotifiers getNotifiers;
 };
 
-} /* namespace messagehandler */
+} /* namespace requesthandler */
 } /* namespace server */
 } /* namespace messaging */
 } /* namespace esl */
 
-#endif /* ESL_MESSAGING_SERVER_MESSAGEHANDLER_INTERFACE_H_ */
+#endif /* ESL_MESSAGING_SERVER_REQUESTHANDLER_INTERFACE_H_ */

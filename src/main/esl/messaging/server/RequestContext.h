@@ -20,24 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/messaging/server/Connection.h>
 #include <esl/object/ObjectContext.h>
-#include <esl/object/Values.h>
+#include <esl/messaging/server/Connection.h>
+#include <esl/messaging/server/Request.h>
 
-#ifndef ESL_MESSAGING_SERVER_MESSAGECONTEXT_H_
-#define ESL_MESSAGING_SERVER_MESSAGECONTEXT_H_
+#ifndef ESL_MESSAGING_SERVER_REQUESTCONTEXT_H_
+#define ESL_MESSAGING_SERVER_REQUESTCONTEXT_H_
 
 namespace esl {
 namespace messaging {
 namespace server {
 
-class MessageContext : public object::ObjectContext, public object::Values<std::string> {
+class RequestContext : public object::ObjectContext {
 public:
 	virtual Connection& getConnection() const = 0;
+	virtual const Request& getRequest() const = 0;
 };
 
 } /* namespace server */
 } /* namespace messaging */
 } /* namespace esl */
 
-#endif /* ESL_MESSAGING_SERVER_MESSAGECONTEXT_H_ */
+#endif /* ESL_MESSAGING_SERVER_REQUESTCONTEXT_H_ */

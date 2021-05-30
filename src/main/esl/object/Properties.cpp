@@ -35,6 +35,11 @@ Properties::Properties(std::initializer_list<std::pair<std::string, std::string>
    settingsMap(settings.begin(), settings.end())
 { }
 
+Properties::Properties(std::vector<std::pair<std::string, std::string>> aSettings)
+: settings(std::move(aSettings)),
+  settingsMap(settings.begin(), settings.end())
+{ }
+
 Properties::Properties(const object::Values<std::string>& aSettings)
 {
 	const std::vector<std::pair<std::string, std::string>>& values = aSettings.getValues();

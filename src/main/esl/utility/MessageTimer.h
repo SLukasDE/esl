@@ -83,8 +83,7 @@ private:
 		  priority(aPriority),
 		  timePoint(std::chrono::steady_clock::now() + aTimer),
 		  timer(aTimer)
-    	{
-    	}
+    	{ }
 
     	Key key;
     	Message message;

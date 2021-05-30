@@ -40,17 +40,17 @@ class Socket final : public Interface::Socket {
 public:
 	static module::Implementation& getDefault();
 
-	Socket(std::uint16_t port, requesthandler::Interface::CreateInput createInput,
+	Socket(std::uint16_t port,
 			std::initializer_list<std::pair<std::string, std::string>> settings,
 			const std::string& implementation = getDefault().getImplementation());
 
-	Socket(std::uint16_t port, requesthandler::Interface::CreateInput createInput,
+	Socket(std::uint16_t port,
 			const object::Values<std::string>& settings = getDefault().getProperties(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	void addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) override;
 	void addObjectFactory(const std::string& id, ObjectFactory objectFactory) override;
-	bool listen() override;
+	void listen(requesthandler::Interface::CreateInput createInput) override;
 	void release() override;
 
 private:

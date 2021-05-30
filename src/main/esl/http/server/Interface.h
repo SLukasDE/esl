@@ -45,7 +45,7 @@ struct Interface : esl::module::Interface {
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class Socket {
+	class Socket : public object::Interface::Object {
 	public:
 		using ObjectFactory = std::function<esl::object::Interface::Object*(const RequestContext&)>;
 
@@ -56,12 +56,12 @@ struct Interface : esl::module::Interface {
 		virtual void addObjectFactory(const std::string& id, ObjectFactory objectFactory) = 0;
 
 		/* this method is non-blocking. A separate thread will be opened to listen */
-		virtual bool listen() = 0;
+		virtual void listen(requesthandler::Interface::CreateInput createInput) = 0;
 
 		virtual void release() = 0;
 	};
 
-	using CreateSocket = std::unique_ptr<Socket> (*)(std::uint16_t port, requesthandler::Interface::CreateInput createInput, const object::Values<std::string>& settings);
+	using CreateSocket = std::unique_ptr<Socket> (*)(std::uint16_t port, const object::Values<std::string>& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *

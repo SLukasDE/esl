@@ -49,8 +49,8 @@ void Socket::addObjectFactory(const std::string& id, ObjectFactory objectFactory
 	socket->addObjectFactory(id, objectFactory);
 }
 
-void Socket::listen(const std::set<std::string>& notifications, messagehandler::Interface::CreateMessageHandler createMessageHandler) {
-	socket->listen(notifications, createMessageHandler);
+void Socket::listen(const std::set<std::string>& notifications, requesthandler::Interface::CreateInput createInput) {
+	socket->listen(notifications, createInput);
 }
 
 void Socket::release() {

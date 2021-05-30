@@ -27,8 +27,8 @@ SOFTWARE.
 #include <esl/object/Interface.h>
 #include <esl/object/Values.h>
 #include <esl/Module.h>
-#include <esl/messaging/server/MessageContext.h>
-#include <esl/messaging/server/messagehandler/Interface.h>
+#include <esl/messaging/server/RequestContext.h>
+#include <esl/messaging/server/requesthandler/Interface.h>
 
 #include <string>
 #include <functional>
@@ -45,16 +45,16 @@ struct Interface : esl::module::Interface {
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class Socket {
+	class Socket : public object::Interface::Object {
 	public:
-		using ObjectFactory = std::function<object::Interface::Object*(const MessageContext&)>;
+		using ObjectFactory = std::function<object::Interface::Object*(const RequestContext&)>;
 
 		virtual ~Socket() = default;
 
 		virtual void addObjectFactory(const std::string& id, ObjectFactory objectFactory) = 0;
 
 		/* this method is non-blocking. A separate thread will be opened to listen */
-		virtual void listen(const std::set<std::string>& notifications, messagehandler::Interface::CreateMessageHandler createMessageHandler) = 0;
+		virtual void listen(const std::set<std::string>& notifications, requesthandler::Interface::CreateInput createInput) = 0;
 		virtual void release() = 0;
 		virtual bool wait(std::uint32_t ms) = 0;
 	};

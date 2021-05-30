@@ -19,38 +19,20 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-#if 0
-#ifndef ESL_OBJECT_VALUESETTINGS_H_
-#define ESL_OBJECT_VALUESETTINGS_H_
+
+#ifndef ESL_MESSAGING_SERVER_REQUEST_H_
+#define ESL_MESSAGING_SERVER_REQUEST_H_
 
 #include <esl/object/Values.h>
-#include <esl/object/Settings.h>
-
-#include <initializer_list>
-#include <utility>
-#include <vector>
-#include <map>
 
 namespace esl {
-namespace object {
+namespace messaging {
+namespace server {
 
-class ValueSettings : public object::Values<std::string>, public object::Settings {
-public:
-	ValueSettings(std::initializer_list<std::pair<std::string, std::string>> settings = {});
-	ValueSettings(const object::Values<std::string>& settings);
+using Request = object::Values<std::string>;
 
-	void addSetting(const std::string& key, const std::string& value) override;
-	bool hasValue(const std::string& key) const override;
-	std::string getValue(const std::string& key) const override;
-	const std::vector<std::pair<std::string, std::string>>& getValues() const override;
-
-private:
-	std::vector<std::pair<std::string, std::string>> settings;
-	std::map<std::string, std::string> settingsMap;
-};
-
-} /* namespace object */
+} /* namespace server */
+} /* namespace messaging */
 } /* namespace esl */
 
-#endif /* ESL_OBJECT_VALUESETTINGS_H_ */
-#endif
+#endif /* ESL_MESSAGING_SERVER_REQUEST_H_ */

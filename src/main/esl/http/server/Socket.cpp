@@ -33,18 +33,18 @@ module::Implementation& Socket::getDefault() {
 	return implementation;
 }
 
-Socket::Socket(std::uint16_t port, requesthandler::Interface::CreateInput createInput,
+Socket::Socket(std::uint16_t port,
 		std::initializer_list<std::pair<std::string, std::string>> settings,
 		const std::string& implementation)
 : Interface::Socket(),
-  socket(esl::getModule().getInterface<Interface>(implementation).createSocket(port, createInput, object::Properties(std::move(settings))))
+  socket(esl::getModule().getInterface<Interface>(implementation).createSocket(port, object::Properties(std::move(settings))))
 { }
 
-Socket::Socket(std::uint16_t port, requesthandler::Interface::CreateInput createInput,
+Socket::Socket(std::uint16_t port,
 		const object::Values<std::string>& settings,
 		const std::string& implementation)
 : Interface::Socket(),
-  socket(esl::getModule().getInterface<Interface>(implementation).createSocket(port, createInput, settings))
+  socket(esl::getModule().getInterface<Interface>(implementation).createSocket(port, settings))
 { }
 
 void Socket::addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) {
@@ -55,8 +55,8 @@ void Socket::addObjectFactory(const std::string& id, ObjectFactory objectFactory
 	socket->addObjectFactory(id, objectFactory);
 }
 
-bool Socket::listen() {
-	return socket->listen();
+void Socket::listen(requesthandler::Interface::CreateInput createInput) {
+	socket->listen(createInput);
 }
 
 void Socket::release() {
