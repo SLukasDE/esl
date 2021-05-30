@@ -52,6 +52,7 @@ public:
 	void addObjectFactory(const std::string& id, ObjectFactory objectFactory) override;
 	void listen(requesthandler::Interface::CreateInput createInput) override;
 	void release() override;
+	bool wait(std::uint32_t ms) override;
 
 private:
 	std::unique_ptr<Interface::Socket> socket;

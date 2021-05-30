@@ -63,6 +63,10 @@ void Socket::release() {
 	socket->release();
 }
 
+bool Socket::wait(std::uint32_t ms) {
+	return socket->wait(ms);
+}
+
 } /* namespace server */
 } /* namespace http */
 } /* namespace esl */

@@ -57,8 +57,8 @@ struct Interface : esl::module::Interface {
 
 		/* this method is non-blocking. A separate thread will be opened to listen */
 		virtual void listen(requesthandler::Interface::CreateInput createInput) = 0;
-
 		virtual void release() = 0;
+		virtual bool wait(std::uint32_t ms) = 0;
 	};
 
 	using CreateSocket = std::unique_ptr<Socket> (*)(std::uint16_t port, const object::Values<std::string>& settings);
