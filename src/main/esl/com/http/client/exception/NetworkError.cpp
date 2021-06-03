@@ -20,43 +20,39 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_IO_OUTPUT_FUNCTION_H_
-#define ESL_IO_OUTPUT_FUNCTION_H_
-
-#include <esl/io/Output.h>
-#include <esl/io/Reader.h>
-
-#include <string>
-#include <functional>
+#include <esl/com/http/client/exception/NetworkError.h>
 
 namespace esl {
-namespace io {
-namespace output {
+namespace com {
+namespace http {
+namespace client {
+namespace exception {
 
-class Function : public Reader {
-public:
-	static esl::io::Output create(std::function<std::size_t(void*, std::size_t)> getDataFunction);
+namespace {
+static constexpr const char* defaultMessage = "network error";
+}
 
-	Function(std::function<std::size_t(void*, std::size_t)> getDataFunction);
+NetworkError::NetworkError(int aErrorCode)
+: std::runtime_error(defaultMessage),
+  errorCode(aErrorCode)
+{ }
 
-	std::size_t read(void* data, std::size_t size) override;
-	std::size_t getSizeReadable() const override;
-	bool hasSize() const override;
-	std::size_t getSize() const override;
+NetworkError::NetworkError(int aErrorCode, const char* message)
+: std::runtime_error(message),
+  errorCode(aErrorCode)
+{ }
 
-private:
-	static constexpr std::size_t prefetchSize = 1024;
-	std::size_t prefetchData() const;
+NetworkError::NetworkError(int aErrorCode, const std::string& message)
+: std::runtime_error(message),
+  errorCode(aErrorCode)
+{ }
 
-	mutable std::function<std::size_t(void*, std::size_t)> getDataFunction;
-	mutable std::size_t fetchedDirectSize = 0;
+int NetworkError::getErrorCode() const noexcept {
+	return errorCode;
+}
 
-	mutable std::string data;
-	std::size_t dataPos = 0;
-};
-
-} /* namespace output */
-} /* namespace io */
+} /* namespace exception */
+} /* namespace client */
+} /* namespace http */
+} /* namespace com */
 } /* namespace esl */
-
-#endif /* ESL_IO_OUTPUT_FUNCTION_H_ */

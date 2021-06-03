@@ -30,6 +30,10 @@ namespace output {
 
 constexpr std::size_t Function::prefetchSize;
 
+esl::io::Output Function::create(std::function<std::size_t(void*, std::size_t)> getDataFunction) {
+	return esl::io::Output(std::unique_ptr<Reader>(new Function(getDataFunction)));
+}
+
 Function::Function(std::function<std::size_t(void*, std::size_t)> aGetDataFunction)
 : getDataFunction(aGetDataFunction)
 { }

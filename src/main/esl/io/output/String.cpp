@@ -28,7 +28,11 @@ namespace io {
 namespace output {
 
 namespace {
-esl::logging::Logger<esl::logging::Level::TRACE> logger("esl::io::ProducerString");
+esl::logging::Logger<> logger("esl::io::ProducerString");
+}
+
+esl::io::Output String::create(std::string content) {
+	return esl::io::Output(std::unique_ptr<Producer>(new String(std::move(content))));
 }
 
 String::String(std::string aContent)
@@ -39,23 +43,18 @@ String::String(std::string aContent)
 
 std::size_t String::produce(Writer& writer) {
 	if(currentPos >= currentSize) {
-logger.error << "produce[" << this << "]: currentSize = npos\n";
 		currentSize = Writer::npos;
 	}
 
 	if(currentSize == Writer::npos) {
-logger.error << "produce[" << this << "]: return npos\n";
 		return Writer::npos;
 	}
 
-logger.error << "produce[" << this << "]: call writer(..., " << (currentSize - currentPos) << ")\n";
 	std::size_t count = writer.write(&bufferRead[currentPos], currentSize - currentPos);
 	if(count == Writer::npos) {
-logger.error << "produce[" << this << "]: writer returned npos\n";
 		currentPos = currentSize;
 	}
 	else {
-logger.error << "produce[" << this << "]: writer returned " << count << "\n";
 		if(count > currentSize - currentPos) {
 			logger.warn << "ProducerString has been called with a broken writer!\n";
 			logger.warn << "Writer read " << count << " bytes but at most " << (currentSize - currentPos) << " bytes was allowed to read.\n";
@@ -64,7 +63,6 @@ logger.error << "produce[" << this << "]: writer returned " << count << "\n";
 		currentPos += count;
 	}
 
-logger.error << "produce[" << this << "]: return " << count << "\n";
 	return count;
 }
 

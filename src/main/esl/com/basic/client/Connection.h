@@ -20,43 +20,44 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_IO_OUTPUT_FUNCTION_H_
-#define ESL_IO_OUTPUT_FUNCTION_H_
+#ifndef ESL_COM_BASIC_CLIENT_CONNECTION_H_
+#define ESL_COM_BASIC_CLIENT_CONNECTION_H_
 
+#include <esl/com/basic/client/Interface.h>
+#include <esl/module/Implementation.h>
+#include <esl/object/Values.h>
 #include <esl/io/Output.h>
-#include <esl/io/Reader.h>
 
 #include <string>
-#include <functional>
+#include <memory>
+#include <utility>
+#include <vector>
+#include <initializer_list>
 
 namespace esl {
-namespace io {
-namespace output {
+namespace com {
+namespace basic {
+namespace client {
 
-class Function : public Reader {
+class Connection : public Interface::Connection {
 public:
-	static esl::io::Output create(std::function<std::size_t(void*, std::size_t)> getDataFunction);
+	static module::Implementation& getDefault();
 
-	Function(std::function<std::size_t(void*, std::size_t)> getDataFunction);
+	Connection(std::initializer_list<std::pair<std::string, std::string>> settings,
+			const std::string& implementation = getDefault().getImplementation());
 
-	std::size_t read(void* data, std::size_t size) override;
-	std::size_t getSizeReadable() const override;
-	bool hasSize() const override;
-	std::size_t getSize() const override;
+	Connection(const object::Values<std::string>& settings = getDefault().getProperties(),
+			const std::string& implementation = getDefault().getImplementation());
+
+	io::Output send(io::Output output, std::vector<std::pair<std::string, std::string>> parameters) override;
 
 private:
-	static constexpr std::size_t prefetchSize = 1024;
-	std::size_t prefetchData() const;
-
-	mutable std::function<std::size_t(void*, std::size_t)> getDataFunction;
-	mutable std::size_t fetchedDirectSize = 0;
-
-	mutable std::string data;
-	std::size_t dataPos = 0;
+	std::unique_ptr<Interface::Connection> connection;
 };
 
-} /* namespace output */
-} /* namespace io */
+} /* namespace client */
+} /* namespace basic */
+} /* namespace com */
 } /* namespace esl */
 
-#endif /* ESL_IO_OUTPUT_FUNCTION_H_ */
+#endif /* ESL_COM_BASIC_CLIENT_CONNECTION_H_ */

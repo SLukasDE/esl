@@ -20,43 +20,41 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_IO_OUTPUT_FUNCTION_H_
-#define ESL_IO_OUTPUT_FUNCTION_H_
+#ifndef ESL_DATABASE_SQL_ENGINE_H_
+#define ESL_DATABASE_SQL_ENGINE_H_
 
-#include <esl/io/Output.h>
-#include <esl/io/Reader.h>
+#include <esl/database/sql/Interface.h>
+#include <esl/database/table/Interface.h>
+#include <esl/object/Values.h>
+#include <esl/module/Implementation.h>
 
 #include <string>
-#include <functional>
+#include <initializer_list>
+#include <memory>
 
 namespace esl {
-namespace io {
-namespace output {
+namespace database {
+namespace sql {
 
-class Function : public Reader {
+class Engine final : public Interface::Engine {
 public:
-	static esl::io::Output create(std::function<std::size_t(void*, std::size_t)> getDataFunction);
+	static module::Implementation& getDefault();
 
-	Function(std::function<std::size_t(void*, std::size_t)> getDataFunction);
+	Engine(std::initializer_list<std::pair<std::string, std::string>> settings,
+			const std::string& implementation = getDefault().getImplementation());
 
-	std::size_t read(void* data, std::size_t size) override;
-	std::size_t getSizeReadable() const override;
-	bool hasSize() const override;
-	std::size_t getSize() const override;
+	Engine(const object::Values<std::string>& settings = getDefault().getProperties(),
+			const std::string& implementation = getDefault().getImplementation());
+
+	void addTables(const std::string& id, std::unique_ptr<table::Interface::Tables> tables) override;
+	std::unique_ptr<database::Interface::ConnectionFactory> createConnectionFactory() override;
 
 private:
-	static constexpr std::size_t prefetchSize = 1024;
-	std::size_t prefetchData() const;
-
-	mutable std::function<std::size_t(void*, std::size_t)> getDataFunction;
-	mutable std::size_t fetchedDirectSize = 0;
-
-	mutable std::string data;
-	std::size_t dataPos = 0;
+	std::unique_ptr<Interface::Engine> engine;
 };
 
-} /* namespace output */
-} /* namespace io */
+} /* namespace sql */
+} /* namespace database */
 } /* namespace esl */
 
-#endif /* ESL_IO_OUTPUT_FUNCTION_H_ */
+#endif /* ESL_DATABASE_SQL_ENGINE_H_ */

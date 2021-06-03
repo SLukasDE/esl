@@ -20,43 +20,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_IO_OUTPUT_FUNCTION_H_
-#define ESL_IO_OUTPUT_FUNCTION_H_
-
-#include <esl/io/Output.h>
-#include <esl/io/Reader.h>
-
-#include <string>
-#include <functional>
+#include <esl/io/input/Closed.h>
 
 namespace esl {
 namespace io {
-namespace output {
+namespace input {
+namespace {
+Closed closed;
+}
 
-class Function : public Reader {
-public:
-	static esl::io::Output create(std::function<std::size_t(void*, std::size_t)> getDataFunction);
+esl::io::Input Closed::create() {
+	return esl::io::Input(closed);
+}
 
-	Function(std::function<std::size_t(void*, std::size_t)> getDataFunction);
+std::size_t Closed::write(const void* data, std::size_t size) {
+	return npos;
+}
 
-	std::size_t read(void* data, std::size_t size) override;
-	std::size_t getSizeReadable() const override;
-	bool hasSize() const override;
-	std::size_t getSize() const override;
+std::size_t Closed::getSizeWritable() const {
+	return 0;
+}
 
-private:
-	static constexpr std::size_t prefetchSize = 1024;
-	std::size_t prefetchData() const;
-
-	mutable std::function<std::size_t(void*, std::size_t)> getDataFunction;
-	mutable std::size_t fetchedDirectSize = 0;
-
-	mutable std::string data;
-	std::size_t dataPos = 0;
-};
-
-} /* namespace output */
+} /* namespace input */
 } /* namespace io */
 } /* namespace esl */
-
-#endif /* ESL_IO_OUTPUT_FUNCTION_H_ */

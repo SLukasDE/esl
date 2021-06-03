@@ -20,43 +20,43 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_IO_OUTPUT_FUNCTION_H_
-#define ESL_IO_OUTPUT_FUNCTION_H_
-
-#include <esl/io/Output.h>
-#include <esl/io/Reader.h>
-
-#include <string>
-#include <functional>
+#include <esl/com/http/server/Response.h>
 
 namespace esl {
-namespace io {
-namespace output {
+namespace com {
+namespace http {
+namespace server {
 
-class Function : public Reader {
-public:
-	static esl::io::Output create(std::function<std::size_t(void*, std::size_t)> getDataFunction);
+Response::Response(unsigned short aStatusCode, const utility::MIME& contentType, std::string aRealmId) noexcept
+: headers{{"Content-Type", contentType.toString()}},
+  statusCode(aStatusCode),
+  realmId(std::move(aRealmId))
+{
+//	headers["Content-Type"] = contentType.toString();
+}
 
-	Function(std::function<std::size_t(void*, std::size_t)> getDataFunction);
 
-	std::size_t read(void* data, std::size_t size) override;
-	std::size_t getSizeReadable() const override;
-	bool hasSize() const override;
-	std::size_t getSize() const override;
+bool Response::isValid() const noexcept {
+	return (headers.find("Content-Type")->second != "");
+}
 
-private:
-	static constexpr std::size_t prefetchSize = 1024;
-	std::size_t prefetchData() const;
+unsigned short Response::getStatusCode() const noexcept {
+	return statusCode;
+}
 
-	mutable std::function<std::size_t(void*, std::size_t)> getDataFunction;
-	mutable std::size_t fetchedDirectSize = 0;
+const std::string& Response::getRealmId() const noexcept {
+	return realmId;
+}
 
-	mutable std::string data;
-	std::size_t dataPos = 0;
-};
+void Response::addHeader(const std::string& key, const std::string& value) {
+	headers[key] = value;
+}
 
-} /* namespace output */
-} /* namespace io */
+const std::map<std::string, std::string>& Response::getHeaders() const {
+	return headers;
+}
+
+} /* namespace server */
+} /* namespace http */
+} /* namespace com */
 } /* namespace esl */
-
-#endif /* ESL_IO_OUTPUT_FUNCTION_H_ */

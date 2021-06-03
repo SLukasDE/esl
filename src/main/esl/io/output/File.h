@@ -23,6 +23,7 @@ SOFTWARE.
 #ifndef ESL_IO_OUTPUT_FILE_H_
 #define ESL_IO_OUTPUT_FILE_H_
 
+#include <esl/io/Output.h>
 #include <esl/io/Reader.h>
 
 #include <string>
@@ -35,6 +36,8 @@ namespace output {
 
 class File : public Reader {
 public:
+	static esl::io::Output create(const std::string& filename);
+
 	File(const std::string& filename);
 
 	std::size_t read(void* data, std::size_t size) override;

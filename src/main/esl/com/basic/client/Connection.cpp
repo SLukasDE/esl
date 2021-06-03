@@ -20,70 +20,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/io/output/File.h>
+#include <esl/com/basic/client/Connection.h>
+#include <esl/object/Properties.h>
 #include <esl/logging/Logger.h>
+#include <esl/Module.h>
 
 namespace esl {
-namespace io {
-namespace output {
+namespace com {
+namespace basic {
+namespace client {
 
 namespace {
-logging::Logger<> logger("esl::io::output::File");
+esl::logging::Logger<> logger("esl::com::basic::client::Connection");
 }
 
-esl::io::Output File::create(const std::string& filename) {
-	return esl::io::Output(std::unique_ptr<Reader>(new File(filename)));
+module::Implementation& Connection::getDefault() {
+	static module::Implementation implementation;
+	return implementation;
 }
 
-File::File(const std::string& filename)
-: file(new std::ifstream(filename))
-{
-	if(file->good()) {
-		const auto begin = file->tellg();
-		file->seekg(0, std::ios::end);
-		const auto end = file->tellg();
-		size = (end-begin);
-	}
-	else {
-        logger.warn << "esl: cannot open file \"" << filename << "\"\n";
-        file.reset();
-	}
+Connection::Connection(std::initializer_list<std::pair<std::string, std::string>> setting,
+		const std::string& implementation)
+: Interface::Connection(),
+  connection(esl::getModule().getInterface<Interface>(implementation).createConnection(object::Properties(std::move(setting))))
+{ }
+
+Connection::Connection(const object::Values<std::string>& settings,
+		const std::string& implementation)
+: Interface::Connection(),
+  connection(esl::getModule().getInterface<Interface>(implementation).createConnection(settings))
+{ }
+
+io::Output Connection::send(io::Output output, std::vector<std::pair<std::string, std::string>> parameters) {
+	return connection->send(std::move(output), std::move(parameters));
 }
 
-std::size_t File::read(void* buffer, std::size_t count) {
-	if(!file) {
-		return 0;
-	}
-
-	std::size_t remainingSize = getSizeReadable();
-	if(count > remainingSize) {
-		count = remainingSize;
-	}
-
-	if(count > 0) {
-		file->read(static_cast<char*>(buffer), count);
-	}
-
-	return count;
-}
-
-std::size_t File::getSizeReadable() const {
-	if(!file) {
-		return 0;
-	}
-
-	return getSize() - pos;
-}
-
-bool File::hasSize() const {
-	return file ? true : false;
-//	return (bool) file;
-}
-
-std::size_t File::getSize() const {
-	return size;
-}
-
-} /* namespace output */
-} /* namespace io */
+} /* namespace client */
+} /* namespace basic */
+} /* namespace com */
 } /* namespace esl */

@@ -23,6 +23,7 @@ SOFTWARE.
 #ifndef ESL_IO_OUTPUT_STRING_H_
 #define ESL_IO_OUTPUT_STRING_H_
 
+#include <esl/io/Output.h>
 #include <esl/io/Producer.h>
 #include <esl/io/Writer.h>
 
@@ -34,6 +35,8 @@ namespace output {
 
 class String : public Producer {
 public:
+	static esl::io::Output create(std::string content);
+
 	String(std::string content);
 
 	std::size_t produce(Writer& writer) override;

@@ -23,6 +23,7 @@ SOFTWARE.
 #ifndef ESL_IO_OUTPUT_MEMORY_H_
 #define ESL_IO_OUTPUT_MEMORY_H_
 
+#include <esl/io/Output.h>
 #include <esl/io/Producer.h>
 #include <esl/io/Writer.h>
 
@@ -34,6 +35,8 @@ namespace output {
 
 class Memory : public Producer {
 public:
+	static esl::io::Output create(const void* data, std::size_t size);
+
 	Memory(const void* data, std::size_t size);
 
 	std::size_t produce(Writer& writer) override;

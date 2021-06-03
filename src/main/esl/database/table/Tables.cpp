@@ -20,43 +20,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_IO_OUTPUT_FUNCTION_H_
-#define ESL_IO_OUTPUT_FUNCTION_H_
-
-#include <esl/io/Output.h>
-#include <esl/io/Reader.h>
-
-#include <string>
-#include <functional>
+#include <esl/database/table/Tables.h>
+#include <esl/object/Properties.h>
+#include <esl/Module.h>
 
 namespace esl {
-namespace io {
-namespace output {
+namespace database {
+namespace table {
 
-class Function : public Reader {
-public:
-	static esl::io::Output create(std::function<std::size_t(void*, std::size_t)> getDataFunction);
+module::Implementation& Tables::getDefault() {
+	static module::Implementation implementation;
+	return implementation;
+}
 
-	Function(std::function<std::size_t(void*, std::size_t)> getDataFunction);
+Tables::Tables(std::initializer_list<std::pair<std::string, std::string>> settings,
+		const std::string& implementation)
+: tables(esl::getModule().getInterface<Interface>(implementation).createTables(object::Properties(std::move(settings))))
+{ }
 
-	std::size_t read(void* data, std::size_t size) override;
-	std::size_t getSizeReadable() const override;
-	bool hasSize() const override;
-	std::size_t getSize() const override;
+Tables::Tables(const object::Values<std::string>& settings,
+		const std::string& implementation)
+: tables(esl::getModule().getInterface<Interface>(implementation).createTables(settings))
+{ }
 
-private:
-	static constexpr std::size_t prefetchSize = 1024;
-	std::size_t prefetchData() const;
-
-	mutable std::function<std::size_t(void*, std::size_t)> getDataFunction;
-	mutable std::size_t fetchedDirectSize = 0;
-
-	mutable std::string data;
-	std::size_t dataPos = 0;
-};
-
-} /* namespace output */
-} /* namespace io */
+} /* namespace table */
+} /* namespace database */
 } /* namespace esl */
-
-#endif /* ESL_IO_OUTPUT_FUNCTION_H_ */

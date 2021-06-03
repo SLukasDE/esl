@@ -20,43 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_IO_OUTPUT_FUNCTION_H_
-#define ESL_IO_OUTPUT_FUNCTION_H_
+#ifndef ESL_COM_HTTP_SERVER_CONNECTION_H_
+#define ESL_COM_HTTP_SERVER_CONNECTION_H_
 
+#include <esl/com/http/server/Response.h>
 #include <esl/io/Output.h>
-#include <esl/io/Reader.h>
 
-#include <string>
-#include <functional>
+#include <boost/filesystem.hpp>
+
+#include <memory>
 
 namespace esl {
-namespace io {
-namespace output {
+namespace com {
+namespace http {
+namespace server {
 
-class Function : public Reader {
+class Connection {
 public:
-	static esl::io::Output create(std::function<std::size_t(void*, std::size_t)> getDataFunction);
+	Connection() = default;
+	virtual ~Connection() = default;
 
-	Function(std::function<std::size_t(void*, std::size_t)> getDataFunction);
-
-	std::size_t read(void* data, std::size_t size) override;
-	std::size_t getSizeReadable() const override;
-	bool hasSize() const override;
-	std::size_t getSize() const override;
-
-private:
-	static constexpr std::size_t prefetchSize = 1024;
-	std::size_t prefetchData() const;
-
-	mutable std::function<std::size_t(void*, std::size_t)> getDataFunction;
-	mutable std::size_t fetchedDirectSize = 0;
-
-	mutable std::string data;
-	std::size_t dataPos = 0;
+	virtual bool send(const Response& response, io::Output output) = 0;
+	virtual bool send(const Response& response, boost::filesystem::path path) = 0;
 };
 
-} /* namespace output */
-} /* namespace io */
+} /* namespace server */
+} /* namespace http */
+} /* namespace com */
 } /* namespace esl */
 
-#endif /* ESL_IO_OUTPUT_FUNCTION_H_ */
+#endif /* ESL_COM_HTTP_SERVER_CONNECTION_H_ */

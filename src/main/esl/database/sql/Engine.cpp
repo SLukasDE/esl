@@ -20,43 +20,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_IO_OUTPUT_FUNCTION_H_
-#define ESL_IO_OUTPUT_FUNCTION_H_
-
-#include <esl/io/Output.h>
-#include <esl/io/Reader.h>
-
-#include <string>
-#include <functional>
+#include <esl/database/sql/Engine.h>
+#include <esl/object/Properties.h>
+#include <esl/Module.h>
 
 namespace esl {
-namespace io {
-namespace output {
+namespace database {
+namespace sql {
 
-class Function : public Reader {
-public:
-	static esl::io::Output create(std::function<std::size_t(void*, std::size_t)> getDataFunction);
+module::Implementation& Engine::getDefault() {
+	static module::Implementation implementation;
+	return implementation;
+}
 
-	Function(std::function<std::size_t(void*, std::size_t)> getDataFunction);
+Engine::Engine(std::initializer_list<std::pair<std::string, std::string>> settings,
+		const std::string& implementation)
+: engine(esl::getModule().getInterface<Interface>(implementation).createEngine(object::Properties(std::move(settings))))
+{ }
 
-	std::size_t read(void* data, std::size_t size) override;
-	std::size_t getSizeReadable() const override;
-	bool hasSize() const override;
-	std::size_t getSize() const override;
+Engine::Engine(const object::Values<std::string>& settings,
+		const std::string& implementation)
+: engine(esl::getModule().getInterface<Interface>(implementation).createEngine(settings))
+{ }
 
-private:
-	static constexpr std::size_t prefetchSize = 1024;
-	std::size_t prefetchData() const;
+void Engine::addTables(const std::string& id, std::unique_ptr<table::Interface::Tables> tables) {
+	engine->addTables(id, std::move(tables));
+}
 
-	mutable std::function<std::size_t(void*, std::size_t)> getDataFunction;
-	mutable std::size_t fetchedDirectSize = 0;
+std::unique_ptr<database::Interface::ConnectionFactory> Engine::createConnectionFactory() {
+	return engine->createConnectionFactory();
+}
 
-	mutable std::string data;
-	std::size_t dataPos = 0;
-};
-
-} /* namespace output */
-} /* namespace io */
+} /* namespace sql */
+} /* namespace database */
 } /* namespace esl */
-
-#endif /* ESL_IO_OUTPUT_FUNCTION_H_ */

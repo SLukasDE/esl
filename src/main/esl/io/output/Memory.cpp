@@ -26,6 +26,10 @@ namespace esl {
 namespace io {
 namespace output {
 
+esl::io::Output Memory::create(const void* data, std::size_t size) {
+    return esl::io::Output(std::unique_ptr<esl::io::Producer>(new Memory(data, size)));
+}
+
 Memory::Memory(const void* aData, std::size_t aSize)
 : data(aData),
   size(aSize)

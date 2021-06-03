@@ -174,20 +174,15 @@ private:
 
 ReaderProducer::ReaderProducer(Producer& aProducer)
 : producer(aProducer)
-{
-logger.error << "ReaderProducer(" << &producer << ")\n";
-}
+{ }
 
 std::size_t ReaderProducer::read(void* aData, std::size_t size) {
 	std::uint8_t* data = static_cast<std::uint8_t*>(aData);
-logger.error << "ReaderProducer::read 1\n";
 
 	if(isProducerEOF) {
-logger.error << "ReaderProducer::read 1 return npos\n";
 		return Reader::npos;
 	}
 
-logger.error << "ReaderProducer::read 2\n";
 	/* ************************************************** *
 	 * Signal producer that no more data will be received *
 	 * ************************************************** */
@@ -195,12 +190,10 @@ logger.error << "ReaderProducer::read 2\n";
 		WriterMemory writerStatic(data, 0);
 		producer.produce(writerStatic);
 		isProducerEOF = true;
-logger.error << "ReaderProducer::read 2 return 0\n";
 		return 0;
 	}
 
 
-logger.error << "ReaderProducer::read 3\n";
 	/* ********************* *
 	 * Read data from reader *
 	 * ********************* */
@@ -208,17 +201,13 @@ logger.error << "ReaderProducer::read 3\n";
 	while(currentPos < size) {
 		std::size_t sizeRemaining = size - currentPos;
 		WriterMemory writerStatic(data + currentPos, sizeRemaining);
-logger.error << "ReaderProducer: produce(LocalWriterStatic(..., " << sizeRemaining << ")\n";
 		isProducerEOF = (producer.produce(writerStatic) == Writer::npos);
 
 		if(isProducerEOF) {
-//logger.error << "ReaderProducer::read 3 return npos\n";
-//			return Reader::npos;
 			break;
 		}
 
 		std::size_t sizeWritten = sizeRemaining - writerStatic.getSizeWritable();
-logger.error << "ReaderProducer::read 3 sizeWritten = " << sizeWritten << "\n";
 
 		/* check if writer is stalled */
 		if(sizeWritten == 0) {
@@ -228,7 +217,6 @@ logger.error << "ReaderProducer::read 3 sizeWritten = " << sizeWritten << "\n";
 		currentPos += sizeWritten;
 	}
 
-logger.error << "ReaderProducer::read 3 return " << currentPos << "\n";
 	return currentPos;
 }
 

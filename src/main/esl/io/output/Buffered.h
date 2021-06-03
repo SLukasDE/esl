@@ -23,6 +23,7 @@ SOFTWARE.
 #ifndef ESL_IO_OUTPUT_BUFFERED_H_
 #define ESL_IO_OUTPUT_BUFFERED_H_
 
+#include <esl/io/Output.h>
 #include <esl/io/Reader.h>
 
 #include <cstdint>
@@ -37,6 +38,8 @@ namespace output {
 
 class Buffered : public Reader {
 public:
+	static esl::io::Output create(Reader& baseReader);
+
 	Buffered(Reader& baseReader);
 
 	std::size_t read(void* data, std::size_t size) override;
