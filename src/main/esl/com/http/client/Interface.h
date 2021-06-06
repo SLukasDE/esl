@@ -55,8 +55,8 @@ struct Interface : esl::module::Interface {
 		Connection() = default;
 		virtual ~Connection() = default;
 
-		virtual Response send(Request request, esl::io::Output output, CreateInput createInput) = 0;
-		virtual Response send(Request request, esl::io::Output output, esl::io::Input input) = 0;
+		virtual Response send(Request request, esl::io::Output output, CreateInput createInput) const = 0;
+		virtual Response send(Request request, esl::io::Output output, esl::io::Input input) const = 0;
 	};
 
 	using CreateConnection = std::unique_ptr<Connection> (*)(const utility::URL& hostUrl, const object::Values<std::string>& settings);
