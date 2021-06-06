@@ -26,22 +26,26 @@ namespace esl {
 namespace io {
 namespace input {
 
-bool String::consume(Reader& reader) {
+std::size_t String::write(const void* data, std::size_t size) {
 	if(done) {
-		return false;
+		return npos;
 	}
 
-	char buffer[1024];
-	std::size_t size = reader.read(buffer, 1024);
+	if(size > 0) {
+		str += std::string(static_cast<const char*>(data), size);
+		return size;
+	}
 
-	if(size == Reader::npos) {
-		done = true;
-		return false;
-	}
-	else {
-		str.append(buffer, size);
-		return true;
-	}
+	done = true;
+	process();
+	return npos;
+}
+
+std::size_t String::getSizeWritable() const {
+	return npos;
+}
+
+void String::process() {
 }
 
 const std::string& String::getString() const noexcept {

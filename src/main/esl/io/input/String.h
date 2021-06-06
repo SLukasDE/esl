@@ -23,15 +23,25 @@ SOFTWARE.
 #ifndef ESL_IO_INPUT_STRING_H_
 #define ESL_IO_INPUT_STRING_H_
 
-#include <esl/io/Consumer.h>
+#include <esl/io/Writer.h>
 
 namespace esl {
 namespace io {
 namespace input {
 
-class String : public Consumer {
+class String : public Writer {
 public:
-	bool consume(Reader& reader) override;
+	// if function is called with size=0, this signals that writing is done, so write will not be called anymore.
+	// -> this can be used for cleanup stuff.
+	// returns consumed bytes.
+	// npos is returned if writer will not consume anymore.
+	std::size_t write(const void* data, std::size_t size) override;
+
+	// returns consumable bytes to write.
+	// npos is returned if available size is unknown.
+	std::size_t getSizeWritable() const override;
+
+	virtual void process();
 
 	const std::string& getString() const noexcept;
 
