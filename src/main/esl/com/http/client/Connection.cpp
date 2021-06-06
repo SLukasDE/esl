@@ -53,11 +53,11 @@ Connection::Connection(const utility::URL& hostUrl,
   connection(esl::getModule().getInterface<Interface>(implementation).createConnection(hostUrl, settings))
 { }
 
-Response Connection::send(Request request, esl::io::Output output, Interface::CreateInput createInput) {
+Response Connection::send(Request request, esl::io::Output output, Interface::CreateInput createInput) const {
 	return connection->send(std::move(request), std::move(output), createInput);
 }
 
-Response Connection::send(Request request, esl::io::Output output, esl::io::Input input) {
+Response Connection::send(Request request, esl::io::Output output, esl::io::Input input) const {
 	return connection->send(std::move(request), std::move(output), std::move(input));
 }
 

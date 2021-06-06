@@ -49,8 +49,8 @@ public:
 			const object::Values<std::string>& settings = getDefault().getProperties(),
 			const std::string& implementation = getDefault().getImplementation());
 
-	Response send(Request request, esl::io::Output output, Interface::CreateInput createInput) override;
-	Response send(Request request, esl::io::Output output, esl::io::Input input) override;
+	Response send(Request request, esl::io::Output output, Interface::CreateInput createInput) const override;
+	Response send(Request request, esl::io::Output output, esl::io::Input input) const override;
 
 private:
 	std::unique_ptr<Interface::Connection> connection;
