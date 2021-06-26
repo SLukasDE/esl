@@ -37,6 +37,7 @@ public:
 	virtual ~Connection() = default;
 
 	virtual PreparedStatement prepare(const std::string& sql) const = 0;
+	virtual ResultSet getTable(const std::string& tableName) = 0;
 
 	virtual void commit() const = 0;
 	virtual void rollback() const = 0;

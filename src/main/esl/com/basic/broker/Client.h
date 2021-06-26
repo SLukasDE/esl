@@ -26,10 +26,8 @@ SOFTWARE.
 #include <esl/com/basic/broker/Interface.h>
 #include <esl/com/basic/client/Interface.h>
 #include <esl/com/basic/server/Interface.h>
-#include <esl/object/Values.h>
 #include <esl/module/Implementation.h>
 
-#include <initializer_list>
 #include <utility>
 #include <vector>
 #include <memory>
@@ -43,17 +41,12 @@ class Client final : public Interface::Client {
 public:
 	static module::Implementation& getDefault();
 
-	Client(const std::string& brokers,
-			std::initializer_list<std::pair<std::string, std::string>> settings,
-			const std::string& implementation = getDefault().getImplementation());
-
-	Client(const std::string& brokers,
-			const object::Values<std::string>& settings = getDefault().getProperties(),
+	Client(const Interface::Settings& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	server::Interface::Socket& getSocket() override;
 
-	std::unique_ptr<client::Interface::Connection> createConnection(std::vector<std::pair<std::string, std::string>> parameters) override;
+	std::unique_ptr<client::Interface::Connection> createConnection(const Interface::Settings& parameters) override;
 
 private:
 	std::unique_ptr<Interface::Client> client;

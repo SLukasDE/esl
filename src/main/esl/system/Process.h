@@ -28,10 +28,8 @@ SOFTWARE.
 #include <esl/system/Arguments.h>
 #include <esl/system/Environment.h>
 #include <esl/system/FileDescriptor.h>
-#include <esl/object/Values.h>
 #include <esl/module/Implementation.h>
 
-#include <initializer_list>
 #include <string>
 #include <memory>
 
@@ -42,9 +40,7 @@ class Process final : public Interface::Process {
 public:
 	static module::Implementation& getDefault();
 
-	Process(std::initializer_list<std::pair<std::string, std::string>> settings,
-			const std::string& implementation = getDefault().getImplementation());
-	Process(const object::Values<std::string>& settings = getDefault().getProperties(),
+	Process(const Interface::Settings& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	Transceiver& operator[](const FileDescriptor& fd) override;

@@ -24,10 +24,8 @@ SOFTWARE.
 #define ESL_DATABASE_CONNECTIONFACTORY_H_
 
 #include <esl/database/Interface.h>
-#include <esl/object/Values.h>
 #include <esl/module/Implementation.h>
 
-#include <initializer_list>
 #include <string>
 #include <memory>
 
@@ -38,14 +36,10 @@ class ConnectionFactory : public Interface::ConnectionFactory {
 public:
 	static module::Implementation& getDefault();
 
-	ConnectionFactory(std::initializer_list<std::pair<std::string, std::string>> settings,
-			const std::string& implementation = getDefault().getImplementation());
-
-	ConnectionFactory(const object::Values<std::string>& settings = getDefault().getProperties(),
+	ConnectionFactory(const Interface::Settings& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	std::unique_ptr<Connection> createConnection() override;
-	//void addSetting(const std::string& key, const std::string& value) override;
 
 private:
 	std::unique_ptr<Interface::ConnectionFactory> connectionFactory;

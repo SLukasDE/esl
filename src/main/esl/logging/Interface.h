@@ -62,18 +62,21 @@ struct Interface : esl::module::Interface {
 		return "esl-logging";
 	}
 
-	static inline const std::string& getApiVersion() {
-		return esl::getModule().getApiVersion();
-	}
-
 	/* ************************************ *
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	Interface(std::string module, std::string implementation,
+	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation,
+			SetUnblocked setUnblocked, SetLevel setLevel, AddAppender addAppender, RemoveAppender removeAppender,
+			IsEnabled isEnabled, CreateOStream createOStream, GetThreadNo getThreadNo) {
+		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation,
+				setUnblocked, setLevel, addAppender, removeAppender, isEnabled, createOStream, getThreadNo));
+	}
+
+	Interface(const char* implementation,
 			SetUnblocked aSetUnblocked, SetLevel aSetLevel, AddAppender aAddAppender, RemoveAppender aRemoveAppender,
 			IsEnabled aIsEnabled, CreateOStream aCreateOStream, GetThreadNo aGetThreadNo)
-	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
+	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
 	  setUnblocked(aSetUnblocked),
 	  setLevel(aSetLevel),
 	  addAppender(aAddAppender),

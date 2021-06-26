@@ -25,27 +25,23 @@ SOFTWARE.
 namespace esl {
 namespace module {
 
-void Implementation::setImplementation(std::string aImplementation, std::initializer_list<std::pair<std::string, std::string>> aSettings) {
+void Implementation::setImplementation(std::string aImplementation, Settings aSettings) {
 	implementation = std::move(aImplementation);
-	properties = object::Properties(std::move(aSettings));
-}
-
-void Implementation::setImplementation(std::string aImplementation, const object::Values<std::string>& aSettings) {
-	implementation = std::move(aImplementation);
-	properties = object::Properties(aSettings);
+	settings = std::move(aSettings);
 }
 
 const std::string& Implementation::getImplementation() const noexcept {
 	return implementation;
 }
 
-const object::Properties& Implementation::getProperties() const noexcept {
-	return properties;
+const Implementation::Settings& Implementation::getSettings() const noexcept {
+	return settings;
 }
-
-object::Properties& Implementation::getProperties() noexcept {
-	return properties;
+/*
+Implementation::Settings& Implementation::getSettings() noexcept {
+	return settings;
 }
+*/
 
 } /* namespace module */
 } /* namespace esl */

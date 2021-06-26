@@ -34,26 +34,16 @@ module::Implementation& Client::getDefault() {
 	return implementation;
 }
 
-Client::Client(const std::string& brokers,
-		std::initializer_list<std::pair<std::string, std::string>> settings,
-		const std::string& implementation)
-: Interface::Client(),
-  client(esl::getModule().getInterface<Interface>(implementation).createClient(brokers, object::Properties(std::move(settings))))
-{ }
-
-Client::Client(const std::string& brokers,
-		const object::Values<std::string>& settings,
-		const std::string& implementation)
-: Interface::Client(),
-  client(esl::getModule().getInterface<Interface>(implementation).createClient(brokers, settings))
+Client::Client(const Interface::Settings& settings, const std::string& implementation)
+: client(esl::getModule().getInterface<Interface>(implementation).createClient(settings))
 { }
 
 server::Interface::Socket& Client::getSocket() {
 	return client->getSocket();
 }
 
-std::unique_ptr<client::Interface::Connection> Client::createConnection(std::vector<std::pair<std::string, std::string>> parameters) {
-	return client->createConnection(std::move(parameters));
+std::unique_ptr<client::Interface::Connection> Client::createConnection(const Interface::Settings& parameters) {
+	return client->createConnection(parameters);
 }
 
 } /* namespace broker */

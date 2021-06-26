@@ -52,17 +52,16 @@ struct Interface : esl::module::Interface {
 		return "esl-com-http-server-requesthandler";
 	}
 
-	static inline const std::string& getApiVersion() {
-		return esl::getModule().getApiVersion();
-	}
-
 	/* ************************************ *
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	Interface(std::string module, std::string implementation,
-			CreateInput aCreateInput)
-	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
+	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateInput createInput) {
+		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createInput));
+	}
+
+	Interface(const char* implementation, CreateInput aCreateInput)
+	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
 	  createInput(aCreateInput)
 	{ }
 

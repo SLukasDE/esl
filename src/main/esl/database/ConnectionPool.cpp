@@ -36,8 +36,7 @@ public:
 	~CPConnection();
 
 	PreparedStatement prepare(const std::string& sql) const override;
-	//std::unique_ptr<PreparedStatement> prepare(const std::string& sql) const override;
-	//PreparedStatement& prepare(const std::string& sql) const override;
+	ResultSet getTable(const std::string& tableName) override;
 
     void commit() const override;
     void rollback() const override;
@@ -81,6 +80,10 @@ void* CPConnection::getNativeHandle() const {
 //PreparedStatement& CPConnection::prepare(const std::string& sql) const {
 PreparedStatement CPConnection::prepare(const std::string& sql) const {
 	return connection->prepare(sql);
+}
+
+ResultSet CPConnection::getTable(const std::string& tableName) {
+	return ResultSet();
 }
 
 } /* anonymous namespace */

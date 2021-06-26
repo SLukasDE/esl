@@ -33,13 +33,7 @@ module::Implementation& Process::getDefault() {
 	return implementation;
 }
 
-Process::Process(std::initializer_list<std::pair<std::string, std::string>> settings,
-		const std::string& implementation)
-: process(esl::getModule().getInterface<Interface>(implementation).createProcess(object::Properties(std::move(settings))))
-{ }
-
-Process::Process(const object::Values<std::string>& settings,
-		const std::string& implementation)
+Process::Process(const Interface::Settings& settings, const std::string& implementation)
 : process(esl::getModule().getInterface<Interface>(implementation).createProcess(settings))
 { }
 

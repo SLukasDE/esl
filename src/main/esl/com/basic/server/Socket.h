@@ -25,11 +25,8 @@ SOFTWARE.
 
 #include <esl/com/basic/server/Interface.h>
 #include <esl/com/basic/server/requesthandler/Interface.h>
-#include <esl/object/Values.h>
 #include <esl/module/Implementation.h>
 
-#include <cstdint>
-#include <initializer_list>
 #include <memory>
 
 namespace esl {
@@ -41,10 +38,7 @@ class Socket final : public Interface::Socket {
 public:
 	static module::Implementation& getDefault();
 
-	Socket(std::uint16_t port, std::initializer_list<std::pair<std::string, std::string>> settings,
-			const std::string& implementation = getDefault().getImplementation());
-
-	Socket(std::uint16_t port, const object::Values<std::string>& settings = getDefault().getProperties(),
+	Socket(const Interface::Settings& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	void addObjectFactory(const std::string& id, ObjectFactory objectFactory) override;

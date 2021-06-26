@@ -25,7 +25,6 @@ SOFTWARE.
 
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
-#include <esl/object/Values.h>
 #include <esl/logging/Location.h>
 #include <esl/logging/StreamReal.h>
 
@@ -50,7 +49,7 @@ struct Interface : esl::module::Interface {
 		virtual std::unique_ptr<Stacktrace> clone() const = 0;
 	};
 
-	using CreateStacktrace = std::unique_ptr<Stacktrace> (*)(const object::Values<std::string>& settings);
+	using CreateStacktrace = std::unique_ptr<Stacktrace> (*)(const Interface::Settings& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *
@@ -60,16 +59,16 @@ struct Interface : esl::module::Interface {
 		return "esl-stacktrace";
 	}
 
-	static inline const std::string& getApiVersion() {
-		return esl::getModule().getApiVersion();
-	}
-
 	/* ************************************ *
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	Interface(std::string module, std::string implementation, CreateStacktrace aCreateStacktrace)
-	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
+	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateStacktrace createStacktrace) {
+		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createStacktrace));
+	}
+
+	Interface(const char* implementation, CreateStacktrace aCreateStacktrace)
+	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
 	  createStacktrace(aCreateStacktrace)
 	{ }
 

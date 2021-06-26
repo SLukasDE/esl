@@ -31,10 +31,8 @@ SOFTWARE.
 #include <esl/logging/Location.h>
 #include <esl/logging/StreamReal.h>
 #include <esl/logging/StreamEmpty.h>
-#include <esl/object/Values.h>
 #include <esl/module/Implementation.h>
 
-#include <initializer_list>
 #include <ostream>
 #include <memory>
 
@@ -44,15 +42,10 @@ class Stacktrace {
 public:
 	static module::Implementation& getDefault();
 
-	Stacktrace(std::initializer_list<std::pair<std::string, std::string>> settings,
+	Stacktrace(const stacktrace::Interface::Settings& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
-	Stacktrace(const object::Values<std::string>& settings = getDefault().getProperties(),
-			const std::string& implementation = getDefault().getImplementation());
-
-	//Stacktrace();
 	Stacktrace(const esl::Stacktrace&);
-	~Stacktrace() = default;
 
 	void dump(std::ostream& stream) const;
 	void dump(esl::logging::StreamReal& stream, esl::logging::Location location = esl::logging::Location{}) const;

@@ -26,11 +26,9 @@ SOFTWARE.
 #include <esl/com/http/client/Interface.h>
 #include <esl/com/http/client/Request.h>
 #include <esl/utility/URL.h>
-#include <esl/object/Values.h>
 #include <esl/module/Implementation.h>
 
 #include <string>
-#include <initializer_list>
 
 namespace esl {
 namespace com {
@@ -42,11 +40,7 @@ public:
 	static module::Implementation& getDefault();
 
 	Connection(const utility::URL& hostUrl,
-			std::initializer_list<std::pair<std::string, std::string>> settings,
-			const std::string& implementation = getDefault().getImplementation());
-
-	Connection(const utility::URL& hostUrl,
-			const object::Values<std::string>& settings = getDefault().getProperties(),
+			const Interface::Settings& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	Response send(Request request, esl::io::Output output, Interface::CreateInput createInput) const override;

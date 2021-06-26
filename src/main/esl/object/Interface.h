@@ -23,10 +23,13 @@ SOFTWARE.
 #ifndef ESL_OBJECT_INTERFACE_H_
 #define ESL_OBJECT_INTERFACE_H_
 
-#include <esl/module/Interface.h>
 #include <esl/Module.h>
+#include <esl/module/Interface.h>
+#include <esl/module/Module.h>
 
 #include <string>
+#include <vector>
+#include <utility>
 #include <memory>
 
 namespace esl {
@@ -42,26 +45,25 @@ struct Interface : esl::module::Interface {
 		virtual ~Object() = default;
 	};
 
-	using CreateObject = std::unique_ptr<Object>(*)();
+	using CreateObject = std::unique_ptr<Object>(*)(const Settings&);
 
 	/* ************************************ *
 	 * standard API definition of interface *
 	 * ************************************ */
-
 	static inline const char* getType() {
 		return "esl-object";
-	}
-
-	static inline const std::string& getApiVersion() {
-		return esl::getModule().getApiVersion();
 	}
 
 	/* ************************************ *
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	Interface(std::string module, std::string implementation, CreateObject aCreateObject)
-	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
+	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateObject createObject) {
+		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createObject));
+	}
+
+	Interface(const char* implementation, CreateObject aCreateObject)
+	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
 	  createObject(aCreateObject)
 	{ }
 

@@ -33,13 +33,7 @@ module::Implementation& Tables::getDefault() {
 	return implementation;
 }
 
-Tables::Tables(std::initializer_list<std::pair<std::string, std::string>> settings,
-		const std::string& implementation)
-: tables(esl::getModule().getInterface<Interface>(implementation).createTables(object::Properties(std::move(settings))))
-{ }
-
-Tables::Tables(const object::Values<std::string>& settings,
-		const std::string& implementation)
+Tables::Tables(const Interface::Settings& settings, const std::string& implementation)
 : tables(esl::getModule().getInterface<Interface>(implementation).createTables(settings))
 { }
 

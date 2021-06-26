@@ -30,7 +30,6 @@ SOFTWARE.
 #include <esl/system/Environment.h>
 #include <esl/system/FileDescriptor.h>
 #include <esl/object/Interface.h>
-#include <esl/object/Values.h>
 
 #include <string>
 #include <functional>
@@ -84,9 +83,9 @@ struct Interface : esl::module::Interface {
 		virtual const void* getNativeHandle() const = 0;
 	};
 
-	using CreateProcess = std::unique_ptr<Process>(*)(const object::Values<std::string>& setting);
-	using InstallSignalHandler = void (*)(SignalType signalType, std::function<void()> handler, const object::Values<std::string>& setting);
-	using RemoveSignalHandler = void (*)(SignalType signalType, std::function<void()> handler, const object::Values<std::string>& setting);
+	using CreateProcess = std::unique_ptr<Process>(*)(const Interface::Settings& setting);
+	using InstallSignalHandler = void (*)(SignalType signalType, std::function<void()> handler, const Interface::Settings& setting);
+	using RemoveSignalHandler = void (*)(SignalType signalType, std::function<void()> handler, const Interface::Settings& setting);
 
 	/* ************************************ *
 	 * standard API definition of interface *
@@ -96,19 +95,20 @@ struct Interface : esl::module::Interface {
 		return "esl-system";
 	}
 
-	static inline const std::string& getApiVersion() {
-		return esl::getModule().getApiVersion();
-	}
-
 	/* ************************************ *
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	Interface(std::string module, std::string implementation,
+	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation,
+			CreateProcess createProcess, InstallSignalHandler installSignalHandler, RemoveSignalHandler removeSignalHandler) {
+		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createProcess, installSignalHandler, removeSignalHandler));
+	}
+
+	Interface(const char* implementation,
 			CreateProcess aCreateProcess,
 			InstallSignalHandler aInstallSignalHandler,
 			RemoveSignalHandler aRemoveSignalHandler)
-	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
+	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
 	  createProcess(aCreateProcess),
 	  installSignalHandler(aInstallSignalHandler),
 	  removeSignalHandler(aRemoveSignalHandler)

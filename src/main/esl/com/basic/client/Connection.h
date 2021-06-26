@@ -25,14 +25,12 @@ SOFTWARE.
 
 #include <esl/com/basic/client/Interface.h>
 #include <esl/module/Implementation.h>
-#include <esl/object/Values.h>
 #include <esl/io/Output.h>
 
 #include <string>
 #include <memory>
 #include <utility>
 #include <vector>
-#include <initializer_list>
 
 namespace esl {
 namespace com {
@@ -43,10 +41,7 @@ class Connection : public Interface::Connection {
 public:
 	static module::Implementation& getDefault();
 
-	Connection(std::initializer_list<std::pair<std::string, std::string>> settings,
-			const std::string& implementation = getDefault().getImplementation());
-
-	Connection(const object::Values<std::string>& settings = getDefault().getProperties(),
+	Connection(const Interface::Settings& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	io::Output send(io::Output output, std::vector<std::pair<std::string, std::string>> parameters) override;

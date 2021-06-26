@@ -21,7 +21,6 @@ SOFTWARE.
 */
 
 #include <esl/com/http/server/Socket.h>
-#include <esl/object/Properties.h>
 #include <esl/Module.h>
 
 namespace esl {
@@ -33,19 +32,13 @@ module::Implementation& Socket::getDefault() {
 	static module::Implementation implementation;
 	return implementation;
 }
-
-Socket::Socket(std::uint16_t port,
-		std::initializer_list<std::pair<std::string, std::string>> settings,
-		const std::string& implementation)
-: Interface::Socket(),
-  socket(esl::getModule().getInterface<Interface>(implementation).createSocket(port, object::Properties(std::move(settings))))
+/*
+Socket::Socket(std::initializer_list<std::pair<std::string, std::string>> settings, const std::string& implementation)
+: socket(esl::getModule().getInterface<Interface>(implementation).createSocket(settings))
 { }
-
-Socket::Socket(std::uint16_t port,
-		const object::Values<std::string>& settings,
-		const std::string& implementation)
-: Interface::Socket(),
-  socket(esl::getModule().getInterface<Interface>(implementation).createSocket(port, settings))
+*/
+Socket::Socket(const Interface::Settings& settings, const std::string& implementation)
+: socket(esl::getModule().getInterface<Interface>(implementation).createSocket(settings))
 { }
 
 void Socket::addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) {

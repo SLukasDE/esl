@@ -25,8 +25,6 @@ SOFTWARE.
 
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
-//#include <esl/object/Settings.h>
-#include <esl/object/Values.h>
 #include <esl/logging/Location.h>
 #include <string>
 #include <memory>
@@ -48,7 +46,7 @@ struct Interface : esl::module::Interface {
 		virtual std::string toString(const Location& location) const = 0;
 	};
 
-	using CreateLayout = std::unique_ptr<Layout> (*)(const object::Values<std::string>& settings);
+	using CreateLayout = std::unique_ptr<Layout> (*)(const Settings& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *
@@ -58,16 +56,16 @@ struct Interface : esl::module::Interface {
 		return "esl-logging-layout";
 	}
 
-	static inline const std::string& getApiVersion() {
-		return esl::getModule().getApiVersion();
-	}
-
 	/* ************************************ *
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	Interface(std::string module, std::string implementation, CreateLayout aCreateLayout)
-	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
+	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateLayout createLayout) {
+		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createLayout));
+	}
+
+	Interface(const char* implementation, CreateLayout aCreateLayout)
+	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
 	  createLayout(aCreateLayout)
 	{ }
 

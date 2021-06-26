@@ -25,9 +25,8 @@ SOFTWARE.
 
 #include <esl/module/Interface.h>
 #include <esl/object/Interface.h>
-#include <esl/object/Values.h>
-#include <esl/Module.h>
 #include <esl/database/Interface.h>
+#include <esl/Module.h>
 
 #include <string>
 #include <memory>
@@ -45,7 +44,7 @@ struct Interface : esl::module::Interface {
 	public:
 	};
 
-	using CreateTables = std::unique_ptr<Tables> (*)(const object::Values<std::string>& settings);
+	using CreateTables = std::unique_ptr<Tables> (*)(const Settings& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *
@@ -55,17 +54,16 @@ struct Interface : esl::module::Interface {
 		return "esl-database-table";
 	}
 
-	static inline const std::string& getApiVersion() {
-		return esl::getModule().getApiVersion();
-	}
-
 	/* ************************************ *
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	Interface(std::string module, std::string implementation,
-			CreateTables aCreateTables)
-	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
+	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateTables createTables) {
+		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createTables));
+	}
+
+	Interface(const char* implementation, CreateTables aCreateTables)
+	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
 	  createTables(aCreateTables)
 	{ }
 

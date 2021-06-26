@@ -30,7 +30,7 @@ SOFTWARE.
 namespace esl {
 namespace object {
 
-class ObjectContext : public virtual Interface::Object {
+class ObjectContext : public Interface::Object {
 public:
 	template<typename T>
 	T* findObject(const std::string& id = "") const {

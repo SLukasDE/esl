@@ -24,10 +24,8 @@ SOFTWARE.
 #define ESL_SYSTEM_SIGNALHANDLER_H_
 
 #include <esl/system/Interface.h>
-#include <esl/object/Values.h>
 #include <esl/module/Implementation.h>
 
-#include <initializer_list>
 #include <functional>
 
 namespace esl {
@@ -42,17 +40,11 @@ public:
 	SignalHandler() = delete;
 
 	static void install(SignalType signalType, std::function<void()> handler,
-			std::initializer_list<std::pair<std::string, std::string>> settings,
-			const std::string& implementation = getDefault().getImplementation());
-	static void install(SignalType signalType, std::function<void()> handler,
-			const object::Values<std::string>& settings = getDefault().getProperties(),
+			const Interface::Settings& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	static void remove(SignalType signalType, std::function<void()> handler,
-			std::initializer_list<std::pair<std::string, std::string>> settings,
-			const std::string& implementation = getDefault().getImplementation());
-	static void remove(SignalType signalType, std::function<void()> handler,
-			const object::Values<std::string>& settings = getDefault().getProperties(),
+			const Interface::Settings& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 };
 

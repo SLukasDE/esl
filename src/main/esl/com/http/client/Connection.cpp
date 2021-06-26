@@ -40,14 +40,7 @@ module::Implementation& Connection::getDefault() {
 }
 
 Connection::Connection(const utility::URL& hostUrl,
-		std::initializer_list<std::pair<std::string, std::string>> setting,
-		const std::string& implementation)
-: Interface::Connection(),
-  connection(esl::getModule().getInterface<Interface>(implementation).createConnection(hostUrl, object::Properties(std::move(setting))))
-{ }
-
-Connection::Connection(const utility::URL& hostUrl,
-		const object::Values<std::string>& settings,
+		const Interface::Settings& settings,
 		const std::string& implementation)
 : Interface::Connection(),
   connection(esl::getModule().getInterface<Interface>(implementation).createConnection(hostUrl, settings))

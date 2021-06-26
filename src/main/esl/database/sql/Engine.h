@@ -25,11 +25,9 @@ SOFTWARE.
 
 #include <esl/database/sql/Interface.h>
 #include <esl/database/table/Interface.h>
-#include <esl/object/Values.h>
 #include <esl/module/Implementation.h>
 
 #include <string>
-#include <initializer_list>
 #include <memory>
 
 namespace esl {
@@ -40,10 +38,7 @@ class Engine final : public Interface::Engine {
 public:
 	static module::Implementation& getDefault();
 
-	Engine(std::initializer_list<std::pair<std::string, std::string>> settings,
-			const std::string& implementation = getDefault().getImplementation());
-
-	Engine(const object::Values<std::string>& settings = getDefault().getProperties(),
+	Engine(const Interface::Settings& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	void addTables(const std::string& id, std::unique_ptr<table::Interface::Tables> tables) override;

@@ -23,30 +23,29 @@ SOFTWARE.
 #ifndef ESL_OBJECT_PROPERTIES_H_
 #define ESL_OBJECT_PROPERTIES_H_
 
+//#include <esl/object/Interface.h>
 #include <esl/object/Values.h>
-#include <esl/object/Settings.h>
 
-#include <initializer_list>
+#include <string>
 #include <utility>
-#include <vector>
 #include <map>
 
 namespace esl {
 namespace object {
 
-class Properties : public object::Values<std::string>, public object::Settings {
+//class Properties : public Interface::Object {
+class Properties : public esl::object::Values<std::string> {
 public:
-	Properties(std::initializer_list<std::pair<std::string, std::string>> settings = {});
-	Properties(std::vector<std::pair<std::string, std::string>> settings);
-	Properties(const object::Values<std::string>& settings);
+	Properties(const Interface::Settings& settings = {});
 
-	void addSetting(const std::string& key, const std::string& value) override;
+	void addValue(const std::string& key, const std::string& value);
+
 	bool hasValue(const std::string& key) const override;
 	std::string getValue(const std::string& key) const override;
 	const std::vector<std::pair<std::string, std::string>>& getValues() const override;
 
 private:
-	std::vector<std::pair<std::string, std::string>> settings;
+	Interface::Settings settings;
 	std::map<std::string, std::string> settingsMap;
 };
 

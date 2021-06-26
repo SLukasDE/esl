@@ -25,7 +25,6 @@ SOFTWARE.
 
 #include <esl/module/Interface.h>
 #include <esl/object/Interface.h>
-#include <esl/object/Values.h>
 #include <esl/Module.h>
 #include <esl/database/Interface.h>
 #include <esl/database/table/Interface.h>
@@ -48,7 +47,7 @@ struct Interface : esl::module::Interface {
 		virtual std::unique_ptr<database::Interface::ConnectionFactory> createConnectionFactory() = 0;
 	};
 
-	using CreateEngine = std::unique_ptr<Engine> (*)(const object::Values<std::string>& settings);
+	using CreateEngine = std::unique_ptr<Engine> (*)(const Interface::Settings& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *
@@ -58,17 +57,16 @@ struct Interface : esl::module::Interface {
 		return "esl-database-sql";
 	}
 
-	static inline const std::string& getApiVersion() {
-		return esl::getModule().getApiVersion();
-	}
-
 	/* ************************************ *
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	Interface(std::string module, std::string implementation,
-			CreateEngine aCreateEngine)
-	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
+	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateEngine createEngine) {
+		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createEngine));
+	}
+
+	Interface(const char* implementation, CreateEngine aCreateEngine)
+	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
 	  createEngine(aCreateEngine)
 	{ }
 

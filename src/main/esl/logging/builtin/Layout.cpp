@@ -25,10 +25,12 @@ SOFTWARE.
 #include <esl/logging/Interface.h>
 #include <esl/Module.h>
 #include <esl/utility/String.h>
+#include <esl/Stacktrace.h>
 
 #include <functional>
 #include <time.h>
 #include <ctime>
+#include <stdexcept>
 
 namespace esl {
 namespace logging {
@@ -123,37 +125,42 @@ bool convertValueToBool(const std::string& value) {
 
 } /* anonymous namespace */
 
-std::unique_ptr<esl::logging::layout::Interface::Layout> Layout::create(const object::Values<std::string>& values) {
+std::unique_ptr<esl::logging::layout::Interface::Layout> Layout::create(const layout::Interface::Settings& values) {
 	return std::unique_ptr<esl::logging::layout::Interface::Layout>(new Layout(values));
 }
 
-Layout::Layout(const object::Values<std::string>& values)
-{
-	if(values.hasValue("showTimestamp")) {
-		setShowTimestamp(convertValueToBool(values.getValue("showTimestamp")));
-	}
-	if(values.hasValue("showLevel")) {
-		setShowLevel(convertValueToBool(values.getValue("showLevel")));
-	}
-	if(values.hasValue("showTypeName")) {
-		setShowTypeName(convertValueToBool(values.getValue("showTypeName")));
-	}
-	if(values.hasValue("showAddress")) {
-		setShowAddress(convertValueToBool(values.getValue("showAddress")));
-	}
-	if(values.hasValue("showFile")) {
-		setShowFile(convertValueToBool(values.getValue("showFile")));
-	}
-	if(values.hasValue("showFunction")) {
-		setShowFunction(convertValueToBool(values.getValue("showFunction")));
-	}
-	if(values.hasValue("showLineNo")) {
-		setShowLineNo(convertValueToBool(values.getValue("showLineNo")));
-	}
-	if(values.hasValue("showThreadNo")) {
-		setShowThreadNo(convertValueToBool(values.getValue("showThreadNo")));
+Layout::Layout(const layout::Interface::Settings& settings) {
+	for(const auto& setting : settings) {
+		if(setting.first == "showTimestamp") {
+			showTimestamp = convertValueToBool(setting.second);
+		}
+		else if(setting.first == "showLevel") {
+			showLevel = convertValueToBool(setting.second);
+		}
+		else if(setting.first == "showTypeName") {
+			showTypeName = convertValueToBool(setting.second);
+		}
+		else if(setting.first == "showAddress") {
+			showAddress = convertValueToBool(setting.second);
+		}
+		else if(setting.first == "showFile") {
+			showFile = convertValueToBool(setting.second);
+		}
+		else if(setting.first == "showFunction") {
+			showFunction = convertValueToBool(setting.second);
+		}
+		else if(setting.first == "showLineNo") {
+			showLineNo = convertValueToBool(setting.second);
+		}
+		else if(setting.first == "showThreadNo") {
+			showThreadNo = convertValueToBool(setting.second);
+		}
+		else {
+			throw esl::addStacktrace(std::runtime_error("Unknown key \"" + setting.first + "\""));
+		}
 	}
 }
+
 std::string Layout::toString(const Location& location) const {
 	std::string rv;
 
@@ -188,96 +195,37 @@ std::string Layout::toString(const Location& location) const {
 
 	return rv;
 }
-/*
-void Layout::addSetting(const std::string& key, const std::string& value) {
-	if(key == "showTimestamp") {
-		setShowTimestamp(convertValueToBool(value));
-	}
-	else if(key == "showLevel") {
-		setShowLevel(convertValueToBool(value));
-	}
-	else if(key == "showTypeName") {
-		setShowTypeName(convertValueToBool(value));
-	}
-	else if(key == "showAddress") {
-		setShowAddress(convertValueToBool(value));
-	}
-	else if(key == "showFile") {
-		setShowFile(convertValueToBool(value));
-	}
-	else if(key == "showFunction") {
-		setShowFunction(convertValueToBool(value));
-	}
-	else if(key == "showLineNo") {
-		setShowLineNo(convertValueToBool(value));
-	}
-	else if(key == "showThreadNo") {
-		setShowThreadNo(convertValueToBool(value));
-	}
-}
-*/
+
 bool Layout::getShowTimestamp() const {
 	return showTimestamp;
-}
-
-void Layout::setShowTimestamp(bool aShowTimestamp) {
-	showTimestamp = aShowTimestamp;
 }
 
 bool Layout::getShowLevel() const {
 	return showLevel;
 }
 
-void Layout::setShowLevel(bool aShowLevel) {
-	showLevel = aShowLevel;
-}
-
 bool Layout::getShowTypeName() const {
 	return showTypeName;
-}
-
-void Layout::setShowTypeName(bool aShowTypeName) {
-	showTypeName = aShowTypeName;
 }
 
 bool Layout::getShowAddress() const {
 	return showAddress;
 }
 
-void Layout::setShowAddress(bool aShowAddress) {
-	showAddress = aShowAddress;
-}
-
 bool Layout::getShowFile() const {
 	return showFile;
-}
-
-void Layout::setShowFile(bool aShowFile) {
-	showFile = aShowFile;
 }
 
 bool Layout::getShowFunction() const {
 	return showFunction;
 }
 
-void Layout::setShowFunction(bool aShowFunction) {
-	showFunction = aShowFunction;
-}
-
 bool Layout::getShowLineNo() const {
 	return showLineNo;
 }
 
-void Layout::setShowLineNo(bool aShowLineNo) {
-	showLineNo = aShowLineNo;
-}
-
 bool Layout::getShowThreadNo() const {
 	return showThreadNo;
-}
-
-void Layout::setShowThreadNo(bool aShowThreadNo) {
-	showThreadNo = aShowThreadNo;
 }
 
 } /* namespace builtin */

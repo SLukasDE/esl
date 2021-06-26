@@ -27,9 +27,9 @@ namespace esl {
 namespace logging {
 
 namespace {
-std::unique_ptr<layout::Interface::Layout> createLayout(const std::string& implementation, const object::Values<std::string>& values) {
+std::unique_ptr<layout::Interface::Layout> createLayout(const layout::Interface::Settings& settings, const std::string& implementation) {
 	const layout::Interface* interface = esl::getModule().findInterface<layout::Interface>(implementation);
-	return interface ? interface->createLayout(values) : nullptr;
+	return interface ? interface->createLayout(settings) : nullptr;
 }
 }
 
@@ -38,22 +38,21 @@ module::Implementation& Layout::getDefault() {
 	return implementation;
 }
 
-
+/*
 Layout::Layout(std::initializer_list<std::pair<std::string, std::string>> aSettings, const std::string& aImplementation)
-: layout::Interface::Layout(),
-  implementation(aImplementation),
-  settings(aSettings)
+: implementation(aImplementation),
+  settings(std::move(aSettings))
 { }
+*/
 
-Layout::Layout(const object::Values<std::string>& aSettings, const std::string& aImplementation)
-: layout::Interface::Layout(),
-  implementation(aImplementation),
+Layout::Layout(const layout::Interface::Settings& aSettings, const std::string& aImplementation)
+: implementation(aImplementation),
   settings(std::move(aSettings))
 { }
 
 std::string Layout::toString(const Location& location) const {
 	if(!layout) {
-		layout = createLayout(implementation, settings);
+		layout = createLayout(settings, implementation);
 	}
 	if(layout) {
 		return layout->toString(location);

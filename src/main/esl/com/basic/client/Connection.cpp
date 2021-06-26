@@ -39,16 +39,8 @@ module::Implementation& Connection::getDefault() {
 	return implementation;
 }
 
-Connection::Connection(std::initializer_list<std::pair<std::string, std::string>> setting,
-		const std::string& implementation)
-: Interface::Connection(),
-  connection(esl::getModule().getInterface<Interface>(implementation).createConnection(object::Properties(std::move(setting))))
-{ }
-
-Connection::Connection(const object::Values<std::string>& settings,
-		const std::string& implementation)
-: Interface::Connection(),
-  connection(esl::getModule().getInterface<Interface>(implementation).createConnection(settings))
+Connection::Connection(const Interface::Settings& settings, const std::string& implementation)
+: connection(esl::getModule().getInterface<Interface>(implementation).createConnection(settings))
 { }
 
 io::Output Connection::send(io::Output output, std::vector<std::pair<std::string, std::string>> parameters) {

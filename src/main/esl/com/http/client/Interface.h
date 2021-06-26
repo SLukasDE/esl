@@ -26,14 +26,12 @@ SOFTWARE.
 #include <esl/com/http/client/Response.h>
 #include <esl/io/Input.h>
 #include <esl/io/Output.h>
-#include <esl/object/Values.h>
 #include <esl/utility/URL.h>
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
 
 #include <string>
 #include <memory>
-#include <functional>
 
 namespace esl {
 namespace com {
@@ -59,7 +57,7 @@ struct Interface : esl::module::Interface {
 		virtual Response send(Request request, esl::io::Output output, esl::io::Input input) const = 0;
 	};
 
-	using CreateConnection = std::unique_ptr<Connection> (*)(const utility::URL& hostUrl, const object::Values<std::string>& settings);
+	using CreateConnection = std::unique_ptr<Connection> (*)(const utility::URL& hostUrl, const Settings& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *
@@ -69,24 +67,18 @@ struct Interface : esl::module::Interface {
 		return "esl-com-http-client";
 	}
 
-	static inline const std::string& getApiVersion() {
-		return esl::getModule().getApiVersion();
-	}
-
-
 	/* ************************************ *
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	Interface(std::string module, std::string implementation,
-			CreateConnection aCreateConnection)
-	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
+	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateConnection createConnection) {
+		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createConnection));
+	}
+
+	Interface(const char* implementation, CreateConnection aCreateConnection)
+	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
 	  createConnection(aCreateConnection)
 	{ }
-
-	static inline void initialize(Interface& interface, CreateConnection createConnection) {
-		interface.createConnection = createConnection;
-	}
 
 	/* **************************** *
 	 * start extension of interface *

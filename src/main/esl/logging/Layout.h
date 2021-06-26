@@ -24,10 +24,10 @@ SOFTWARE.
 #define ESL_LOGGING_LAYOUT_H_
 
 #include <esl/logging/layout/Interface.h>
-#include <esl/object/Properties.h>
 #include <esl/module/Implementation.h>
 
-#include <initializer_list>
+//#include <initializer_list>
+#include <utility>
 #include <string>
 #include <memory>
 
@@ -37,18 +37,18 @@ namespace logging {
 class Layout final : public layout::Interface::Layout {
 public:
 	static module::Implementation& getDefault();
-
+/*
 	Layout(std::initializer_list<std::pair<std::string, std::string>> settings,
 			const std::string& implementation = getDefault().getImplementation());
-
-	Layout(const object::Values<std::string>& settings = getDefault().getProperties(),
+*/
+	Layout(const layout::Interface::Settings& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	std::string toString(const Location& location) const override;
 
 private:
 	const std::string implementation;
-	object::Properties settings;
+	layout::Interface::Settings settings;
 
 	mutable std::unique_ptr<layout::Interface::Layout> layout;
 };

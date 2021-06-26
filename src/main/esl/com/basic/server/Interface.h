@@ -25,14 +25,12 @@ SOFTWARE.
 
 #include <esl/module/Interface.h>
 #include <esl/object/Interface.h>
-#include <esl/object/Values.h>
 #include <esl/Module.h>
 #include <esl/com/basic/server/RequestContext.h>
 #include <esl/com/basic/server/requesthandler/Interface.h>
 
 #include <string>
 #include <functional>
-#include <cstdint>
 #include <set>
 #include <memory>
 
@@ -60,7 +58,7 @@ struct Interface : esl::module::Interface {
 		virtual bool wait(std::uint32_t ms) = 0;
 	};
 
-	using CreateSocket = std::unique_ptr<Socket> (*)(std::uint16_t port, const object::Values<std::string>& settings);
+	using CreateSocket = std::unique_ptr<Socket> (*)(const Settings& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *
@@ -70,17 +68,16 @@ struct Interface : esl::module::Interface {
 		return "esl-com-basic-server";
 	}
 
-	static inline const std::string& getApiVersion() {
-		return esl::getModule().getApiVersion();
-	}
-
 	/* ************************************ *
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	Interface(std::string module, std::string implementation,
-			CreateSocket aCreateSocket)
-	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
+	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateSocket createSocket) {
+		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createSocket));
+	}
+
+	Interface(const char* implementation, CreateSocket aCreateSocket)
+	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
 	  createSocket(aCreateSocket)
 	{ }
 

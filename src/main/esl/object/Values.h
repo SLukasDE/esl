@@ -34,7 +34,7 @@ namespace esl {
 namespace object {
 
 template<typename T>
-class Values : public virtual Interface::Object {
+class Values : public Interface::Object {
 public:
 	virtual bool hasValue(const std::string& key) const {
 		return false;

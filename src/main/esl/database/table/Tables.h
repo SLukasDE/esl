@@ -24,11 +24,9 @@ SOFTWARE.
 #define ESL_DATABASE_TABLE_TABLES_H_
 
 #include <esl/database/table/Interface.h>
-#include <esl/object/Values.h>
 #include <esl/module/Implementation.h>
 
 #include <string>
-#include <initializer_list>
 #include <memory>
 
 namespace esl {
@@ -39,10 +37,7 @@ class Tables final : public Interface::Tables {
 public:
 	static module::Implementation& getDefault();
 
-	Tables(std::initializer_list<std::pair<std::string, std::string>> settings,
-			const std::string& implementation = getDefault().getImplementation());
-
-	Tables(const object::Values<std::string>& settings = getDefault().getProperties(),
+	Tables(const Interface::Settings& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
 private:

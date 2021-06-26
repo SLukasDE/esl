@@ -25,12 +25,17 @@ SOFTWARE.
 
 #include <esl/object/Values.h>
 
+#include <string>
+//#include <vector>
+//#include <utility>
+
 namespace esl {
 namespace com {
 namespace basic {
 namespace server {
 
-using Request = object::Values<std::string>;
+//using Request = std::vector<std::pair<std::string, std::string>>;
+using Request = esl::object::Values<std::string>;
 
 } /* namespace server */
 } /* namespace basic */

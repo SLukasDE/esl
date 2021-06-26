@@ -26,7 +26,6 @@ SOFTWARE.
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
 #include <esl/object/Interface.h>
-#include <esl/object/Values.h>
 #include <esl/database/Connection.h>
 
 #include <string>
@@ -43,13 +42,12 @@ struct Interface : esl::module::Interface {
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class ConnectionFactory : public virtual esl::object::Interface::Object {
+	class ConnectionFactory : public esl::object::Interface::Object {
 	public:
-		//virtual ~ConnectionFactory() = default;
 	    virtual std::unique_ptr<Connection> createConnection() = 0;
 	};
 
-	using CreateConnectionFactory = std::unique_ptr<ConnectionFactory>(*)(const object::Values<std::string>& settings);
+	using CreateConnectionFactory = std::unique_ptr<ConnectionFactory>(*)(const Settings& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *
@@ -59,17 +57,16 @@ struct Interface : esl::module::Interface {
 		return "esl-database";
 	}
 
-	static inline const std::string& getApiVersion() {
-		return esl::getModule().getApiVersion();
-	}
-
 	/* ************************************ *
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	Interface(std::string module, std::string implementation,
-			CreateConnectionFactory aCreateConnectionFactory)
-	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
+	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateConnectionFactory createConnectionFactory) {
+		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createConnectionFactory));
+	}
+
+	Interface(const char* implementation, CreateConnectionFactory aCreateConnectionFactory)
+	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
 	  createConnectionFactory(aCreateConnectionFactory)
 	{ }
 

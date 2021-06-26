@@ -97,7 +97,7 @@ public:
 	const Interface* findInterface(const Interface& descriptor) const;
 
 	template <class T>
-	const T* findInterface(const std::string& implementationName = "");
+	const T* findInterface(const std::string& implementationName = "") const;
 
 	template <class T>
 	const T& getInterface(const std::string& implementationName = "");
@@ -169,7 +169,7 @@ private:
 };
 
 template <class T>
-const T* Module::findInterface(const std::string& implementationName) {
+const T* Module::findInterface(const std::string& implementationName) const {
 	static std::map<std::string, std::pair<bool, const T*>> implementations;
 	static std::pair<bool, const T*> implementation{false, nullptr};
 
@@ -177,7 +177,7 @@ const T* Module::findInterface(const std::string& implementationName) {
 
 	if(implementationEntry.first == false) {
 		implementationEntry.first = true;
-		implementationEntry.second = static_cast<const T*>(findInterface(Interface("", T::getType(), implementationName, T::getApiVersion())));
+		implementationEntry.second = static_cast<const T*>(findInterface(Interface("", T::getType(), implementationName, "")));
 	}
 
 	return implementationEntry.second;

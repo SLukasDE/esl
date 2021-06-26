@@ -24,7 +24,6 @@ SOFTWARE.
 #define ESL_LOGGING_BUILTIN_LAYOUT_H_
 
 #include <esl/logging/layout/Interface.h>
-#include <esl/object/Values.h>
 
 namespace esl {
 namespace logging {
@@ -32,7 +31,7 @@ namespace builtin {
 
 class Layout : public layout::Interface::Layout {
 public:
-	static std::unique_ptr<layout::Interface::Layout> create(const object::Values<std::string>& values);
+	static std::unique_ptr<layout::Interface::Layout> create(const layout::Interface::Settings& settings);
 
 	static inline const char* getImplementation() {
 		return "esl/logging/builtin";
@@ -41,31 +40,16 @@ public:
 	std::string toString(const Location& location) const override;
 
 	bool getShowTimestamp() const;
-	void setShowTimestamp(bool showTimestamp = true);
-
 	bool getShowLevel() const;
-	void setShowLevel(bool showLevel = true);
-
 	bool getShowTypeName() const;
-	void setShowTypeName(bool showTypeName = true);
-
 	bool getShowAddress() const;
-	void setShowAddress(bool showAddress = true);
-
 	bool getShowFile() const;
-	void setShowFile(bool showFile = true);
-
 	bool getShowFunction() const;
-	void setShowFunction(bool showFunction = true);
-
 	bool getShowLineNo() const;
-	void setShowLineNo(bool showLineNo = true);
-
 	bool getShowThreadNo() const;
-	void setShowThreadNo(bool showThreadNo = true);
 
 private:
-	Layout(const object::Values<std::string>& values);
+	Layout(const layout::Interface::Settings& values);
 
 	bool showTimestamp = true;
 	bool showLevel = true;

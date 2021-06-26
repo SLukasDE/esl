@@ -28,7 +28,6 @@ SOFTWARE.
 #include <esl/com/basic/client/Interface.h>
 #include <esl/com/basic/server/Interface.h>
 #include <esl/object/Interface.h>
-#include <esl/object/Values.h>
 
 #include <string>
 #include <utility>
@@ -48,10 +47,10 @@ struct Interface : esl::module::Interface {
 	class Client : public object::Interface::Object {
 	public:
 		virtual server::Interface::Socket& getSocket() = 0;
-		virtual std::unique_ptr<client::Interface::Connection> createConnection(std::vector<std::pair<std::string, std::string>> parameters) = 0;
+		virtual std::unique_ptr<client::Interface::Connection> createConnection(const Settings& parameters) = 0;
 	};
 
-	using CreateClient = std::unique_ptr<Client> (*)(const std::string& brokers, const object::Values<std::string>& settings);
+	using CreateClient = std::unique_ptr<Client> (*)(const Settings& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *
@@ -61,17 +60,16 @@ struct Interface : esl::module::Interface {
 		return "esl-com-basic-broker";
 	}
 
-	static inline const std::string& getApiVersion() {
-		return esl::getModule().getApiVersion();
-	}
-
 	/* ************************************ *
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	Interface(std::string module, std::string implementation,
-			CreateClient aCreateClient)
-	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
+	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateClient createClient) {
+		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createClient));
+	}
+
+	Interface(const char* implementation, CreateClient aCreateClient)
+	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
 	  createClient(aCreateClient)
 	{ }
 

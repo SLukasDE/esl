@@ -23,28 +23,26 @@ SOFTWARE.
 #ifndef ESL_MODULE_IMPLEMENTATION_H_
 #define ESL_MODULE_IMPLEMENTATION_H_
 
-#include <esl/object/Values.h>
-#include <esl/object/Properties.h>
-
 #include <string>
-#include <initializer_list>
 #include <utility>
+#include <vector>
 
 namespace esl {
 namespace module {
 
 class Implementation final {
 public:
-	void setImplementation(std::string implementation, std::initializer_list<std::pair<std::string, std::string>> settings = {});
-	void setImplementation(std::string implementation, const object::Values<std::string>& settings);
+	using Settings = std::vector<std::pair<std::string, std::string>>;
+
+	void setImplementation(std::string implementation, Settings settings = {});
 
 	const std::string& getImplementation() const noexcept;
-	const object::Properties& getProperties() const noexcept;
-	object::Properties& getProperties() noexcept;
+	const Settings& getSettings() const noexcept;
+	//Settings& getSettings() noexcept;
 
 private:
 	std::string implementation;
-	object::Properties properties;
+	Settings settings;
 };
 
 } /* namespace module */

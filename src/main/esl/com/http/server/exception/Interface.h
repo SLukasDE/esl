@@ -64,17 +64,16 @@ struct Interface : esl::module::Interface {
 		return "esl-com-http-server-exception-message";
 	}
 
-	static inline const std::string& getApiVersion() {
-		return esl::getModule().getApiVersion();
-	}
-
 	/* ************************************ *
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	Interface(std::string module, std::string implementation,
-			CreateMessage aCreateMessage)
-	: esl::module::Interface(std::move(module), getType(), std::move(implementation), getApiVersion()),
+	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateMessage createMessage) {
+		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createMessage));
+	}
+
+	Interface(const char* implementation, CreateMessage aCreateMessage)
+	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
 	  createMessage(aCreateMessage)
 	{ }
 

@@ -33,13 +33,7 @@ module::Implementation& Engine::getDefault() {
 	return implementation;
 }
 
-Engine::Engine(std::initializer_list<std::pair<std::string, std::string>> settings,
-		const std::string& implementation)
-: engine(esl::getModule().getInterface<Interface>(implementation).createEngine(object::Properties(std::move(settings))))
-{ }
-
-Engine::Engine(const object::Values<std::string>& settings,
-		const std::string& implementation)
+Engine::Engine(const Interface::Settings& settings, const std::string& implementation)
 : engine(esl::getModule().getInterface<Interface>(implementation).createEngine(settings))
 { }
 

@@ -30,7 +30,7 @@ namespace esl {
 namespace {
 const char* dummyMessage = "no implementation available for \"esl::Stacktrace\"";
 
-std::unique_ptr<stacktrace::Interface::Stacktrace> createStacktrace(const std::string& implementation, const object::Values<std::string>& values) {
+std::unique_ptr<stacktrace::Interface::Stacktrace> createStacktrace(const std::string& implementation, const stacktrace::Interface::Settings& values) {
 	const stacktrace::Interface* interface = esl::getModule().findInterface<stacktrace::Interface>(implementation);
 	return interface ? interface->createStacktrace(values) : nullptr;
 }
@@ -41,11 +41,7 @@ module::Implementation& Stacktrace::getDefault() {
 	return implementation;
 }
 
-Stacktrace::Stacktrace(std::initializer_list<std::pair<std::string, std::string>> settings, const std::string& implementation)
-: stacktrace(createStacktrace(implementation, object::Properties(std::move(settings))))
-{ }
-
-Stacktrace::Stacktrace(const object::Values<std::string>& settings, const std::string& implementation)
+Stacktrace::Stacktrace(const stacktrace::Interface::Settings& settings, const std::string& implementation)
 : stacktrace(createStacktrace(implementation, settings))
 { }
 /*
