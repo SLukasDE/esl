@@ -94,8 +94,7 @@ ConnectionPool::ConnectionPool(CreateConnection createConnection, unsigned int c
   objectPool(createConnection, connectionsMax, connectionLifetime, resetTimeoutOnCreate, resetTimeoutOnDelete),
   getTimeout(aGetTimeout),
   strategy(aStrategy)
-{
-}
+{ }
 
 std::unique_ptr<Connection> ConnectionPool::createConnection() {
 	esl::utility::ObjectPool<Connection>::unique_ptr connection(objectPool.get(getTimeout, strategy));

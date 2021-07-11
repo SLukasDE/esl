@@ -21,9 +21,11 @@ SOFTWARE.
 */
 
 #include <esl/module/Library.h>
-#include <esl/Module.h>
+//#include <esl/Module.h>
 #include <esl/Stacktrace.h>
+
 #include <stdexcept>
+#include <memory>
 
 #ifdef linux
 #include <dlfcn.h>
@@ -32,55 +34,71 @@ SOFTWARE.
 namespace esl {
 namespace module {
 
-Library::Library(std::string aPath)
-: path(std::move(aPath)),
-  libGetModule(nullptr)
-{
+std::set<Library*> Library::libraries;
+
+Library& Library::load(std::string path) {
+	void* nativeHandle = nullptr;
+
 #ifdef linux
-	libHandle = dlopen(path.c_str(), RTLD_NOW | RTLD_LOCAL );
-    if(libHandle == nullptr) {
+	nativeHandle = dlopen(path.c_str(), RTLD_NOLOAD | RTLD_NOW | RTLD_LOCAL );
+    if(nativeHandle != nullptr) {
+       	throw std::runtime_error("Library loaded already");
+    }
+
+	nativeHandle = dlopen(path.c_str(), RTLD_NOW | RTLD_LOCAL );
+    if(nativeHandle == nullptr) {
     	throw std::runtime_error(dlerror());
     }
-
-    libGetModule = reinterpret_cast<GetModule>(dlsym(libHandle, "esl__module__library__getModule"));
-
-    if(libGetModule == nullptr) {
-        if(dlclose(libHandle) != 0) {
-        }
-        libHandle = nullptr;
-    	throw std::runtime_error("Symbol \"esl__module__library__getModule\" in library \"" + path + "\" is null");
+#else
+    if(nativeHandle == nullptr) {
+       	throw std::runtime_error("Library loader not implemented so far");
     }
+#endif
+
+    Library* library = new Library(nativeHandle, std::move(path));
+    libraries.insert(library);
+    return *library;
+}
+
+void Library::install(Module& module) {
+	using Install = void(*)(Module*);
+	Install libInstall = nullptr;
+
+#ifdef linux
+    libInstall = reinterpret_cast<Install>(dlsym(nativeHandle, "esl__module__library__install"));
 #else
    	throw std::runtime_error("Library loader not implemented so far");
 #endif
-}
 
-Library::~Library() {
-#ifdef linux
-	if(libHandle != nullptr) {
-        if(dlclose(libHandle) != 0) {
-        	// cannot close library
-        }
-        libHandle = nullptr;
-	}
-#endif
+    if(libInstall == nullptr) {
+    	throw std::runtime_error("Symbol \"esl__module__library__install\" in library \"" + path + "\" is null");
+    }
+	libInstall(&module);
 }
 
 const std::string& Library::getPath() const {
 	return path;
 }
 
-esl::module::Module* Library::getModulePointer(const std::string& moduleName) {
-	return libGetModule(moduleName);
+void* Library::getNativeHandle() const {
+	return nativeHandle;
 }
 
-esl::module::Module& Library::getModule(const std::string& moduleName) {
-	Module* libModule =  getModulePointer(moduleName);
+Library::Library(void* aNativeHandle, std::string aPath)
+: nativeHandle(aNativeHandle),
+  path(std::move(aPath))
+{
+    if(nativeHandle == nullptr) {
+    	throw std::runtime_error("Cannot initialize library with empty nativeHandle");
+    }
+}
 
-	if(libModule == nullptr) {
-		throw esl::addStacktrace(std::runtime_error("request for unknown module \"" + moduleName + "\""));
-	}
-	return *libModule;
+Library::~Library() {
+#ifdef linux
+    if(dlclose(nativeHandle) != 0) {
+    	// cannot close library
+    }
+#endif
 }
 
 } /* namespace module */

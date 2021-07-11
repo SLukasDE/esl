@@ -37,7 +37,6 @@ public:
 	using CreateConnection = esl::utility::ObjectPool<Connection>::CreateObject;
 
 	ConnectionPool(CreateConnection createConnection, unsigned int connectionsMax, std::chrono::milliseconds getTimeout, Strategy strategy, std::chrono::milliseconds connectionLifetime, bool resetTimeoutOnCreate, bool resetTimeoutOnDelete);
-	~ConnectionPool() = default;
 
 	//void addSetting(const std::string& key, const std::string& value) override;
 	std::unique_ptr<Connection> createConnection() override;

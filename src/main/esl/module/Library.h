@@ -24,7 +24,9 @@ SOFTWARE.
 #define ESL_MODULE_LIBRARY_H_
 
 #include <esl/module/Module.h>
+
 #include <string>
+#include <set>
 
 #define linux
 
@@ -33,21 +35,20 @@ namespace module {
 
 class Library {
 public:
-	using GetModule = Module*(*)(const std::string&);
+	static Library& load(std::string path);
 
-	Library(std::string path);
-	~Library();
+	void install(Module& module);
 
 	const std::string& getPath() const;
-	Module* getModulePointer(const std::string& moduleName = "");
-	Module& getModule(const std::string& moduleName = "");
+	void* getNativeHandle() const;
 
 private:
+	Library(void* nativeHandle, std::string path);
+	~Library();
+
+	void* nativeHandle = nullptr;
 	const std::string path;
-#ifdef linux
-	void* libHandle = nullptr;
-#endif
-	GetModule libGetModule = nullptr;
+	static std::set<Library*> libraries;
 };
 
 } /* namespace module */

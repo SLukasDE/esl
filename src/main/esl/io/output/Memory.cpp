@@ -21,10 +21,15 @@ SOFTWARE.
 */
 
 #include <esl/io/output/Memory.h>
+#include <esl/logging/Logger.h>
 
 namespace esl {
 namespace io {
 namespace output {
+
+namespace {
+esl::logging::Logger<> logger("esl::com::basic::client::Connection");
+}
 
 esl::io::Output Memory::create(const void* data, std::size_t size) {
     return esl::io::Output(std::unique_ptr<esl::io::Producer>(new Memory(data, size)));
@@ -36,16 +41,17 @@ Memory::Memory(const void* aData, std::size_t aSize)
 { }
 
 std::size_t Memory::produce(Writer& writer) {
-	std::size_t count = writer.write(getData(), getSize() - currentPos);
+	std::size_t count = writer.write(static_cast<const char*>(getData()) + currentPos, getSize() - currentPos);
 
-	if(count != 0) {
-		if(count == Writer::npos) {
-			/* error occurred. set currentPos to the end of the content */
-			currentPos = getSize();
-		}
-		else {
-			currentPos += count;
-		}
+	if(count == Writer::npos) {
+		currentPos = getSize();
+	}
+	else if(count + currentPos > getSize()) {
+		logger.warn << "writer read more bytes than send\n";
+		currentPos = getSize();
+	}
+	else {
+		currentPos += count;
 	}
 
 	return (currentPos < getSize()) ? count : Writer::npos;

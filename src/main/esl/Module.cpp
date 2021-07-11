@@ -33,18 +33,18 @@ namespace esl {
 
 namespace {
 
-class Module : public esl::module::Module {
+class Module : public module::Module {
 public:
 	Module();
 };
 
-typename std::aligned_storage<sizeof(Module), alignof(Module)>::type moduleBuffer; // memory for the object;
-Module* modulePtr = nullptr;
+typename std::aligned_storage<sizeof(esl::module::Module), alignof(esl::module::Module)>::type moduleBuffer; // memory for the object;
+esl::module::Module* modulePtr = nullptr;
 
 Module::Module()
-: esl::module::Module()
+: module::Module()
 {
-	esl::module::Module::initialize(*this);
+	module::Module::initialize(*this);
 
 	addInterface(esl::logging::layout::Interface::createInterface(
 			esl::logging::builtin::Layout::getImplementation(),
@@ -53,7 +53,7 @@ Module::Module()
 
 }  /* anonymous namespace */
 
-esl::module::Module& getModule() {
+module::Module& getModule() {
 	if(modulePtr == nullptr) {
 		/* ***************** *
 		 * initialize module *
@@ -64,6 +64,10 @@ esl::module::Module& getModule() {
 	}
 
 	return *modulePtr;
+}
+
+void setModule(module::Module& module) {
+	modulePtr = &module;
 }
 
 } /* namespace esl */

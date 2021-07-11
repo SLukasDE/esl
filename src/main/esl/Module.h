@@ -27,7 +27,8 @@ SOFTWARE.
 
 namespace esl {
 
-esl::module::Module& getModule();
+module::Module& getModule();
+void setModule(module::Module& module);
 
 } /* namespace esl */
 

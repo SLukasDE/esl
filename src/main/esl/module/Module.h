@@ -102,12 +102,13 @@ public:
 	template <class T>
 	const T& getInterface(const std::string& implementationName = "");
 
+	void addInterface(std::unique_ptr<const Interface> interface);
+
+
+protected:
 	//virtual Module* getModule(const std::string& module);
 	void addInterfaces(const Module& foreignModule, const std::string& type = "", const std::string& implementation = "");
 	void replaceInterfaces(const Module& foreignModule, const std::string& type = "", const std::string& implementation = "");
-
-protected:
-	void addInterface(std::unique_ptr<const Interface> interface);
 
 private:
 	std::string id;

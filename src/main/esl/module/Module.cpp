@@ -87,14 +87,6 @@ const Interface* Module::findInterface(const Interface& descriptor) const {
 	return nullptr;
 }
 
-void Module::addInterfaces(const Module& foreignModule, const std::string& type, const std::string& implementation) {
-	addOrReplaceInterfaces(foreignModule, type, implementation, false);
-}
-
-void Module::replaceInterfaces(const Module& foreignModule, const std::string& type, const std::string& implementation) {
-	addOrReplaceInterfaces(foreignModule, type, implementation, true);
-}
-
 void Module::addInterface(std::unique_ptr<const Interface> interface) {
 	if(!interface) {
 		throw std::runtime_error("Cannot add empty interface to module \"" + getName() + "\".");
@@ -103,6 +95,14 @@ void Module::addInterface(std::unique_ptr<const Interface> interface) {
 	if(addInterface(*interface.get(), false)) {
 		ownInterfaces.push_back(std::move(interface));
 	}
+}
+
+void Module::addInterfaces(const Module& foreignModule, const std::string& type, const std::string& implementation) {
+	addOrReplaceInterfaces(foreignModule, type, implementation, false);
+}
+
+void Module::replaceInterfaces(const Module& foreignModule, const std::string& type, const std::string& implementation) {
+	addOrReplaceInterfaces(foreignModule, type, implementation, true);
 }
 
 Interface* Module::findMetaInterface(const std::string& type, const std::string& implementation) {
