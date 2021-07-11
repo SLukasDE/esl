@@ -42,12 +42,11 @@ public:
 	std::size_t produce(Writer& writer) override;
 
 private:
-	std::string data;
+	std::string str;
 
-	char buffer[4096];
-	const char* bufferRead = nullptr;
+	const char* data;
+	std::size_t size = 0;
 	std::size_t currentPos = 0;
-	std::size_t currentSize = 0;
 };
 
 } /* namespace output */

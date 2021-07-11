@@ -41,20 +41,29 @@ Memory::Memory(const void* aData, std::size_t aSize)
 { }
 
 std::size_t Memory::produce(Writer& writer) {
-	std::size_t count = writer.write(static_cast<const char*>(getData()) + currentPos, getSize() - currentPos);
-
-	if(count == Writer::npos) {
-		currentPos = getSize();
+	if(currentPos >= size) {
+		size = Writer::npos;
 	}
-	else if(count + currentPos > getSize()) {
-		logger.warn << "writer read more bytes than send\n";
-		currentPos = getSize();
+
+	if(size == Writer::npos) {
+		return Writer::npos;
+	}
+
+	std::size_t count = writer.write(&static_cast<const char*>(getData())[currentPos], size - currentPos);
+	//std::size_t count = writer.write(static_cast<const char*>(getData()) + currentPos, size - currentPos);
+	if(count == Writer::npos) {
+		currentPos = size;
 	}
 	else {
+		if(count > size - currentPos) {
+			logger.warn << "output::Memory has been called with a broken writer!\n";
+			logger.warn << "Writer read " << count << " bytes but at most " << (size - currentPos) << " bytes was allowed to read.\n";
+			count = size - currentPos;
+		}
 		currentPos += count;
 	}
 
-	return (currentPos < getSize()) ? count : Writer::npos;
+	return count;
 }
 
 const void* Memory::getData() const noexcept {

@@ -36,29 +36,30 @@ esl::io::Output String::create(std::string content) {
 }
 
 String::String(std::string aContent)
-: data(std::move(aContent)),
-  bufferRead(data.data()),
-  currentSize(data.size() == 0 ? Writer::npos : data.size())
+: str(std::move(aContent)),
+  data(str.data()),
+  size(str.size() == 0 ? Writer::npos : str.size())
 { }
 
 std::size_t String::produce(Writer& writer) {
-	if(currentPos >= currentSize) {
-		currentSize = Writer::npos;
-	}
-
-	if(currentSize == Writer::npos) {
+	if(currentPos >= size) {
+		size = Writer::npos;
 		return Writer::npos;
 	}
 
-	std::size_t count = writer.write(&bufferRead[currentPos], currentSize - currentPos);
+	if(size == Writer::npos) {
+		return Writer::npos;
+	}
+
+	std::size_t count = writer.write(&data[currentPos], size - currentPos);
 	if(count == Writer::npos) {
-		currentPos = currentSize;
+		currentPos = size;
 	}
 	else {
-		if(count > currentSize - currentPos) {
-			logger.warn << "ProducerString has been called with a broken writer!\n";
-			logger.warn << "Writer read " << count << " bytes but at most " << (currentSize - currentPos) << " bytes was allowed to read.\n";
-			count = currentSize - currentPos;
+		if(currentPos + count > size) {
+			logger.warn << "output::String has been called with a broken writer!\n";
+			logger.warn << "Writer read " << count << " bytes but at most " << (size - currentPos) << " bytes was allowed to read.\n";
+			count = size - currentPos;
 		}
 		currentPos += count;
 	}
