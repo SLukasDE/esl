@@ -47,7 +47,7 @@ struct Interface : esl::module::Interface {
 	    virtual std::unique_ptr<Connection> createConnection() = 0;
 	};
 
-	using CreateConnectionFactory = std::unique_ptr<ConnectionFactory>(*)(const Settings& settings);
+	using CreateConnectionFactory = std::unique_ptr<ConnectionFactory>(*)(const object::Interface::Settings& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *
