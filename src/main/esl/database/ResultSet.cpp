@@ -122,6 +122,14 @@ const Field& ResultSet::operator[](std::size_t index) const {
         throw esl::addStacktrace(std::runtime_error("cannot access field at index \"" + std::to_string(index) + "\" because record set it empty."));
 	}
 
+	if(index >= fields.size()) {
+		if(fields.size() == 0) {
+	        throw esl::addStacktrace(std::out_of_range("field index " + std::to_string(index) + " is out of range. ResultSet has no fields."));
+		}
+		else {
+	        throw esl::addStacktrace(std::out_of_range("field index " + std::to_string(index) + " is out of range. Valid index is between 0 and " + std::to_string(fields.size()) + "."));
+		}
+	}
 	return fields[index];
 }
 
@@ -130,6 +138,14 @@ Field& ResultSet::operator[](std::size_t index) {
         throw esl::addStacktrace(std::runtime_error("cannot access field at index \"" + std::to_string(index) + "\" because record set it empty."));
 	}
 
+	if(index >= fields.size()) {
+		if(fields.size() == 0) {
+	        throw esl::addStacktrace(std::out_of_range("field index " + std::to_string(index) + " is out of range. ResultSet has no fields."));
+		}
+		else {
+	        throw esl::addStacktrace(std::out_of_range("field index " + std::to_string(index) + " is out of range. Valid index is between 0 and " + std::to_string(fields.size()) + "."));
+		}
+	}
 	return fields[index];
 }
 
