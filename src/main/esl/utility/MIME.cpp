@@ -49,6 +49,10 @@ MIME::MIME(std::string type) noexcept
   stringType(std::move(type))
 { }
 
+MIME::operator bool() const noexcept {
+	return hasEnum || !stringType.empty();
+}
+
 bool MIME::operator==(MIME::Type type) const noexcept {
 	return (*this == MIME(type));
 }
@@ -81,6 +85,8 @@ const std::string& MIME::toString() const noexcept {
 
 const std::string& MIME::toString(MIME::Type mimeType) noexcept {
 	switch(mimeType) {
+	case empty:
+		return strEmpty;
 	case textPlain:
 		return strTextPlain;
 	case textHtml:

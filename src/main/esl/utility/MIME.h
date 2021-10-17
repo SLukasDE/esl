@@ -43,6 +43,8 @@ public:
 	MIME(Type type) noexcept;
 	explicit MIME(std::string type) noexcept;
 
+	explicit operator bool() const noexcept;
+
 	bool operator==(Type type) const noexcept;
 	bool operator==(const MIME& aMime) const noexcept;
 
