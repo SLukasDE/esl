@@ -79,6 +79,9 @@ public:
 	Field& operator=(double value);
 	Field& operator=(const std::string& value);
 
+	// TODO : see unixODBC4esl::...::BindResult::setField(...)
+	// Field& operator=(std::string&& value);
+
 	const Column* getColumn() const;
 
 	/* this is the real type of this field */
