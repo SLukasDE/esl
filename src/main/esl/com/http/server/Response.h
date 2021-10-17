@@ -38,8 +38,6 @@ public:
 	Response(unsigned short statusCode, const utility::MIME& contentType, std::string realmId = "") noexcept;
 	virtual ~Response() = default;
 
-	bool isValid() const noexcept;
-
 	unsigned short getStatusCode() const noexcept;
 
 	const std::string& getRealmId() const noexcept;

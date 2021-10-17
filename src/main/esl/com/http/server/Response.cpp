@@ -28,16 +28,12 @@ namespace http {
 namespace server {
 
 Response::Response(unsigned short aStatusCode, const utility::MIME& contentType, std::string aRealmId) noexcept
-: headers{{"Content-Type", contentType.toString()}},
-  statusCode(aStatusCode),
+: statusCode(aStatusCode),
   realmId(std::move(aRealmId))
 {
-//	headers["Content-Type"] = contentType.toString();
-}
-
-
-bool Response::isValid() const noexcept {
-	return (headers.find("Content-Type")->second != "");
+	if(contentType) {
+		headers["Content-Type"] = contentType.toString();
+	}
 }
 
 unsigned short Response::getStatusCode() const noexcept {
