@@ -82,19 +82,31 @@ std::string decodeBase64Buffer(std::size_t bufferIndex, unsigned char* buffer) {
 }
 }
 
-std::vector<std::string> String::split(const std::string& str, const char separator) {
+std::vector<std::string> String::split(const std::string& str, const char separator, bool dropEmptyContent) {
+    return split(str, {{separator}}, dropEmptyContent);
+}
+
+std::vector<std::string> String::split(const std::string& str, std::set<const char> separators, bool dropEmptyContent) {
     std::vector<std::string> rv;
     std::string::const_iterator currentIt = str.begin();
     std::string::const_iterator lastIt = currentIt;
 
     for(;currentIt != str.end(); ++currentIt) {
-        if(*currentIt == separator) {
-            rv.push_back( std::string(lastIt, currentIt));
+        if(separators.count(*currentIt) > 0) {
+        	std::string content(lastIt, currentIt);
+        	if(dropEmptyContent == false || content.empty() == false) {
+                rv.push_back(content);
+        	}
+
             lastIt = currentIt;
             ++lastIt;
         }
     }
-    rv.push_back(std::string(lastIt, currentIt));
+
+    std::string content(lastIt, currentIt);
+	if(dropEmptyContent == false || content.empty() == false) {
+        rv.push_back(content);
+	}
 
     return rv;
 }

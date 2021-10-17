@@ -24,6 +24,7 @@ SOFTWARE.
 #define SRC_MAIN_C___ESL_UTILITY_STRING_H_
 
 #include <string>
+#include <set>
 #include <vector>
 #include <functional>
 
@@ -32,7 +33,8 @@ namespace utility {
 
 class String {
 public:
-	static std::vector<std::string> split(const std::string& str, const char separator);
+	static std::vector<std::string> split(const std::string& str, const char separator, bool dropEmptyContent = false);
+	static std::vector<std::string> split(const std::string& str, std::set<const char> separators, bool dropEmptyContent = false);
 
 	static std::string ltrim(std::string str, char trimCharacter = ' ');
 	static std::string rtrim(std::string str, char trimCharacter = ' ');
