@@ -20,40 +20,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/com/http/server/Socket.h>
-#include <esl/Module.h>
+#include <esl/object/ObjectContext.h>
 
 namespace esl {
-namespace com {
-namespace http {
-namespace server {
+namespace object {
 
-module::Implementation& Socket::getDefault() {
-	static module::Implementation implementation;
-	return implementation;
+void ObjectContext::addObject(const std::string& id, std::unique_ptr<esl::object::Interface::Object> object) {
+	objects[id] = std::move(object);
 }
 
-Socket::Socket(const Interface::Settings& settings, const std::string& implementation)
-: socket(esl::getModule().getInterface<Interface>(implementation).createSocket(settings))
-{ }
-
-void Socket::addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) {
-	socket->addTLSHost(hostname, certificate, key);
+Interface::Object* ObjectContext::findRawObject(const std::string& id) const {
+	auto iter = objects.find(id);
+	return iter == std::end(objects) ? nullptr : iter->second.get();
 }
 
-void Socket::listen(const requesthandler::Interface::RequestHandler& requestHandler, std::function<void()> onReleasedHandler) {
-	socket->listen(requestHandler, onReleasedHandler);
-}
-
-void Socket::release() {
-	socket->release();
-}
-
-bool Socket::wait(std::uint32_t ms) {
-	return socket->wait(ms);
-}
-
-} /* namespace server */
-} /* namespace http */
-} /* namespace com */
+} /* namespace object */
 } /* namespace esl */

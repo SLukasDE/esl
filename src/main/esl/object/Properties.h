@@ -23,17 +23,17 @@ SOFTWARE.
 #ifndef ESL_OBJECT_PROPERTIES_H_
 #define ESL_OBJECT_PROPERTIES_H_
 
-//#include <esl/object/Interface.h>
+#include <esl/module/Interface.h>
 #include <esl/object/Values.h>
 
 #include <string>
 #include <utility>
 #include <map>
+#include <vector>
 
 namespace esl {
 namespace object {
 
-//class Properties : public Interface::Object {
 class Properties : public esl::object::Values<std::string> {
 public:
 	Properties(const Interface::Settings& settings = {});

@@ -249,15 +249,28 @@ std::size_t WriterConsumer::getSizeWritable() const {
 
 }
 
-Input::Input(Writer& aWriter)
-: consumerGenerated(new ConsumerWriter(aWriter)),
-  consumer(consumerGenerated.get()),
+Input::Input(std::unique_ptr<object::Interface::Object> aObject, Consumer& aConsumer, Writer& aWriter)
+: object(std::move(aObject)),
+  consumer(&aConsumer),
   writer(&aWriter)
 { }
 
 Input::Input(Consumer& aConsumer)
 : writerGenerated(new WriterConsumer(aConsumer)),
   consumer(&aConsumer),
+  writer(writerGenerated.get())
+{ }
+
+Input::Input(Writer& aWriter)
+: consumerGenerated(new ConsumerWriter(aWriter)),
+  consumer(consumerGenerated.get()),
+  writer(&aWriter)
+{ }
+
+Input::Input(std::unique_ptr<Consumer> aConsumerGenerated)
+: consumerGenerated(std::move(aConsumerGenerated)),
+  writerGenerated(consumerGenerated ? new WriterConsumer(*consumerGenerated) : nullptr),
+  consumer(consumerGenerated.get()),
   writer(writerGenerated.get())
 { }
 
@@ -268,15 +281,9 @@ Input::Input(std::unique_ptr<Writer> aWriterGenerated)
   writer(writerGenerated.get())
 { }
 
-Input::Input(std::unique_ptr<Consumer> aConsumerGenerated)
-: consumerGenerated(std::move(aConsumerGenerated)),
-  writerGenerated(consumerGenerated ? new WriterConsumer(*consumerGenerated) : nullptr),
-  consumer(consumerGenerated.get()),
-  writer(writerGenerated.get())
-{ }
-
 Input::Input(Input&& other)
-: consumerGenerated(std::move(other.consumerGenerated)),
+: object(std::move(other.object)),
+  consumerGenerated(std::move(other.consumerGenerated)),
   writerGenerated(std::move(other.writerGenerated)),
   consumer(other.consumer),
   writer(other.writer)
@@ -287,6 +294,8 @@ Input::Input(Input&& other)
 
 Input& Input::operator=(Input&& other) {
 	if(this != &other) {
+		object = std::move(other.object);
+
 		consumerGenerated = std::move(other.consumerGenerated);
 		writerGenerated = std::move(other.writerGenerated);
 

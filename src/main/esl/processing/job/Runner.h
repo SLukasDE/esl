@@ -20,44 +20,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_COM_HTTP_CLIENT_CONNECTION_H_
-#define ESL_COM_HTTP_CLIENT_CONNECTION_H_
+#ifndef ESL_PROCESSING_JOB_RUNNER_H_
+#define ESL_PROCESSING_JOB_RUNNER_H_
 
-#include <esl/com/http/client/Interface.h>
-#include <esl/com/http/client/Request.h>
-#include <esl/utility/URL.h>
+#include <esl/processing/job/Interface.h>
+#include <esl/processing/job/Context.h>
+#include <esl/processing/job/Handle.h>
+#include <esl/processing/job/Job.h>
 #include <esl/module/Implementation.h>
 
-#include <string>
 #include <memory>
 
 namespace esl {
-namespace com {
-namespace http {
-namespace client {
+namespace processing {
+namespace job {
 
-/* ********************************************************** *
- * * Deprecated! Use ConnectionFactory to create a connection *
- * ********************************************************** */
-class Connection : public Interface::Connection {
+class Runner : public Interface::Runner {
 public:
 	static module::Implementation& getDefault();
 
-	Connection(const utility::URL& hostUrl,
-			const Interface::Settings& settings = getDefault().getSettings(),
+	Runner(const Interface::Settings& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
-	Response send(const Request& request, esl::io::Output output, Interface::CreateInput createInput) const override;
-	Response send(const Request& request, esl::io::Output output, esl::io::Input input) const override;
+	Handle addJob(std::unique_ptr<Job> job) override;
+	void cancel(Handle jobId) override;
 
 private:
-	std::unique_ptr<Interface::ConnectionFactory> connectionFactory;
-	std::unique_ptr<Interface::Connection> connection;
+	std::unique_ptr<Interface::Runner> runner;
 };
 
-} /* namespace client */
-} /* namespace http */
-} /* namespace com */
+} /* namespace job */
+} /* namespace processing */
 } /* namespace esl */
 
-#endif /* ESL_COM_HTTP_CLIENT_CONNECTION_H_ */
+#endif /* ESL_PROCESSING_JOB_RUNNER_H_ */

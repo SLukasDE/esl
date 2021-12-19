@@ -34,7 +34,7 @@ namespace utility {
 class String {
 public:
 	static std::vector<std::string> split(const std::string& str, const char separator, bool dropEmptyContent = false);
-	static std::vector<std::string> split(const std::string& str, std::set<const char> separators, bool dropEmptyContent = false);
+	static std::vector<std::string> split(const std::string& str, const std::set<char>& separators, bool dropEmptyContent = false);
 
 	static std::string ltrim(std::string str, char trimCharacter = ' ');
 	static std::string rtrim(std::string str, char trimCharacter = ' ');

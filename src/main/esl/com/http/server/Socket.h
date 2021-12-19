@@ -25,10 +25,11 @@ SOFTWARE.
 
 #include <esl/com/http/server/Interface.h>
 #include <esl/com/http/server/requesthandler/Interface.h>
+#include <esl/object/Interface.h>
 #include <esl/module/Implementation.h>
 
-//#include <initializer_list>
 #include <utility>
+#include <functional>
 #include <string>
 #include <cstdint>
 #include <memory>
@@ -41,16 +42,13 @@ namespace server {
 class Socket final : public Interface::Socket {
 public:
 	static module::Implementation& getDefault();
-/*
-	Socket(std::initializer_list<std::pair<std::string, std::string>> settings,
-			const std::string& implementation = getDefault().getImplementation());
-*/
+
 	Socket(const Interface::Settings& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	void addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) override;
-	void addObjectFactory(const std::string& id, ObjectFactory objectFactory) override;
-	void listen(requesthandler::Interface::CreateInput createInput) override;
+
+	void listen(const requesthandler::Interface::RequestHandler& requestHandler, std::function<void()> onReleasedHandler) override;
 	void release() override;
 	bool wait(std::uint32_t ms) override;
 

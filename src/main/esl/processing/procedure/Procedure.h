@@ -19,28 +19,36 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-#if 0
-#ifndef ESL_COM_HTTP_SERVER_SESSIONCONTEXT_H_
-#define ESL_COM_HTTP_SERVER_SESSIONCONTEXT_H_
 
+#ifndef ESL_PROCESSING_PROCEDURE_PROCEDURE_H_
+#define ESL_PROCESSING_PROCEDURE_PROCEDURE_H_
+
+#include <esl/processing/procedure/Interface.h>
 #include <esl/object/Interface.h>
-#include <esl/object/Settings.h>
-#include <esl/com/http/server/RequestContext.h>
+#include <esl/module/Implementation.h>
+
+#include <memory>
 
 namespace esl {
-namespace com {
-namespace http {
-namespace server {
+namespace processing {
+namespace procedure {
 
-class SessionContext : public esl::object::Settings {
+class Procedure final : public Interface::Procedure {
 public:
-	virtual esl::object::Interface::Object& getSession(RequestContext& requestContext) const = 0;
+	static module::Implementation& getDefault();
+
+	Procedure(const Interface::Settings& settings = getDefault().getSettings(),
+			const std::string& implementation = getDefault().getImplementation());
+
+	void procedureRun(object::Interface::ObjectContext& objectContext) override;
+	void procedureCancel() override;
+
+private:
+	std::unique_ptr<Interface::Procedure> procedure;
 };
 
-} /* namespace server */
-} /* namespace http */
-} /* namespace com */
+} /* namespace procedure */
+} /* namespace processing */
 } /* namespace esl */
 
-#endif /* ESL_COM_HTTP_SERVER_SESSIONCONTEXT_H_ */
-#endif
+#endif /* ESL_PROCESSING_PROCEDURE_PROCEDURE_H_ */

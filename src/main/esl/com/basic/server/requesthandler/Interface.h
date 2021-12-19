@@ -25,7 +25,7 @@ SOFTWARE.
 
 #include <esl/io/Input.h>
 #include <esl/com/basic/server/RequestContext.h>
-#include <esl/object/ObjectContext.h>
+#include <esl/object/Interface.h>
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
 
@@ -45,8 +45,22 @@ struct Interface : esl::module::Interface {
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	using CreateInput = io::Input (*)(RequestContext&);
-	using GetNotifiers = const std::set<std::string>& (*)(const object::ObjectContext&);
+	class RequestHandler : public object::Interface::Object {
+	public:
+		virtual io::Input accept(RequestContext&, object::Interface::ObjectContext&) const = 0;
+
+		/* Tells server what kind of messages MUST NOT be filtered.
+		 * Method 'accept' is called AT LEAST for messages that match this kind.
+		 * Be aware about that accept MIGHT BE called for other messages as well.
+		 * So, it is important to check the 'kind' of message in method 'accept'.
+		 */
+		virtual std::set<std::string> getNotifiers() const = 0;
+	};
+
+	using CreateRequestHandler = std::unique_ptr<RequestHandler> (*)(const module::Interface::Settings& settings);
+
+	//using CreateInput = io::Input (*)(RequestContext&, object::Interface::ObjectContext&);
+	//using GetNotifiers = const std::set<std::string>& (*)(const object::Interface::Object*);
 
 	/* ************************************ *
 	 * standard API definition of interface *
@@ -60,18 +74,16 @@ struct Interface : esl::module::Interface {
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateInput createInput, GetNotifiers getNotifiers) {
-		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createInput, getNotifiers));
+	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateRequestHandler createRequestHandler) {
+		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createRequestHandler));
 	}
 
-	Interface(const char* implementation, CreateInput aCreateInput, GetNotifiers aGetNotifiers)
+	Interface(const char* implementation, CreateRequestHandler aCreateRequestHandler)
 	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
-	  createInput(aCreateInput),
-	  getNotifiers(aGetNotifiers)
+	  createRequestHandler(aCreateRequestHandler)
 	{ }
 
-	CreateInput createInput;
-	GetNotifiers getNotifiers;
+	CreateRequestHandler createRequestHandler;
 };
 
 } /* namespace requesthandler */

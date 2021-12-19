@@ -20,40 +20,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/com/http/server/Socket.h>
-#include <esl/Module.h>
+#ifndef ESL_PROCESSING_JOB_JOB_H_
+#define ESL_PROCESSING_JOB_JOB_H_
+
+#include <esl/processing/job/Handle.h>
 
 namespace esl {
-namespace com {
-namespace http {
-namespace server {
+namespace processing {
+namespace job {
 
-module::Implementation& Socket::getDefault() {
-	static module::Implementation implementation;
-	return implementation;
-}
+class Context;
 
-Socket::Socket(const Interface::Settings& settings, const std::string& implementation)
-: socket(esl::getModule().getInterface<Interface>(implementation).createSocket(settings))
-{ }
+class Job {
+public:
+	virtual ~Job() = 0;
 
-void Socket::addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) {
-	socket->addTLSHost(hostname, certificate, key);
-}
+	virtual Handle run(Context& conext) = 0;
+	virtual void cancel() = 0;
+};
 
-void Socket::listen(const requesthandler::Interface::RequestHandler& requestHandler, std::function<void()> onReleasedHandler) {
-	socket->listen(requestHandler, onReleasedHandler);
-}
-
-void Socket::release() {
-	socket->release();
-}
-
-bool Socket::wait(std::uint32_t ms) {
-	return socket->wait(ms);
-}
-
-} /* namespace server */
-} /* namespace http */
-} /* namespace com */
+} /* namespace job */
+} /* namespace processing */
 } /* namespace esl */
+
+#endif /* ESL_PROCESSING_JOB_JOB_H_ */

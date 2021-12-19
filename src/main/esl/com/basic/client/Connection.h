@@ -44,9 +44,11 @@ public:
 	Connection(const Interface::Settings& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
-	io::Output send(io::Output output, std::vector<std::pair<std::string, std::string>> parameters) override;
+	Response send(const Request& request, esl::io::Output output, Interface::CreateInput createInput) const override;
+	Response send(const Request& request, esl::io::Output output, esl::io::Input input) const override;
 
 private:
+	std::unique_ptr<Interface::ConnectionFactory> connectionFactory;
 	std::unique_ptr<Interface::Connection> connection;
 };
 

@@ -20,64 +20,63 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_COM_HTTP_SERVER_REQUESTHANDLER_INTERFACE_H_
-#define ESL_COM_HTTP_SERVER_REQUESTHANDLER_INTERFACE_H_
+#ifndef ESL_PROCESSING_DAEMON_INTERFACE_H_
+#define ESL_PROCESSING_DAEMON_INTERFACE_H_
 
 #include <esl/module/Interface.h>
-#include <esl/Module.h>
-#include <esl/com/http/server/RequestContext.h>
-#include <esl/io/Input.h>
 #include <esl/object/Interface.h>
+#include <esl/Module.h>
 
 #include <string>
+#include <functional>
+#include <cstdint>
 #include <memory>
 
 namespace esl {
-namespace com {
-namespace http {
-namespace server {
-namespace requesthandler {
+namespace processing {
+namespace daemon {
 
-struct Interface : module::Interface {
+struct Interface : esl::module::Interface {
 	/* ******************************************** *
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class RequestHandler : public object::Interface::Object {
+	class Daemon : public object::Interface::Object {
 	public:
-		virtual io::Input accept(RequestContext&, object::Interface::ObjectContext&) const = 0;
+		/* this methods are non-blocking. A separate thread will be created */
+		virtual bool start(std::function<void()> onReleasedHandler) = 0;
+		virtual void release() = 0;
+		virtual bool wait(std::uint32_t ms) = 0;
 	};
 
-	using CreateRequestHandler = std::unique_ptr<RequestHandler> (*)(const module::Interface::Settings& settings);
+	using CreateDaemon = std::unique_ptr<Daemon> (*)(const Settings& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *
 	 * ************************************ */
 
 	static inline const char* getType() {
-		return "esl-com-http-server-requesthandler";
+		return "esl-processing-daemon";
 	}
 
 	/* ************************************ *
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	static std::unique_ptr<const module::Interface> createInterface(const char* implementation, CreateRequestHandler createRequestHandler) {
-		return std::unique_ptr<const module::Interface>(new Interface(implementation, createRequestHandler));
+	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateDaemon createDaemon) {
+		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createDaemon));
 	}
 
-	Interface(const char* implementation, CreateRequestHandler aCreateRequestHandler)
-	: module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
-	  createRequestHandler(aCreateRequestHandler)
+	Interface(const char* implementation, CreateDaemon aCreateDaemon)
+	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
+	  createDaemon(aCreateDaemon)
 	{ }
 
-	CreateRequestHandler createRequestHandler;
+	CreateDaemon createDaemon;
 };
 
-} /* namespace requesthandler */
-} /* namespace server */
-} /* namespace http */
-} /* namespace com */
+} /* namespace daemon */
+} /* namespace processing */
 } /* namespace esl */
 
-#endif /* ESL_COM_HTTP_SERVER_REQUESTHANDLER_INTERFACE_H_ */
+#endif /* ESL_PROCESSING_DAEMON_INTERFACE_H_ */

@@ -41,20 +41,17 @@ namespace com {
 namespace http {
 namespace server {
 
-struct Interface : esl::module::Interface {
+struct Interface : module::Interface {
 	/* ******************************************** *
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
 	class Socket : public object::Interface::Object {
 	public:
-		using ObjectFactory = std::function<esl::object::Interface::Object*(const RequestContext&)>;
-
 		virtual void addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) = 0;
-		virtual void addObjectFactory(const std::string& id, ObjectFactory objectFactory) = 0;
 
 		/* this method is non-blocking. A separate thread will be opened to listen */
-		virtual void listen(requesthandler::Interface::CreateInput createInput) = 0;
+		virtual void listen(const requesthandler::Interface::RequestHandler& requestHandler, std::function<void()> onReleasedHandler) = 0;
 		virtual void release() = 0;
 		virtual bool wait(std::uint32_t ms) = 0;
 	};
@@ -73,12 +70,12 @@ struct Interface : esl::module::Interface {
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateSocket createSocket) {
-		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createSocket));
+	static std::unique_ptr<const module::Interface> createInterface(const char* implementation, CreateSocket createSocket) {
+		return std::unique_ptr<const module::Interface>(new Interface(implementation, createSocket));
 	}
 
 	Interface(const char* implementation, CreateSocket aCreateSocket)
-	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
+	: module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
 	  createSocket(aCreateSocket)
 	{ }
 

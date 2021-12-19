@@ -20,40 +20,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/com/http/server/Socket.h>
+#include <esl/processing/procedure/Procedure.h>
 #include <esl/Module.h>
 
 namespace esl {
-namespace com {
-namespace http {
-namespace server {
+namespace processing {
+namespace procedure {
 
-module::Implementation& Socket::getDefault() {
+module::Implementation& Procedure::getDefault() {
 	static module::Implementation implementation;
 	return implementation;
 }
 
-Socket::Socket(const Interface::Settings& settings, const std::string& implementation)
-: socket(esl::getModule().getInterface<Interface>(implementation).createSocket(settings))
+Procedure::Procedure(const Interface::Settings& settings, const std::string& implementation)
+: procedure(esl::getModule().getInterface<Interface>(implementation).createProcedure(settings))
 { }
 
-void Socket::addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) {
-	socket->addTLSHost(hostname, certificate, key);
+void Procedure::procedureRun(object::Interface::ObjectContext& objectContext) {
+	procedure->procedureRun(objectContext);
 }
 
-void Socket::listen(const requesthandler::Interface::RequestHandler& requestHandler, std::function<void()> onReleasedHandler) {
-	socket->listen(requestHandler, onReleasedHandler);
+void Procedure::procedureCancel() {
+	procedure->procedureCancel();
 }
 
-void Socket::release() {
-	socket->release();
-}
-
-bool Socket::wait(std::uint32_t ms) {
-	return socket->wait(ms);
-}
-
-} /* namespace server */
-} /* namespace http */
-} /* namespace com */
+} /* namespace procedure */
+} /* namespace processing */
 } /* namespace esl */

@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2021 Sven Lukas
+Copyright (c) 2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,40 +20,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/com/http/server/Socket.h>
-#include <esl/Module.h>
+#ifndef ESL_COM_BASIC_CLIENT_RESPONSE_H_
+#define ESL_COM_BASIC_CLIENT_RESPONSE_H_
+
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace com {
-namespace http {
-namespace server {
+namespace basic {
+namespace client {
 
-module::Implementation& Socket::getDefault() {
-	static module::Implementation implementation;
-	return implementation;
-}
+using Response = std::vector<std::pair<std::string, std::string>>;
 
-Socket::Socket(const Interface::Settings& settings, const std::string& implementation)
-: socket(esl::getModule().getInterface<Interface>(implementation).createSocket(settings))
-{ }
-
-void Socket::addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) {
-	socket->addTLSHost(hostname, certificate, key);
-}
-
-void Socket::listen(const requesthandler::Interface::RequestHandler& requestHandler, std::function<void()> onReleasedHandler) {
-	socket->listen(requestHandler, onReleasedHandler);
-}
-
-void Socket::release() {
-	socket->release();
-}
-
-bool Socket::wait(std::uint32_t ms) {
-	return socket->wait(ms);
-}
-
-} /* namespace server */
-} /* namespace http */
+} /* namespace client */
+} /* namespace basic */
 } /* namespace com */
 } /* namespace esl */
+
+#endif /* ESL_COM_BASIC_CLIENT_RESPONSE_H_ */

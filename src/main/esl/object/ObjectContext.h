@@ -26,19 +26,26 @@ SOFTWARE.
 #include <esl/object/Interface.h>
 
 #include <string>
+#include <map>
+#include <memory>
 
 namespace esl {
 namespace object {
 
-class ObjectContext : public Interface::Object {
+class ObjectContext final : public Interface::ObjectContext {
 public:
 	template<typename T>
 	T* findObject(const std::string& id = "") const {
-		return dynamic_cast<T*>(findObject(id));
+		return dynamic_cast<T*>(findRawObject(id));
 	}
 
+	void addObject(const std::string& id, std::unique_ptr<esl::object::Interface::Object> object) override;
+
 protected:
-	virtual Interface::Object* findObject(const std::string& id) const = 0;
+	Interface::Object* findRawObject(const std::string& id) const override;
+
+private:
+	std::map<std::string, std::unique_ptr<esl::object::Interface::Object>> objects;
 };
 
 } /* namespace object */

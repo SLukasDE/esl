@@ -23,14 +23,15 @@ SOFTWARE.
 #ifndef ESL_COM_BASIC_CLIENT_INTERFACE_H_
 #define ESL_COM_BASIC_CLIENT_INTERFACE_H_
 
+#include <esl/com/basic/client/Request.h>
+#include <esl/com/basic/client/Response.h>
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
+#include <esl/io/Input.h>
 #include <esl/io/Output.h>
 
-#include <string>
+#include <functional>
 #include <memory>
-#include <utility>
-#include <vector>
 
 namespace esl {
 namespace com {
@@ -41,15 +42,26 @@ struct Interface : esl::module::Interface {
 	/* *************************************** *
 	 * definitions required for this interface *
 	 * *************************************** */
+
+	using CreateInput = std::function<esl::io::Input (const Response&)>;
+
 	class Connection {
 	public:
 		Connection() = default;
 		virtual ~Connection() = default;
 
-		virtual io::Output send(io::Output output, std::vector<std::pair<std::string, std::string>> parameters = {}) = 0;
+		virtual Response send(const Request& request, esl::io::Output output, CreateInput createInput) const = 0;
+		virtual Response send(const Request& request, esl::io::Output output, esl::io::Input input) const = 0;
 	};
 
 	using CreateConnection = std::unique_ptr<Connection> (*)(const Settings& settings);
+
+	class ConnectionFactory : public object::Interface::Object {
+	public:
+		virtual std::unique_ptr<Connection> createConnection() const = 0;
+	};
+
+	using CreateConnectionFactory = std::unique_ptr<ConnectionFactory> (*)(const Settings& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *
@@ -64,19 +76,19 @@ struct Interface : esl::module::Interface {
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateConnection createConnection) {
-		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createConnection));
+	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateConnectionFactory createConnectionFactory) {
+		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createConnectionFactory));
 	}
 
-	Interface(const char* implementation, CreateConnection aCreateConnection)
+	Interface(const char* implementation, CreateConnectionFactory aCreateConnectionFactory)
 	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
-	  createConnection(aCreateConnection)
+	  createConnectionFactory(aCreateConnectionFactory)
 	{ }
 
 	/* **************************** *
 	 * start extension of interface *
 	 * **************************** */
-	CreateConnection createConnection;
+	CreateConnectionFactory createConnectionFactory;
 };
 
 } /* namespace client */

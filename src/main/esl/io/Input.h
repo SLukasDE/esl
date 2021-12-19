@@ -25,6 +25,7 @@ SOFTWARE.
 
 #include <esl/io/Consumer.h>
 #include <esl/io/Writer.h>
+#include <esl/object/Interface.h>
 
 #include <memory>
 
@@ -35,11 +36,13 @@ class Input final {
 public:
 	Input() = default;
 
-	Input(Writer& writer);
-	Input(Consumer& consumer);
+	Input(std::unique_ptr<object::Interface::Object> object, Consumer& consumer, Writer& writer);
 
-	Input(std::unique_ptr<Writer> writerGenerated);
+	Input(Consumer& consumer);
+	Input(Writer& writer);
+
 	Input(std::unique_ptr<Consumer> consumerGenerated);
+	Input(std::unique_ptr<Writer> writerGenerated);
 
 	Input(const Input&) = delete;
 	Input(Input&& other);
@@ -53,6 +56,7 @@ public:
 	Writer& getWriter() const;
 
 private:
+	std::unique_ptr<object::Interface::Object> object;
 	std::unique_ptr<Consumer> consumerGenerated;
 	std::unique_ptr<Writer> writerGenerated;
 

@@ -21,7 +21,7 @@ SOFTWARE.
 */
 
 #include <esl/com/basic/server/Socket.h>
-#include <esl/object/Properties.h>
+//#include <esl/object/Properties.h>
 #include <esl/Module.h>
 
 namespace esl {
@@ -38,12 +38,8 @@ Socket::Socket(const Interface::Settings& settings, const std::string& implement
 : socket(esl::getModule().getInterface<Interface>(implementation).createSocket(settings))
 { }
 
-void Socket::addObjectFactory(const std::string& id, ObjectFactory objectFactory) {
-	socket->addObjectFactory(id, objectFactory);
-}
-
-void Socket::listen(const std::set<std::string>& notifications, requesthandler::Interface::CreateInput createInput) {
-	socket->listen(notifications, createInput);
+void Socket::listen(const requesthandler::Interface::RequestHandler& requestHandler, std::function<void()> onReleasedHandler) {
+	socket->listen(requestHandler, onReleasedHandler);
 }
 
 void Socket::release() {

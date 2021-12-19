@@ -20,41 +20,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_COM_BASIC_BROKER_CLIENT_H_
-#define ESL_COM_BASIC_BROKER_CLIENT_H_
+#ifndef ESL_COM_BASIC_CLIENT_REQUEST_H_
+#define ESL_COM_BASIC_CLIENT_REQUEST_H_
 
-#include <esl/com/basic/broker/Interface.h>
-#include <esl/com/basic/client/Interface.h>
-#include <esl/com/basic/server/Interface.h>
-#include <esl/module/Implementation.h>
-
+#include <string>
 #include <utility>
 #include <vector>
-#include <memory>
 
 namespace esl {
 namespace com {
 namespace basic {
-namespace broker {
+namespace client {
 
-class Client final : public Interface::Client {
-public:
-	static module::Implementation& getDefault();
+using Request = std::vector<std::pair<std::string, std::string>>;
 
-	Client(const Interface::Settings& settings = getDefault().getSettings(),
-			const std::string& implementation = getDefault().getImplementation());
-
-	server::Interface::Socket& getSocket() override;
-
-	std::unique_ptr<client::Interface::Connection> createConnection(const Interface::Settings& parameters) override;
-
-private:
-	std::unique_ptr<Interface::Client> client;
-};
-
-} /* namespace broker */
+} /* namespace client */
 } /* namespace basic */
 } /* namespace com */
 } /* namespace esl */
 
-#endif /* ESL_COM_BASIC_BROKER_CLIENT_H_ */
+#endif /* ESL_COM_BASIC_CLIENT_REQUEST_H_ */

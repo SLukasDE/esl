@@ -86,7 +86,7 @@ std::vector<std::string> String::split(const std::string& str, const char separa
     return split(str, {{separator}}, dropEmptyContent);
 }
 
-std::vector<std::string> String::split(const std::string& str, std::set<const char> separators, bool dropEmptyContent) {
+std::vector<std::string> String::split(const std::string& str, const std::set<char>& separators, bool dropEmptyContent) {
     std::vector<std::string> rv;
     std::string::const_iterator currentIt = str.begin();
     std::string::const_iterator lastIt = currentIt;

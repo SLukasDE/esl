@@ -20,12 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_COM_HTTP_CLIENT_CONNECTION_H_
-#define ESL_COM_HTTP_CLIENT_CONNECTION_H_
+#ifndef ESL_COM_BASIC_CLIENT_CONNECTIONFACTORY_H_
+#define ESL_COM_BASIC_CLIENT_CONNECTIONFACTORY_H_
 
-#include <esl/com/http/client/Interface.h>
-#include <esl/com/http/client/Request.h>
-#include <esl/utility/URL.h>
+#include <esl/com/basic/client/Interface.h>
 #include <esl/module/Implementation.h>
 
 #include <string>
@@ -33,31 +31,25 @@ SOFTWARE.
 
 namespace esl {
 namespace com {
-namespace http {
+namespace basic {
 namespace client {
 
-/* ********************************************************** *
- * * Deprecated! Use ConnectionFactory to create a connection *
- * ********************************************************** */
-class Connection : public Interface::Connection {
+class ConnectionFactory : public Interface::ConnectionFactory {
 public:
 	static module::Implementation& getDefault();
 
-	Connection(const utility::URL& hostUrl,
-			const Interface::Settings& settings = getDefault().getSettings(),
+	ConnectionFactory(const Interface::Settings& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
-	Response send(const Request& request, esl::io::Output output, Interface::CreateInput createInput) const override;
-	Response send(const Request& request, esl::io::Output output, esl::io::Input input) const override;
+	std::unique_ptr<Interface::Connection> createConnection() const override;
 
 private:
 	std::unique_ptr<Interface::ConnectionFactory> connectionFactory;
-	std::unique_ptr<Interface::Connection> connection;
 };
 
 } /* namespace client */
-} /* namespace http */
+} /* namespace basic */
 } /* namespace com */
 } /* namespace esl */
 
-#endif /* ESL_COM_HTTP_CLIENT_CONNECTION_H_ */
+#endif /* ESL_COM_BASIC_CLIENT_CONNECTIONFACTORY_H_ */

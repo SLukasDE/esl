@@ -39,18 +39,23 @@ module::Implementation& Connection::getDefault() {
 	return implementation;
 }
 
-Connection::Connection(const utility::URL& hostUrl,
+Connection::Connection(const utility::URL& url,
 		const Interface::Settings& settings,
 		const std::string& implementation)
-: Interface::Connection(),
-  connection(esl::getModule().getInterface<Interface>(implementation).createConnection(hostUrl, settings))
-{ }
+: connectionFactory(esl::getModule().getInterface<Interface>(implementation).createConnectionFactory(url, settings)),
+  connection(connectionFactory->createConnection())
+{
+	logger.warn << "****************************************************************************************\n";
+	logger.warn << "*** esl::com::http::client::Connection is DEPRECATED! Don't use this class anymore ! ***\n";
+	logger.warn << "***  Use esl::com::http::client::ConnectionFactory instead to create a connection !  ***\n";
+	logger.warn << "****************************************************************************************\n";
+}
 
-Response Connection::send(Request request, esl::io::Output output, Interface::CreateInput createInput) const {
+Response Connection::send(const Request& request, esl::io::Output output, Interface::CreateInput createInput) const {
 	return connection->send(std::move(request), std::move(output), createInput);
 }
 
-Response Connection::send(Request request, esl::io::Output output, esl::io::Input input) const {
+Response Connection::send(const Request& request, esl::io::Output output, esl::io::Input input) const {
 	return connection->send(std::move(request), std::move(output), std::move(input));
 }
 

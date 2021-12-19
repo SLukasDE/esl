@@ -20,70 +20,65 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_COM_HTTP_SERVER_EXCEPTION_INTERFACE_H_
-#define ESL_COM_HTTP_SERVER_EXCEPTION_INTERFACE_H_
+#ifndef ESL_PROCESSING_PROCEDURE_INTERFACE_H_
+#define ESL_PROCESSING_PROCEDURE_INTERFACE_H_
 
 #include <esl/module/Interface.h>
+#include <esl/object/Interface.h>
 #include <esl/Module.h>
-#include <esl/utility/MIME.h>
-#include <esl/Stacktrace.h>
 
 #include <string>
+#include <functional>
+#include <cstdint>
 #include <memory>
-#include <exception>
 
 namespace esl {
-namespace com {
-namespace http {
-namespace server {
-namespace exception {
+namespace processing {
+namespace procedure {
 
 struct Interface : esl::module::Interface {
 	/* ******************************************** *
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	struct Message final {
-		unsigned short statusCode = 500;
-		esl::utility::MIME contentType = esl::utility::MIME::textHtml;
+	class Procedure : public object::Interface::Object {
+	public:
+		/* this method is blocking. */
+		virtual void procedureRun(object::Interface::ObjectContext& objectContext) = 0;
 
-		std::string title;
-		std::string message;
-		std::string details;
-
-		std::unique_ptr<esl::Stacktrace> stacktrace;
+		/* this method is non-blocking. */
+		virtual void procedureCancel() = 0;
+		//virtual bool procedureWait(std::uint32_t ms) = 0;
 	};
 
-	using CreateMessage = std::unique_ptr<Message> (*)(const std::exception& e);
+	using CreateProcedure = std::unique_ptr<Procedure> (*)(const Settings& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *
 	 * ************************************ */
 
 	static inline const char* getType() {
-		return "esl-com-http-server-exception-message";
+		return "esl-processing-procedure";
 	}
 
 	/* ************************************ *
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateMessage createMessage) {
-		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createMessage));
+	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateProcedure createProcedure) {
+		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createProcedure));
 	}
 
-	Interface(const char* implementation, CreateMessage aCreateMessage)
+	Interface(const char* implementation, CreateProcedure aCreateProcedure)
 	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
-	  createMessage(aCreateMessage)
+	  createProcedure(aCreateProcedure)
 	{ }
 
-	CreateMessage createMessage;
+	CreateProcedure createProcedure;
 };
 
-} /* namespace exception */
-} /* namespace server */
-} /* namespace http */
-} /* namespace com */
+} /* namespace procedure */
+} /* namespace processing */
 } /* namespace esl */
 
-#endif /* ESL_COM_HTTP_SERVER_EXCEPTION_INTERFACE_H_ */
+#endif /* ESL_PROCESSING_PROCEDURE_INTERFACE_H_ */

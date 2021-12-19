@@ -24,14 +24,13 @@ SOFTWARE.
 #define ESL_OBJECT_INITIALIZECONTEXT_H_
 
 #include <esl/object/Interface.h>
-#include <esl/object/ObjectContext.h>
 
 namespace esl {
 namespace object {
 
 class InitializeContext : public virtual Interface::Object {
 public:
-	virtual void initializeContext(ObjectContext& objectContext) = 0;
+	virtual void initializeContext(Interface::ObjectContext& objectContext) = 0;
 };
 
 } /* namespace object */

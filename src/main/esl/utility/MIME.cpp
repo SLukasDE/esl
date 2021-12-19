@@ -85,8 +85,8 @@ const std::string& MIME::toString() const noexcept {
 
 const std::string& MIME::toString(MIME::Type mimeType) noexcept {
 	switch(mimeType) {
-	case empty:
-		return strEmpty;
+	//case empty:
+	//	return strEmpty;
 	case textPlain:
 		return strTextPlain;
 	case textHtml:

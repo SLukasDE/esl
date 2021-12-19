@@ -23,6 +23,7 @@ SOFTWARE.
 #ifndef ESL_COM_HTTP_CLIENT_INTERFACE_H_
 #define ESL_COM_HTTP_CLIENT_INTERFACE_H_
 
+#include <esl/com/http/client/Request.h>
 #include <esl/com/http/client/Response.h>
 #include <esl/io/Input.h>
 #include <esl/io/Output.h>
@@ -31,21 +32,20 @@ SOFTWARE.
 #include <esl/Module.h>
 
 #include <string>
+#include <functional>
 #include <memory>
 
 namespace esl {
 namespace com {
+
 namespace http {
 namespace client {
-
-class Connection;
-class Request;
-//class Response;
 
 struct Interface : esl::module::Interface {
 	/* *************************************** *
 	 * definitions required for this interface *
 	 * *************************************** */
+
 	using CreateInput = std::function<esl::io::Input (const Response&)>;
 
 	class Connection {
@@ -53,11 +53,18 @@ struct Interface : esl::module::Interface {
 		Connection() = default;
 		virtual ~Connection() = default;
 
-		virtual Response send(Request request, esl::io::Output output, CreateInput createInput) const = 0;
-		virtual Response send(Request request, esl::io::Output output, esl::io::Input input) const = 0;
+		virtual Response send(const Request& request, esl::io::Output output, CreateInput createInput) const = 0;
+		virtual Response send(const Request& request, esl::io::Output output, esl::io::Input input) const = 0;
 	};
 
-	using CreateConnection = std::unique_ptr<Connection> (*)(const utility::URL& hostUrl, const Settings& settings);
+	using CreateConnection = std::unique_ptr<Connection> (*)(const utility::URL& url, const Settings& settings);
+
+	class ConnectionFactory : public object::Interface::Object {
+	public:
+		virtual std::unique_ptr<Connection> createConnection() const = 0;
+	};
+
+	using CreateConnectionFactory = std::unique_ptr<ConnectionFactory> (*)(const utility::URL& url, const Settings& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *
@@ -71,19 +78,19 @@ struct Interface : esl::module::Interface {
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateConnection createConnection) {
-		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createConnection));
+	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateConnectionFactory createConnectionFactory) {
+		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createConnectionFactory));
 	}
 
-	Interface(const char* implementation, CreateConnection aCreateConnection)
+	Interface(const char* implementation, CreateConnectionFactory aCreateConnectionFactory)
 	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
-	  createConnection(aCreateConnection)
+	  createConnectionFactory(aCreateConnectionFactory)
 	{ }
 
 	/* **************************** *
 	 * start extension of interface *
 	 * **************************** */
-	CreateConnection createConnection;
+	CreateConnectionFactory createConnectionFactory;
 };
 
 } /* namespace client */

@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2021 Sven Lukas
+Copyright (c) 2019-2021 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,33 +20,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/com/basic/broker/Client.h>
-#include <esl/object/Properties.h>
-#include <esl/Module.h>
+#ifndef ESL_PROCESSING_JOB_HANDLE_H_
+#define ESL_PROCESSING_JOB_HANDLE_H_
 
 namespace esl {
-namespace com {
-namespace basic {
-namespace broker {
+namespace processing {
+namespace job {
 
-module::Implementation& Client::getDefault() {
-	static module::Implementation implementation;
-	return implementation;
-}
+using Handle = int;
 
-Client::Client(const Interface::Settings& settings, const std::string& implementation)
-: client(esl::getModule().getInterface<Interface>(implementation).createClient(settings))
-{ }
-
-server::Interface::Socket& Client::getSocket() {
-	return client->getSocket();
-}
-
-std::unique_ptr<client::Interface::Connection> Client::createConnection(const Interface::Settings& parameters) {
-	return client->createConnection(parameters);
-}
-
-} /* namespace broker */
-} /* namespace basic */
-} /* namespace com */
+} /* namespace job */
+} /* namespace processing */
 } /* namespace esl */
+
+#endif /* ESL_PROCESSING_JOB_HANDLE_H_ */

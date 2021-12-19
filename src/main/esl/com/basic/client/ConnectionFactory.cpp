@@ -20,44 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_COM_HTTP_CLIENT_CONNECTION_H_
-#define ESL_COM_HTTP_CLIENT_CONNECTION_H_
-
-#include <esl/com/http/client/Interface.h>
-#include <esl/com/http/client/Request.h>
-#include <esl/utility/URL.h>
-#include <esl/module/Implementation.h>
-
-#include <string>
-#include <memory>
+#include <esl/com/basic/client/ConnectionFactory.h>
+#include <esl/logging/Logger.h>
+#include <esl/Module.h>
 
 namespace esl {
 namespace com {
-namespace http {
+namespace basic {
 namespace client {
 
-/* ********************************************************** *
- * * Deprecated! Use ConnectionFactory to create a connection *
- * ********************************************************** */
-class Connection : public Interface::Connection {
-public:
-	static module::Implementation& getDefault();
+namespace {
+esl::logging::Logger<> logger("esl::com::basic::client::ConnectionFactory");
+}
 
-	Connection(const utility::URL& hostUrl,
-			const Interface::Settings& settings = getDefault().getSettings(),
-			const std::string& implementation = getDefault().getImplementation());
+module::Implementation& ConnectionFactory::getDefault() {
+	static module::Implementation implementation;
+	return implementation;
+}
 
-	Response send(const Request& request, esl::io::Output output, Interface::CreateInput createInput) const override;
-	Response send(const Request& request, esl::io::Output output, esl::io::Input input) const override;
+ConnectionFactory::ConnectionFactory(const Interface::Settings& settings, const std::string& implementation)
+: connectionFactory(esl::getModule().getInterface<Interface>(implementation).createConnectionFactory(settings))
+{ }
 
-private:
-	std::unique_ptr<Interface::ConnectionFactory> connectionFactory;
-	std::unique_ptr<Interface::Connection> connection;
-};
+std::unique_ptr<Interface::Connection> ConnectionFactory::createConnection() const {
+	return connectionFactory->createConnection();
+}
 
 } /* namespace client */
-} /* namespace http */
+} /* namespace basic */
 } /* namespace com */
 } /* namespace esl */
-
-#endif /* ESL_COM_HTTP_CLIENT_CONNECTION_H_ */

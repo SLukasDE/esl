@@ -40,11 +40,21 @@ module::Implementation& Connection::getDefault() {
 }
 
 Connection::Connection(const Interface::Settings& settings, const std::string& implementation)
-: connection(esl::getModule().getInterface<Interface>(implementation).createConnection(settings))
-{ }
+: connectionFactory(esl::getModule().getInterface<Interface>(implementation).createConnectionFactory(settings)),
+  connection(connectionFactory->createConnection())
+{
+	logger.warn << "*****************************************************************************************\n";
+	logger.warn << "*** esl::com::basic::client::Connection is DEPRECATED! Don't use this class anymore ! ***\n";
+	logger.warn << "***  Use esl::com::basic::client::ConnectionFactory instead to create a connection !  ***\n";
+	logger.warn << "*****************************************************************************************\n";
+}
 
-io::Output Connection::send(io::Output output, std::vector<std::pair<std::string, std::string>> parameters) {
-	return connection->send(std::move(output), std::move(parameters));
+Response Connection::send(const Request& request, esl::io::Output output, Interface::CreateInput createInput) const {
+	return connection->send(request, std::move(output), createInput);
+}
+
+Response Connection::send(const Request& request, esl::io::Output output, esl::io::Input input) const {
+	return connection->send(request, std::move(output), std::move(input));
 }
 
 } /* namespace client */

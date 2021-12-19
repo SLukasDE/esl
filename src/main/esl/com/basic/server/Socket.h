@@ -41,9 +41,7 @@ public:
 	Socket(const Interface::Settings& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
-	void addObjectFactory(const std::string& id, ObjectFactory objectFactory) override;
-
-	void listen(const std::set<std::string>& notifications, requesthandler::Interface::CreateInput createInput) override;
+	void listen(const requesthandler::Interface::RequestHandler& requestHandler, std::function<void()> onReleasedHandler) override;
 	void release() override;
 	bool wait(std::uint32_t ms) override;
 

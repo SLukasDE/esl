@@ -20,40 +20,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/com/http/server/Socket.h>
+#include <esl/processing/job/Runner.h>
 #include <esl/Module.h>
 
 namespace esl {
-namespace com {
-namespace http {
-namespace server {
+namespace processing {
+namespace job {
 
-module::Implementation& Socket::getDefault() {
+module::Implementation& Runner::getDefault() {
 	static module::Implementation implementation;
 	return implementation;
 }
 
-Socket::Socket(const Interface::Settings& settings, const std::string& implementation)
-: socket(esl::getModule().getInterface<Interface>(implementation).createSocket(settings))
+Runner::Runner(const Interface::Settings& settings, const std::string& implementation)
+: runner(esl::getModule().getInterface<Interface>(implementation).createRunner(settings))
 { }
 
-void Socket::addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) {
-	socket->addTLSHost(hostname, certificate, key);
+Handle Runner::addJob(std::unique_ptr<Job> job) {
+	return runner->addJob(std::move(job));
 }
 
-void Socket::listen(const requesthandler::Interface::RequestHandler& requestHandler, std::function<void()> onReleasedHandler) {
-	socket->listen(requestHandler, onReleasedHandler);
+void Runner::cancel(Handle jobId) {
+	runner->cancel(jobId);
 }
 
-void Socket::release() {
-	socket->release();
-}
-
-bool Socket::wait(std::uint32_t ms) {
-	return socket->wait(ms);
-}
-
-} /* namespace server */
-} /* namespace http */
-} /* namespace com */
+} /* namespace job */
+} /* namespace processing */
 } /* namespace esl */
