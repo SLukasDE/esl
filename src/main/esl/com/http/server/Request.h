@@ -36,7 +36,6 @@ namespace server {
 
 class Request {
 public:
-	Request() = default;
 	virtual ~Request() = default;
 
 	virtual bool isHTTPS() const noexcept = 0;

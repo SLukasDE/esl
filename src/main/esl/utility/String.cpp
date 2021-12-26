@@ -57,6 +57,7 @@ std::map<std::string, char> asciiFromEscapeSequences = {
 };
 
 std::string base64Chars("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
+std::string base64urlChars("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_");
 
 std::string decodeBase64Buffer(std::size_t bufferIndex, unsigned char* buffer) {
 	std::string str;
@@ -66,7 +67,11 @@ std::string decodeBase64Buffer(std::size_t bufferIndex, unsigned char* buffer) {
 	}
 
 	for(std::size_t index = 0; index<4; ++index) {
-		buffer[index] = base64Chars.find(buffer[index]);
+		std::size_t pos = base64Chars.find(buffer[index]);
+		if(pos == std::string::npos) {
+			pos = base64urlChars.find(buffer[index]);
+		}
+		buffer[index] = pos;
 	}
 
 	unsigned char tmpBuffer[3];
@@ -203,7 +208,7 @@ char String::fromEscapeSequence(std::string::const_iterator& escapeSequenceItera
 	return c;
 }
 
-std::string String::toBase64(const std::string& str) {
+std::string String::toBase64(const std::string& str, Base64Variant base64Variant) {
 	std::string result;
 
 	for(std::size_t i = 0; i < str.size(); i += 3) {
@@ -222,10 +227,20 @@ std::string String::toBase64(const std::string& str) {
 
 		for(std::size_t j = 0; j < 4; ++j) {
 			if(j < num64Chars) {
-				result += base64Chars[(packed64 >> (6 * (3 - j))) & 0x3f];
+				if(base64Variant == base64url) {
+					result += base64urlChars[(packed64 >> (6 * (3 - j))) & 0x3f];
+				}
+				else {
+					result += base64Chars[(packed64 >> (6 * (3 - j))) & 0x3f];
+				}
 			}
 			else {
-				result += "=";
+				if(base64Variant == base64url) {
+					result += "%3d";
+				}
+				else {
+					result += "=";
+				}
 			}
 		}
 	}
@@ -244,7 +259,7 @@ std::string String::fromBase64(const std::string& base64str) {
 			break;
 		}
 		// abort if characater base64str[pos] is not base64
-		if(std::isalnum(base64str[pos]) == 0 && base64str[pos] != '+' && base64str[pos] != '/') {
+		if(std::isalnum(base64str[pos]) == 0 && base64str[pos] != '+' && base64str[pos] != '/' && base64str[pos] != '-' && base64str[pos] != '_') {
 			break;
 		}
 

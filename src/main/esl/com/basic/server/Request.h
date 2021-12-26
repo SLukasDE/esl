@@ -23,19 +23,23 @@ SOFTWARE.
 #ifndef ESL_COM_BASIC_SERVER_REQUEST_H_
 #define ESL_COM_BASIC_SERVER_REQUEST_H_
 
-#include <esl/object/Values.h>
-
 #include <string>
-//#include <vector>
-//#include <utility>
+#include <vector>
+#include <utility>
 
 namespace esl {
 namespace com {
 namespace basic {
 namespace server {
 
-//using Request = std::vector<std::pair<std::string, std::string>>;
-using Request = esl::object::Values<std::string>;
+class Request {
+public:
+	virtual ~Request() = default;
+
+	virtual bool hasValue(const std::string& key) const = 0;
+	virtual std::string getValue(const std::string& key) const = 0;
+	virtual const std::vector<std::pair<std::string, std::string>>& getValues() const = 0;
+};
 
 } /* namespace server */
 } /* namespace basic */
