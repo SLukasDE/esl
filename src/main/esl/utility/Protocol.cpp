@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2021 Sven Lukas
+Copyright (c) 2019-2022 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,9 @@ namespace utility {
 
 namespace {
 const std::string strEmpty;
-const std::string strProtocolHttp = "http";
-const std::string strProtocolHttps = "https";
+const std::string strFile = "file";
+const std::string strHttp = "http";
+const std::string strHttps = "https";
 }
 
 Protocol::Protocol(Type type) noexcept
@@ -43,26 +44,30 @@ Protocol::Protocol(std::string type) noexcept
   stringType(std::move(type))
 { }
 
+Protocol::operator bool() const noexcept {
+	return hasEnum || !stringType.empty();
+}
+
 bool Protocol::operator==(Protocol::Type type) const noexcept {
 	return (*this == Protocol(type));
 }
 
-bool Protocol::operator==(const Protocol& aMime) const noexcept {
-	if(hasEnum && aMime.hasEnum) {
-		return enumType == aMime.enumType;
+bool Protocol::operator==(const Protocol& aProtocol) const noexcept {
+	if(hasEnum && aProtocol.hasEnum) {
+		return enumType == aProtocol.enumType;
 	}
-	return toString() == aMime.toString();
+	return toString() == aProtocol.toString();
 }
 
 bool Protocol::operator!=(Protocol::Type type) const noexcept {
 	return (*this != Protocol(type));
 }
 
-bool Protocol::operator!=(const Protocol& aMime) const noexcept {
-	if(hasEnum && aMime.hasEnum) {
-		return enumType != aMime.enumType;
+bool Protocol::operator!=(const Protocol& aProtocol) const noexcept {
+	if(hasEnum && aProtocol.hasEnum) {
+		return enumType != aProtocol.enumType;
 	}
-	return toString() != aMime.toString();
+	return toString() != aProtocol.toString();
 }
 
 const std::string& Protocol::toString() const noexcept {
@@ -73,13 +78,15 @@ const std::string& Protocol::toString() const noexcept {
 	return stringType;
 }
 
-const std::string& Protocol::toString(Protocol::Type mimeType) noexcept {
-	switch(mimeType) {
-	case protocolHttp:
-		return strProtocolHttp;
-	case protocolHttps:
-		return strProtocolHttps;
-	case protocolNone:
+const std::string& Protocol::toString(Protocol::Type type) noexcept {
+	switch(type) {
+	case file:
+		return strFile;
+	case http:
+		return strHttp;
+	case https:
+		return strHttps;
+	default:
 		break;
 	}
 	return strEmpty;

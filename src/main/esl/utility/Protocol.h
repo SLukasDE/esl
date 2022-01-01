@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2021 Sven Lukas
+Copyright (c) 2019-2022 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,27 +31,29 @@ namespace utility {
 class Protocol {
 public:
 	enum Type {
-		protocolNone,
-		protocolHttp,
-		protocolHttps
+		file,
+		http,
+		https
 	};
 
 	Protocol() = default;
 	Protocol(Type type) noexcept;
 	explicit Protocol(std::string type) noexcept;
 
+	explicit operator bool() const noexcept;
+
 	bool operator==(Type type) const noexcept;
-	bool operator==(const Protocol& aMime) const noexcept;
+	bool operator==(const Protocol& aProtocol) const noexcept;
 
 	bool operator!=(Type type) const noexcept;
-	bool operator!=(const Protocol& aMime) const noexcept;
+	bool operator!=(const Protocol& aProtocol) const noexcept;
 
 	const std::string& toString() const noexcept;
-	static const std::string& toString(Type mimeType) noexcept;
+	static const std::string& toString(Type type) noexcept;
 
 private:
 	bool hasEnum = false;
-	Type enumType = protocolNone;
+	Type enumType = file;
 	std::string stringType;
 };
 
