@@ -47,7 +47,7 @@ struct Interface : esl::module::Interface {
 
 	class RequestHandler : public object::Interface::Object {
 	public:
-		virtual io::Input accept(RequestContext&, object::Interface::ObjectContext&) const = 0;
+		virtual io::Input accept(RequestContext&) const = 0;
 
 		/* Tells server what kind of messages MUST NOT be filtered.
 		 * Method 'accept' is called AT LEAST for messages that match this kind.

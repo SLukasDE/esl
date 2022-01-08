@@ -20,37 +20,39 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/logging/Appender.h>
-#include <esl/logging/Interface.h>
-#include <esl/Module.h>
+#ifndef ESL_LOGGING_LAYOUT_LAYOUT_H_
+#define ESL_LOGGING_LAYOUT_LAYOUT_H_
+
+#include <esl/logging/layout/Interface.h>
+#include <esl/module/Implementation.h>
+#include <esl/module/Interface.h>
+
+#include <utility>
+#include <string>
+#include <memory>
 
 namespace esl {
 namespace logging {
+namespace layout {
 
-Appender::~Appender() {
-	const Interface* interface = esl::getModule().findInterface<Interface>();
-	if(interface) {
-		interface->removeAppender(handle);
-	}
-}
+class Layout final : public Interface::Layout {
+public:
+	static module::Implementation& getDefault();
 
-void Appender::setLayout(const layout::Interface::Layout* aLayout) {
-	layout = aLayout;
-}
+	Layout(const module::Interface::Settings& settings = getDefault().getSettings(),
+			const std::string& implementation = getDefault().getImplementation());
 
-const layout::Interface::Layout* Appender::getLayout() const {
-	return layout;
-}
+	std::string toString(const Location& location) const override;
 
-/* method is NOT thread-safe */
-Appender::RecordLevel Appender::getRecordLevel() const {
-	return recordLevel;
-}
+private:
+	const std::string implementation;
+	module::Interface::Settings settings;
 
-/* method is NOT thread-safe */
-void Appender::setRecordLevel(RecordLevel aRecordLevel) {
-	recordLevel = aRecordLevel;
-}
+	mutable std::unique_ptr<Interface::Layout> layout;
+};
 
+} /* namespace layout */
 } /* namespace logging */
 } /* namespace esl */
+
+#endif /* ESL_LOGGING_LAYOUT_LAYOUT_H_ */

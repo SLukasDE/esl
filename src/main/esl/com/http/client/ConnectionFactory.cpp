@@ -44,7 +44,7 @@ ConnectionFactory::ConnectionFactory(const utility::URL& hostUrl,
 : connectionFactory(esl::getModule().getInterface<Interface>(implementation).createConnectionFactory(hostUrl, settings))
 { }
 
-std::unique_ptr<Interface::Connection> ConnectionFactory::createConnection() const {
+std::unique_ptr<Connection> ConnectionFactory::createConnection() const {
 	return connectionFactory->createConnection();
 }
 

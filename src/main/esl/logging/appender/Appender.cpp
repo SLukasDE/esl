@@ -20,45 +20,51 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_LOGGING_APPENDER_OSTREAM_H_
-#define ESL_LOGGING_APPENDER_OSTREAM_H_
-
-#include <esl/logging/Appender.h>
-#include <esl/logging/Level.h>
-#include <esl/logging/Location.h>
-#include <string>
-#include <ostream>
+#include <esl/logging/appender/Appender.h>
+#include <esl/Module.h>
 
 namespace esl {
 namespace logging {
 namespace appender {
 
-class OStream : public Appender {
-public:
-	OStream(std::ostream& oStreamTrace,
-	std::ostream& oStreamDebug,
-	std::ostream& oStreamInfo,
-	std::ostream& oStreamWarn,
-	std::ostream& oStreamError);
+module::Implementation& Appender::getDefault() {
+	static module::Implementation implementation;
+	return implementation;
+}
 
-protected:
-	void flush() override;
-	void write(const Location& location, const char* ptr, std::size_t size) override;
+Appender::Appender(const module::Interface::Settings& settings, const std::string& implementation)
+: appender(esl::getModule().getInterface<Interface>(implementation).createAppender(settings))
+{ }
 
-private:
-	bool isFirstCharacterInLine = true;
-	Location lastLocation;
-	std::ostream& oStreamTrace;
-	std::ostream& oStreamDebug;
-	std::ostream& oStreamInfo;
-	std::ostream& oStreamWarn;
-	std::ostream& oStreamError;
+void Appender::setLayout(const layout::Interface::Layout* layout) {
+	appender->setLayout(layout);
+}
 
-	std::ostream& getOStream(Level level);
-};
+const layout::Interface::Layout* Appender::getLayout() const {
+	return appender->getLayout();
+}
+
+/* both methods are NOT thread-safe */
+void Appender::setRecordLevel(RecordLevel recordLevel) {
+	appender->setRecordLevel(recordLevel);
+}
+
+Interface::Appender::RecordLevel Appender::getRecordLevel() const {
+	return appender->getRecordLevel();
+}
+
+void Appender::flush() {
+	return appender->flush();
+}
+
+void Appender::flush(std::ostream& oStream) {
+	return appender->flush(oStream);
+}
+
+void Appender::write(const Location& location, const char* str, std::size_t len) {
+	appender->write(location, str, len);
+}
 
 } /* namespace appender */
 } /* namespace logging */
 } /* namespace esl */
-
-#endif /* ESL_LOGGING_APPENDER_OSTREAM_H_ */

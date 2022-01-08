@@ -26,6 +26,7 @@ SOFTWARE.
 #include <esl/logging/Config.h>
 #include <esl/logging/Level.h>
 #include <esl/logging/Streams.h>
+#include <esl/logging/appender/Interface.h>
 
 #include <vector>
 #include <string>
@@ -34,7 +35,7 @@ SOFTWARE.
 namespace esl {
 namespace logging {
 
-class Appender;
+//class Appender;
 
 // NOT thread save - call it at the beginning if needed. Default is already "true"
 // unblocked behavior makes other threads not waiting on logging, while current thread is writing to logger already.
@@ -48,7 +49,7 @@ void setUnblocked(bool isUnblocked);
 void setLevel(Level logLevel, const std::string& typeName);
 
 // thread safe, quaranteed by loggerMutex
-void addAppender(Appender& appender);
+void addAppender(appender::Interface::Appender& appender);
 
 template<Level level = defaultLevel>
 class Logger {

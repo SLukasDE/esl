@@ -20,57 +20,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_LOGGING_APPENDER_MEMBUFFER_H_
-#define ESL_LOGGING_APPENDER_MEMBUFFER_H_
+#ifndef ESL_LOGGING_APPENDER_APPENDER_H_
+#define ESL_LOGGING_APPENDER_APPENDER_H_
 
-#include <esl/logging/Appender.h>
-#include <esl/logging/Location.h>
-#include <vector>
-#include <string>
-#include <tuple>
+#include <esl/logging/appender/Interface.h>
+#include <esl/module/Implementation.h>
+#include <esl/module/Interface.h>
 
 namespace esl {
 namespace logging {
 namespace appender {
 
-class MemBuffer : public Appender {
+class Appender : public Interface::Appender {
 public:
-	MemBuffer(std::size_t maxRows, std::size_t maxColumns = 0);
-	~MemBuffer();
+	static module::Implementation& getDefault();
 
-	/* method is (currently) NOT thread-safe */
-	std::vector<std::tuple<Location, std::string>> getBuffer() const;
+	Appender(const module::Interface::Settings& settings = getDefault().getSettings(),
+			const std::string& implementation = getDefault().getImplementation());
 
-protected:
+	void setLayout(const layout::Interface::Layout* aLayout) override;
+	const layout::Interface::Layout* getLayout() const override;
+
+	/* both methods are NOT thread-safe */
+	void setRecordLevel(RecordLevel aRecordLevel = RecordLevel::SELECTED) override;
+	RecordLevel getRecordLevel() const override;
+
+//protected:
 	void flush() override;
+	void flush(std::ostream& oStream) override;
 	void write(const Location& location, const char* ptr, std::size_t size) override;
 
 private:
-    using LineBuffer = std::vector<char>;
-    struct Entry {
-    	Entry(std::size_t maxColumns)
-    	: lineStaticSize((maxColumns > 0 ? maxColumns+1 : 0), 0)
-    	{ }
-    	Location location;
-    	LineBuffer lineStaticSize;
-    	std::string lineDynamicSize;
-    };
-
-    std::vector<Entry> entries;
-
-	const std::size_t maxRows;
-	const std::size_t maxColumns;
-
-	std::size_t rowProducer = 0;
-	std::size_t rowConsumer = 0;
-	std::size_t columnsProducer = 0;
-
-	void write(const char* ptr, std::size_t size);
-	void newline();
+	std::unique_ptr<Interface::Appender> appender;
 };
 
 } /* namespace appender */
 } /* namespace logging */
 } /* namespace esl */
 
-#endif /* ESL_LOGGING_APPENDER_MEMBUFFER_H_ */
+#endif /* ESL_LOGGING_APPENDER_APPENDER_H_ */

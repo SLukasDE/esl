@@ -23,16 +23,12 @@ SOFTWARE.
 #ifndef ESL_COM_HTTP_CLIENT_INTERFACE_H_
 #define ESL_COM_HTTP_CLIENT_INTERFACE_H_
 
-#include <esl/com/http/client/Request.h>
-#include <esl/com/http/client/Response.h>
-#include <esl/io/Input.h>
-#include <esl/io/Output.h>
+#include <esl/com/http/client/Connection.h>
 #include <esl/utility/URL.h>
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
 
 #include <string>
-#include <functional>
 #include <memory>
 
 namespace esl {
@@ -45,19 +41,6 @@ struct Interface : esl::module::Interface {
 	/* *************************************** *
 	 * definitions required for this interface *
 	 * *************************************** */
-
-	using CreateInput = std::function<esl::io::Input (const Response&)>;
-
-	class Connection {
-	public:
-		Connection() = default;
-		virtual ~Connection() = default;
-
-		virtual Response send(const Request& request, esl::io::Output output, CreateInput createInput) const = 0;
-		virtual Response send(const Request& request, esl::io::Output output, esl::io::Input input) const = 0;
-	};
-
-	using CreateConnection = std::unique_ptr<Connection> (*)(const utility::URL& url, const Settings& settings);
 
 	class ConnectionFactory : public object::Interface::Object {
 	public:

@@ -23,36 +23,25 @@ SOFTWARE.
 #ifndef ESL_COM_HTTP_CLIENT_CONNECTION_H_
 #define ESL_COM_HTTP_CLIENT_CONNECTION_H_
 
-#include <esl/com/http/client/Interface.h>
 #include <esl/com/http/client/Request.h>
-#include <esl/utility/URL.h>
-#include <esl/module/Implementation.h>
+#include <esl/com/http/client/Response.h>
+#include <esl/io/Input.h>
+#include <esl/io/Output.h>
 
-#include <string>
-#include <memory>
+#include <functional>
 
 namespace esl {
 namespace com {
 namespace http {
 namespace client {
 
-/* ********************************************************** *
- * * Deprecated! Use ConnectionFactory to create a connection *
- * ********************************************************** */
-class Connection : public Interface::Connection {
+class Connection {
 public:
-	static module::Implementation& getDefault();
+	Connection() = default;
+	virtual ~Connection() = default;
 
-	Connection(const utility::URL& hostUrl,
-			const Interface::Settings& settings = getDefault().getSettings(),
-			const std::string& implementation = getDefault().getImplementation());
-
-	Response send(const Request& request, esl::io::Output output, Interface::CreateInput createInput) const override;
-	Response send(const Request& request, esl::io::Output output, esl::io::Input input) const override;
-
-private:
-	std::unique_ptr<Interface::ConnectionFactory> connectionFactory;
-	std::unique_ptr<Interface::Connection> connection;
+	virtual Response send(const Request& request, io::Output output, std::function<esl::io::Input (const Response&)> createInput) const = 0;
+	virtual Response send(const Request& request, io::Output output, esl::io::Input input) const = 0;
 };
 
 } /* namespace client */

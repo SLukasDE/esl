@@ -21,8 +21,6 @@ SOFTWARE.
 */
 
 #include <esl/logging/Logger.h>
-#include <esl/logging/Appender.h>
-
 #include <esl/logging/Interface.h>
 #include <esl/Module.h>
 
@@ -43,7 +41,7 @@ void setLevel(Level logLevel, const std::string& typeName) {
 	}
 }
 
-void addAppender(Appender& appender) {
+void addAppender(appender::Interface::Appender& appender) {
 	/* we are done if appender has been already added */
 	if(appender.handle != nullptr) {
 		return;

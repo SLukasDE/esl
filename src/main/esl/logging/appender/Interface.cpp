@@ -20,45 +20,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/logging/Layout.h>
-#include <esl/Module.h>
+#include <esl/logging/appender/Interface.h>
+#include <esl/logging/Interface.h>
 
 namespace esl {
 namespace logging {
+namespace appender {
 
-namespace {
-std::unique_ptr<layout::Interface::Layout> createLayout(const layout::Interface::Settings& settings, const std::string& implementation) {
-	const layout::Interface* interface = esl::getModule().findInterface<layout::Interface>(implementation);
-	return interface ? interface->createLayout(settings) : nullptr;
-}
-}
-
-module::Implementation& Layout::getDefault() {
-	static module::Implementation implementation;
-	return implementation;
-}
-
-/*
-Layout::Layout(std::initializer_list<std::pair<std::string, std::string>> aSettings, const std::string& aImplementation)
-: implementation(aImplementation),
-  settings(std::move(aSettings))
-{ }
-*/
-
-Layout::Layout(const layout::Interface::Settings& aSettings, const std::string& aImplementation)
-: implementation(aImplementation),
-  settings(std::move(aSettings))
-{ }
-
-std::string Layout::toString(const Location& location) const {
-	if(!layout) {
-		layout = createLayout(settings, implementation);
+Interface::Appender::~Appender() {
+	const logging::Interface* interface = esl::getModule().findInterface<logging::Interface>();
+	if(interface) {
+		interface->removeAppender(handle);
 	}
-	if(layout) {
-		return layout->toString(location);
-	}
-	return "";
 }
 
-} /* namespace esl */
+} /* namespace appender */
 } /* namespace logging */
+} /* namespace esl */

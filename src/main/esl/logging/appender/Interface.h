@@ -20,20 +20,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_LOGGING_LAYOUT_INTERFACE_H_
-#define ESL_LOGGING_LAYOUT_INTERFACE_H_
+#ifndef ESL_LOGGING_APPENDER_INTERFACE_H_
+#define ESL_LOGGING_APPENDER_INTERFACE_H_
 
 #include <esl/module/Interface.h>
 #include <esl/object/Interface.h>
 #include <esl/Module.h>
 #include <esl/logging/Location.h>
+//#include <esl/logging/Interface.h>
+#include <esl/logging/layout/Interface.h>
 
-#include <string>
+#include <string> // std::size_t
+#include <ostream>
 #include <memory>
 
 namespace esl {
 namespace logging {
-namespace layout {
+class Interface;
+namespace appender {
 
 struct Interface : esl::module::Interface {
 
@@ -41,39 +45,66 @@ struct Interface : esl::module::Interface {
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class Layout : public object::Interface::Object {
+	class Appender : public object::Interface::Object {
+		//friend void addAppender(Appender& appender);
 	public:
-		virtual std::string toString(const Location& location) const = 0;
+		enum class RecordLevel {
+			ALL, SELECTED, OFF
+		};
+
+		~Appender();
+		/*
+		~Appender() {
+			const logging::Interface* interface = esl::getModule().findInterface<logging::Interface>();
+			if(interface) {
+				interface->removeAppender(handle);
+			}
+		}
+		*/
+
+		virtual void setLayout(const layout::Interface::Layout* aLayout) = 0;
+		virtual const layout::Interface::Layout* getLayout() const = 0;
+
+		/* both methods are NOT thread-safe */
+		virtual void setRecordLevel(RecordLevel aRecordLevel = RecordLevel::SELECTED) = 0;
+		virtual RecordLevel getRecordLevel() const = 0;
+
+		virtual void flush() = 0;
+		virtual void flush(std::ostream& oStream) = 0;
+		virtual void write(const Location& location, const char* ptr, std::size_t size) = 0;
+
+	//private:
+		void* handle = nullptr;
 	};
 
-	using CreateLayout = std::unique_ptr<Layout> (*)(const Settings& settings);
+	using CreateAppender = std::unique_ptr<Appender> (*)(const Settings& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *
 	 * ************************************ */
 
 	static inline const char* getType() {
-		return "esl-logging-layout";
+		return "esl-logging-appender";
 	}
 
 	/* ************************************ *
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateLayout createLayout) {
-		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createLayout));
+	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateAppender createAppender) {
+		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createAppender));
 	}
 
-	Interface(const char* implementation, CreateLayout aCreateLayout)
+	Interface(const char* implementation, CreateAppender aCreateAppender)
 	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
-	  createLayout(aCreateLayout)
+	  createAppender(aCreateAppender)
 	{ }
 
-	CreateLayout createLayout;
+	CreateAppender createAppender;
 };
 
-} /* namespace layout */
+} /* namespace appender */
 } /* namespace logging */
 } /* namespace esl */
 
-#endif /* ESL_LOGGING_LAYOUT_INTERFACE_H_ */
+#endif /* ESL_LOGGING_APPENDER_INTERFACE_H_ */

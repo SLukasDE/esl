@@ -45,7 +45,7 @@ struct Interface : module::Interface {
 
 	class RequestHandler : public object::Interface::Object {
 	public:
-		virtual io::Input accept(RequestContext&, object::Interface::ObjectContext&) const = 0;
+		virtual io::Input accept(RequestContext&) const = 0;
 	};
 
 	using CreateRequestHandler = std::unique_ptr<RequestHandler> (*)(const module::Interface::Settings& settings);

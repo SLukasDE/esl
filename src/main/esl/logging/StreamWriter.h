@@ -23,8 +23,9 @@ SOFTWARE.
 #ifndef ESL_LOGGING_STREAMWRITER_H_
 #define ESL_LOGGING_STREAMWRITER_H_
 
-//#include <ostream>
 #include <esl/logging/OStream.h>
+
+#include <ostream>
 #include <memory>
 
 namespace esl {

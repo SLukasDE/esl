@@ -27,8 +27,9 @@ SOFTWARE.
 #include <esl/Module.h>
 #include <esl/logging/Location.h>
 #include <esl/logging/Level.h>
-#include <esl/logging/Appender.h>
+#include <esl/logging/appender/Interface.h>
 #include <esl/logging/OStream.h>
+
 #include <ostream>
 #include <vector>
 #include <functional>
@@ -36,9 +37,6 @@ SOFTWARE.
 
 namespace esl {
 namespace logging {
-
-class StreamReal;
-class Appender;
 
 struct Interface : esl::module::Interface {
 
@@ -48,10 +46,10 @@ struct Interface : esl::module::Interface {
 
 	using SetUnblocked = void (*)(bool isUnblocked);
 	using SetLevel = void (*)(Level logLevel, const std::string& typeName);
-	using AddAppender = void*(*)(Appender& appender);
+	using AddAppender = void*(*)(appender::Interface::Appender& appender);
 	using RemoveAppender = void(*)(void* handle);
 	using IsEnabled = bool (*)(const char* typeName, Level level);
-	using CreateOStream = std::unique_ptr<OStream> (*)(const Location& location/*, bool** enabled*/);
+	using CreateOStream = std::unique_ptr<OStream> (*)(const Location& location);
 	using GetThreadNo = unsigned int (*)(std::thread::id threadId);
 
 	/* ************************************ *
@@ -86,11 +84,11 @@ struct Interface : esl::module::Interface {
 	  getThreadNo(aGetThreadNo)
 	{ }
 
-	static void appenderFlush(Appender& appender) {
+	static void appenderFlush(appender::Interface::Appender& appender) {
 		appender.flush();
 	}
 
-	static void appenderWrite(Appender& appender, const Location& location, const char* ptr, std::size_t size) {
+	static void appenderWrite(appender::Interface::Appender& appender, const Location& location, const char* ptr, std::size_t size) {
 		appender.write(location, ptr, size);
 	}
 

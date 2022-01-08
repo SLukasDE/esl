@@ -42,7 +42,7 @@ ConnectionFactory::ConnectionFactory(const Interface::Settings& settings, const 
 : connectionFactory(esl::getModule().getInterface<Interface>(implementation).createConnectionFactory(settings))
 { }
 
-std::unique_ptr<Interface::Connection> ConnectionFactory::createConnection() const {
+std::unique_ptr<Connection> ConnectionFactory::createConnection() const {
 	return connectionFactory->createConnection();
 }
 

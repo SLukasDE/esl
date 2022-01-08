@@ -39,6 +39,7 @@ public:
 	virtual Connection& getConnection() const = 0;
 	virtual const Request& getRequest() const = 0;
 	virtual const std::string& getPath() const = 0;
+	virtual object::Interface::ObjectContext& getObjectContext() = 0;
 };
 
 } /* namespace server */

@@ -20,48 +20,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_LOGGING_APPENDER_H_
-#define ESL_LOGGING_APPENDER_H_
-
-#include <esl/logging/Logger.h>
-#include <esl/logging/Location.h>
-#include <esl/logging/layout/Interface.h>
-
-#include <cstddef>
+#include <esl/logging/layout/Layout.h>
+#include <esl/Module.h>
 
 namespace esl {
 namespace logging {
+namespace layout {
 
-class Interface;
+namespace {
+std::unique_ptr<Interface::Layout> createLayout(const module::Interface::Settings& settings, const std::string& implementation) {
+	const Interface* interface = esl::getModule().findInterface<Interface>(implementation);
+	return interface ? interface->createLayout(settings) : nullptr;
+}
+}
 
-class Appender {
-friend class Interface;
-friend void addAppender(Appender& appender);
-public:
-	enum class RecordLevel {
-		ALL, SELECTED, OFF
-	};
+module::Implementation& Layout::getDefault() {
+	static module::Implementation implementation;
+	return implementation;
+}
 
-	virtual ~Appender();
+Layout::Layout(const module::Interface::Settings& aSettings, const std::string& aImplementation)
+: implementation(aImplementation),
+  settings(std::move(aSettings))
+{ }
 
-	void setLayout(const layout::Interface::Layout* aLayout);
-	const layout::Interface::Layout* getLayout() const;
+std::string Layout::toString(const Location& location) const {
+	if(!layout) {
+		layout = createLayout(settings, implementation);
+	}
+	if(layout) {
+		return layout->toString(location);
+	}
+	return "";
+}
 
-	/* both methods are NOT thread-safe */
-	RecordLevel getRecordLevel() const;
-	void setRecordLevel(RecordLevel aRecordLevel = RecordLevel::SELECTED);
-
-protected:
-	virtual void flush() = 0;
-	virtual void write(const Location& location, const char* ptr, std::size_t size) = 0;
-
-private:
-	void* handle = nullptr;
-	const layout::Interface::Layout* layout = nullptr;
-	RecordLevel recordLevel = RecordLevel::SELECTED;
-};
-
+} /* namespace layout */
 } /* namespace logging */
 } /* namespace esl */
-
-#endif /* ESL_LOGGING_APPENDER_H_ */

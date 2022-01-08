@@ -23,7 +23,6 @@ SOFTWARE.
 #include <esl/Module.h>
 #include <esl/module/Interface.h>
 #include <esl/logging/layout/Interface.h>
-#include <esl/logging/builtin/Layout.h>
 #include <esl/Stacktrace.h>
 #include <stdexcept>
 #include <new>         // placement new
@@ -45,10 +44,6 @@ Module::Module()
 : module::Module()
 {
 	module::Module::initialize(*this);
-
-	addInterface(esl::logging::layout::Interface::createInterface(
-			esl::logging::builtin::Layout::getImplementation(),
-			&esl::logging::builtin::Layout::create));
 }
 
 }  /* anonymous namespace */

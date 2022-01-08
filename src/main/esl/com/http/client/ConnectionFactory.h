@@ -24,6 +24,7 @@ SOFTWARE.
 #define ESL_COM_HTTP_CLIENT_CONNECTIONFACTORY_H_
 
 #include <esl/com/http/client/Interface.h>
+#include <esl/com/http/client/Connection.h>
 #include <esl/utility/URL.h>
 #include <esl/module/Implementation.h>
 
@@ -43,7 +44,7 @@ public:
 			const Interface::Settings& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
-	std::unique_ptr<Interface::Connection> createConnection() const override;
+	std::unique_ptr<Connection> createConnection() const override;
 
 private:
 	std::unique_ptr<Interface::ConnectionFactory> connectionFactory;

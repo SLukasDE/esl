@@ -29,13 +29,11 @@ namespace logging {
 
 StreamWriter::StreamWriter(std::unique_ptr<OStream> aOStream)
 : oStream(std::move(aOStream))
-{
-}
+{ }
 
 StreamWriter::StreamWriter(StreamWriter&& streamWriter)
 : oStream(std::move(streamWriter.oStream))
-{
-}
+{ }
 
 StreamWriter& StreamWriter::operator<<(std::ostream& (*pf)(std::ostream&)) {
     if(oStream && oStream->getOStream()) {
