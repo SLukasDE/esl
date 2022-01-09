@@ -1,8 +1,8 @@
 ###############################################################################
 # Spec file for ESL library
 ################################################################################
-#
-Summary: ESL library
+
+Summary: C++ Enterprise Support Library
 Name: libesl
 Version: 0.3.0
 Release: 1
@@ -13,14 +13,27 @@ Packager: Sven Lukas
 BuildRoot: ./rpmbuild/
 
 %description
-A collection of utility scripts for testing RPM creation.
+ESL is a C++ API specification to create enterprise application with C++.
+This includes:
+- profesional logging
+- execute processes and process stdin, stdout, stderr
+- HTTP client communication
+- HTTP server communication
+- Streaming/Messaging stuff (Kafka, ...)
+- Throwing exceptions with stacktrace
+- Database connectivity
+- ...
+ESL is an API specification. There is no implementation included.
+You can use every ESL compatibal implementation (binding) for each subsystem of ESL.
+Later you can use another binding without rewriting your application.
+There is a free implementation available that you can use. Take a look at libeslx.
+
+You can build and link your application already without using any specific implementation.
+But if you create a class that needs an implemetation (e.g. esl::com::http::server::Socket)
+you will get a std::runtime_error if you did not previously load an ESL implementation that
+implements at least esl::com::http::server::Interface::Socket.
 
 %prep
-################################################################################
-# Create the build tree and copy the files from the development directories    #
-# into the build tree.                                                         #
-################################################################################
-
 #echo "BUILDROOT = $RPM_BUILD_ROOT"
 
 mkdir -p $RPM_BUILD_ROOT/usr/lib64

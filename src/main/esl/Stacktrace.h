@@ -81,20 +81,6 @@ private:
     Stacktrace stacktrace;
 };
 
-/*
-typedef boost::error_info<esl::Stacktrace, esl::Stacktrace> StacktraceType;
-
-template <class E>
-auto addStacktrace(const E& e) -> decltype(boost::enable_error_info(e)) {
-    return boost::enable_error_info(e) << esl::StacktraceType(esl::Stacktrace());
-}
-
-template <class E>
-esl::Stacktrace* getStacktrace(const E& e) {
-	return boost::get_error_info<esl::StacktraceType>(const_cast<E&>(e));
-}
-*/
-
 template <class E>
 StacktraceInjector<E> addStacktrace(const E& e) {
     return StacktraceInjector<E>(e, esl::Stacktrace());
