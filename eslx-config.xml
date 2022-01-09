@@ -1,0 +1,36 @@
+<eslx-config>
+	<!--library file=""/-->
+	
+	<!--default type="esl-com-http-server" implementation="mhd4esl">
+		<parameter key="threads" value="4"/>
+	</default-->
+	
+	<logger>
+		<layout id="standard" implementation="eslx/default">
+			<parameter key="showTimestamp" value="true"/>
+			<parameter key="showLevel" value="true"/>
+			<parameter key="showTypeName" value="true"/>
+			<parameter key="showAddress" value="false"/>
+			<parameter key="showFile" value="false"/>
+			<parameter key="showFunction" value="false"/>
+			<parameter key="showLineNo" value="false"/>
+			<parameter key="showThreadNo" value="false"/>
+		</layout>
+		
+		<!--appender implementation="eslx/ostream" layout="standard"-->
+		<appender implementation="eslx/ostream" record="selected" layout="standard">
+			<parameter key="trace" value="out"/>
+			<parameter key="debug" value="out"/>
+			<parameter key="info"  value="out"/>
+			<parameter key="warn"  value="out"/>
+			<parameter key="error" value="out"/>
+		</appender>
+		
+		<appender implementation="eslx/membuffer" record="all" layout="standard">
+			<parameter key="max-lines" value="100"/>
+		</appender>
+		
+		<setting scope="*"      level="trace"/>
+		<setting scope="esl::*" level="info"/>
+	</logger>
+</eslx-config>
