@@ -24,7 +24,6 @@ SOFTWARE.
 #define ESL_COM_HTTP_CLIENT_INTERFACE_H_
 
 #include <esl/com/http/client/Connection.h>
-#include <esl/utility/URL.h>
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
 
@@ -47,7 +46,7 @@ struct Interface : esl::module::Interface {
 		virtual std::unique_ptr<Connection> createConnection() const = 0;
 	};
 
-	using CreateConnectionFactory = std::unique_ptr<ConnectionFactory> (*)(const utility::URL& url, const Settings& settings);
+	using CreateConnectionFactory = std::unique_ptr<ConnectionFactory> (*)(const Settings& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *

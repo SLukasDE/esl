@@ -25,6 +25,7 @@ SOFTWARE.
 
 #include <esl/module/Interface.h>
 #include <esl/object/Interface.h>
+#include <esl/object/ObjectContext.h>
 #include <esl/Module.h>
 
 #include <string>
@@ -44,7 +45,7 @@ struct Interface : esl::module::Interface {
 	class Procedure : public object::Interface::Object {
 	public:
 		/* this method is blocking. */
-		virtual void procedureRun(object::Interface::ObjectContext& objectContext) = 0;
+		virtual void procedureRun(object::ObjectContext& objectContext) = 0;
 
 		/* this method is non-blocking. */
 		virtual void procedureCancel() = 0;

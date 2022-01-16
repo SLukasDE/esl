@@ -4,7 +4,7 @@
 
 Summary: C++ Enterprise Support Library
 Name: libesl
-Version: 0.3.0
+Version: 1.4.0
 Release: 1
 License: MIT
 URL: http://www.sven-lukas.de
@@ -37,14 +37,14 @@ implements at least esl::com::http::server::Interface::Socket.
 #echo "BUILDROOT = $RPM_BUILD_ROOT"
 
 mkdir -p $RPM_BUILD_ROOT/usr/lib64
-cp -a ../../build/esl/0.3.0/variants/trace/architecture/linux-gcc/link-static/libesl.a $RPM_BUILD_ROOT/usr/lib64
-cp -a ../../build/esl/0.3.0/variants/trace/architecture/linux-gcc/link-dynamic/libesl.so $RPM_BUILD_ROOT/usr/lib64/libesl.so.0.3.0
-ln -s libesl.so.0.3.0 $RPM_BUILD_ROOT/usr/lib64/libesl.so
+cp -a ../../build/esl/1.4.0/variants/trace/architecture/linux-gcc/link-static/libesl.a $RPM_BUILD_ROOT/usr/lib64
+cp -a ../../build/esl/1.4.0/variants/trace/architecture/linux-gcc/link-dynamic/libesl.so $RPM_BUILD_ROOT/usr/lib64/libesl.so.1.4.0
+ln -s libesl.so.1.4.0 $RPM_BUILD_ROOT/usr/lib64/libesl.so
 
 exit
 
 %files
-%attr(0755, root, root) /usr/lib64/libesl.so.0.3.0
+%attr(0755, root, root) /usr/lib64/libesl.so.1.4.0
 %attr(0777, root, root) /usr/lib64/libesl.so
 %attr(0644, root, root) /usr/lib64/libesl.a
 
@@ -58,5 +58,5 @@ exit
 rm -rf $RPM_BUILD_ROOT/usr/include/esl
 
 %changelog
-* Sat Jan 8 2022 Sven Lukas <sven.lukas@gmail.com>
+* Sat Jan 16 2022 Sven Lukas <sven.lukas@gmail.com>
   - First prebuild RPM

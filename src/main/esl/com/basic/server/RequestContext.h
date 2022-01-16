@@ -21,6 +21,7 @@ SOFTWARE.
 */
 
 #include <esl/object/Interface.h>
+#include <esl/object/ObjectContext.h>
 #include <esl/com/basic/server/Connection.h>
 #include <esl/com/basic/server/Request.h>
 
@@ -36,7 +37,7 @@ class RequestContext : public object::Interface::Object {
 public:
 	virtual Connection& getConnection() const = 0;
 	virtual const Request& getRequest() const = 0;
-	virtual object::Interface::ObjectContext& getObjectContext() = 0;
+	virtual object::ObjectContext& getObjectContext() = 0;
 };
 
 } /* namespace server */

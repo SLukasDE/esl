@@ -4,13 +4,13 @@
 
 Summary: C++ Enterprise Support Library development files
 Name: libesl-devel
-Version: 0.3.0
+Version: 1.4.0
 Release: 1
 License: MIT
 URL: http://www.sven-lukas.de
 Group: System
 Packager: Sven Lukas
-Requires: libesl = 0.3.0
+Requires: libesl = 1.4.0
 BuildRoot: ./rpmbuild/
 
 %description
@@ -38,21 +38,21 @@ implements at least esl::com::http::server::Interface::Socket.
 #echo "BUILDROOT = $RPM_BUILD_ROOT"
 #echo "Current path: $PWD"
 
-mkdir -p $RPM_BUILD_ROOT/usr/include/esl-0.3.0
+mkdir -p $RPM_BUILD_ROOT/usr/include/esl-1.4.0
 cd ../../src/main
-find . -name '*.h' -exec cp --parents {} $RPM_BUILD_ROOT/usr/include/esl-0.3.0 \;
+find . -name '*.h' -exec cp --parents {} $RPM_BUILD_ROOT/usr/include/esl-1.4.0 \;
 cd ../../rpm/BUILD
-ln -s esl-0.3.0/esl $RPM_BUILD_ROOT/usr/include/esl
-rm -rf $RPM_BUILD_ROOT/usr/include/esl-0.3.0/esl/caching
-rm -rf $RPM_BUILD_ROOT/usr/include/esl-0.3.0/esl/com/mqtt
-rm -rf $RPM_BUILD_ROOT/usr/include/esl-0.3.0/esl/com/smtp
-rm -rf $RPM_BUILD_ROOT/usr/include/esl-0.3.0/esl/compression
+ln -s esl-1.4.0/esl $RPM_BUILD_ROOT/usr/include/esl
+rm -rf $RPM_BUILD_ROOT/usr/include/esl-1.4.0/esl/caching
+rm -rf $RPM_BUILD_ROOT/usr/include/esl-1.4.0/esl/com/mqtt
+rm -rf $RPM_BUILD_ROOT/usr/include/esl-1.4.0/esl/com/smtp
+rm -rf $RPM_BUILD_ROOT/usr/include/esl-1.4.0/esl/compression
 
 exit
 
 %files
 %defattr(644, root, root, 755)
-/usr/include/esl-0.3.0
+/usr/include/esl-1.4.0
 /usr/include/esl
 
 %pre
@@ -65,5 +65,5 @@ exit
 rm -rf $RPM_BUILD_ROOT/usr/include/esl
 
 %changelog
-* Sun Jan 9 2022 Sven Lukas <sven.lukas@gmail.com>
+* Sun Jan 16 2022 Sven Lukas <sven.lukas@gmail.com>
   - First prebuild RPM

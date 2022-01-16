@@ -24,7 +24,7 @@ SOFTWARE.
 #define ESL_PROCESSING_PROCEDURE_PROCEDURE_H_
 
 #include <esl/processing/procedure/Interface.h>
-#include <esl/object/Interface.h>
+#include <esl/object/ObjectContext.h>
 #include <esl/module/Implementation.h>
 
 #include <memory>
@@ -40,7 +40,7 @@ public:
 	Procedure(const Interface::Settings& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
-	void procedureRun(object::Interface::ObjectContext& objectContext) override;
+	void procedureRun(object::ObjectContext& objectContext) override;
 	void procedureCancel() override;
 
 private:

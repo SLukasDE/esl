@@ -25,7 +25,6 @@ SOFTWARE.
 
 #include <esl/com/http/client/Interface.h>
 #include <esl/com/http/client/Connection.h>
-#include <esl/utility/URL.h>
 #include <esl/module/Implementation.h>
 
 #include <string>
@@ -40,7 +39,7 @@ class ConnectionFactory : public Interface::ConnectionFactory {
 public:
 	static module::Implementation& getDefault();
 
-	ConnectionFactory(const utility::URL& url,
+	ConnectionFactory(
 			const Interface::Settings& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 

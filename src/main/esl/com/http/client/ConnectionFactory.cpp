@@ -38,10 +38,8 @@ module::Implementation& ConnectionFactory::getDefault() {
 	return implementation;
 }
 
-ConnectionFactory::ConnectionFactory(const utility::URL& hostUrl,
-		const Interface::Settings& settings,
-		const std::string& implementation)
-: connectionFactory(esl::getModule().getInterface<Interface>(implementation).createConnectionFactory(hostUrl, settings))
+ConnectionFactory::ConnectionFactory(const Interface::Settings& settings, const std::string& implementation)
+: connectionFactory(esl::getModule().getInterface<Interface>(implementation).createConnectionFactory(settings))
 { }
 
 std::unique_ptr<Connection> ConnectionFactory::createConnection() const {

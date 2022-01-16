@@ -47,19 +47,6 @@ struct Interface : esl::module::Interface {
 
 	using CreateObject = std::unique_ptr<Object>(*)(const Settings&);
 
-	class ObjectContext : public Object {
-	public:
-		template<typename T>
-		T* findObject(const std::string& id = "") const {
-			return dynamic_cast<T*>(findRawObject(id));
-		}
-
-		virtual void addObject(const std::string& id, std::unique_ptr<esl::object::Interface::Object> object) = 0;
-
-	protected:
-		virtual Interface::Object* findRawObject(const std::string& id) const = 0;
-	};
-
 	/* ************************************ *
 	 * standard API definition of interface *
 	 * ************************************ */
