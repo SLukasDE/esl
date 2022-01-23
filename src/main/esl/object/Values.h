@@ -1,3 +1,4 @@
+#if 0
 /*
 MIT License
 Copyright (c) 2019-2022 Sven Lukas
@@ -59,3 +60,4 @@ std::vector<std::pair<std::string, T>> Values<T>::values;
 } /* namespace esl */
 
 #endif /* ESL_OBJECT_VALUES_H_ */
+#endif

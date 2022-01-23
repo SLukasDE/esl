@@ -40,8 +40,6 @@ public:
 
 	virtual bool isHTTPS() const noexcept = 0;
 	virtual const std::string& getHTTPVersion() const noexcept = 0;
-	virtual const std::string& getUsername() const noexcept = 0;
-	virtual const std::string& getPassword() const noexcept = 0;
 
 	virtual const std::string& getHostName() const noexcept = 0;
 	virtual const std::string& getHostAddress() const noexcept = 0;

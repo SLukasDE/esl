@@ -1,3 +1,4 @@
+#if 0
 /*
 MIT License
 Copyright (c) 2019-2022 Sven Lukas
@@ -56,3 +57,4 @@ const std::vector<std::pair<std::string, std::string>>& Properties::getValues() 
 
 } /* namespace object */
 } /* namespace esl */
+#endif

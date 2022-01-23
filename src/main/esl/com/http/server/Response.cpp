@@ -27,9 +27,8 @@ namespace com {
 namespace http {
 namespace server {
 
-Response::Response(unsigned short aStatusCode, const utility::MIME& contentType, std::string aRealmId) noexcept
-: statusCode(aStatusCode),
-  realmId(std::move(aRealmId))
+Response::Response(unsigned short aStatusCode, const utility::MIME& contentType) noexcept
+: statusCode(aStatusCode)
 {
 	if(contentType) {
 		headers["Content-Type"] = contentType.toString();
@@ -38,10 +37,6 @@ Response::Response(unsigned short aStatusCode, const utility::MIME& contentType,
 
 unsigned short Response::getStatusCode() const noexcept {
 	return statusCode;
-}
-
-const std::string& Response::getRealmId() const noexcept {
-	return realmId;
 }
 
 void Response::addHeader(const std::string& key, const std::string& value) {

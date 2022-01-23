@@ -1,3 +1,4 @@
+#if 0
 /*
 MIT License
 Copyright (c) 2019-2022 Sven Lukas
@@ -53,3 +54,4 @@ private:
 } /* namespace esl */
 
 #endif /* ESL_OBJECT_PROPERTIES_H_ */
+#endif

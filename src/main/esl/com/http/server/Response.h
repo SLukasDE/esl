@@ -35,12 +35,10 @@ namespace server {
 
 class Response {
 public:
-	Response(unsigned short statusCode, const utility::MIME& contentType, std::string realmId = "") noexcept;
+	Response(unsigned short statusCode, const utility::MIME& contentType) noexcept;
 	virtual ~Response() = default;
 
 	unsigned short getStatusCode() const noexcept;
-
-	const std::string& getRealmId() const noexcept;
 
 	void addHeader(const std::string& key, const std::string& value);
 	const std::map<std::string, std::string>& getHeaders() const;
@@ -48,7 +46,6 @@ public:
 private:
 	std::map<std::string, std::string> headers;
 	unsigned short statusCode;
-	std::string realmId;
 };
 
 } /* namespace server */
