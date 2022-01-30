@@ -22,7 +22,6 @@ SOFTWARE.
 
 #include <esl/Stacktrace.h>
 #include <esl/stacktrace/Interface.h>
-#include <esl/object/Properties.h>
 #include <esl/Module.h>
 
 namespace esl {

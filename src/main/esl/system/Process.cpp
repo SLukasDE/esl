@@ -21,7 +21,6 @@ SOFTWARE.
 */
 
 #include <esl/system/Process.h>
-#include <esl/object/Properties.h>
 #include <esl/Stacktrace.h>
 #include <esl/Module.h>
 

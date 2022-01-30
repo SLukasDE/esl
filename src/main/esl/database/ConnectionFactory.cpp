@@ -21,7 +21,6 @@ SOFTWARE.
 */
 
 #include <esl/database/ConnectionFactory.h>
-#include <esl/object/Properties.h>
 #include <esl/Module.h>
 
 namespace esl {

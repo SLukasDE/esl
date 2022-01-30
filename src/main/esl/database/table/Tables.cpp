@@ -21,7 +21,6 @@ SOFTWARE.
 */
 
 #include <esl/database/table/Tables.h>
-#include <esl/object/Properties.h>
 #include <esl/Module.h>
 
 namespace esl {

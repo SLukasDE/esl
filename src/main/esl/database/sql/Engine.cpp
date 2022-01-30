@@ -21,7 +21,6 @@ SOFTWARE.
 */
 
 #include <esl/database/sql/Engine.h>
-#include <esl/object/Properties.h>
 #include <esl/Module.h>
 
 namespace esl {

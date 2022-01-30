@@ -21,7 +21,6 @@ SOFTWARE.
 */
 
 #include <esl/system/SignalHandler.h>
-#include <esl/object/Properties.h>
 #include <esl/Module.h>
 
 
