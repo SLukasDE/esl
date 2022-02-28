@@ -33,7 +33,7 @@ module::Implementation& Engine::getDefault() {
 }
 
 Engine::Engine(const Interface::Settings& settings, const std::string& implementation)
-: engine(esl::getModule().getInterface<Interface>(implementation).createEngine(settings))
+: engine(getModule().getInterface<Interface>(implementation).createEngine(settings))
 { }
 
 void Engine::addTables(const std::string& id, std::unique_ptr<table::Interface::Tables> tables) {

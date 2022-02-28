@@ -28,11 +28,11 @@ namespace io {
 namespace output {
 
 namespace {
-esl::logging::Logger<> logger("esl::io::ProducerString");
+logging::Logger<> logger("esl::io::output::String");
 }
 
-esl::io::Output String::create(std::string content) {
-	return esl::io::Output(std::unique_ptr<Producer>(new String(std::move(content))));
+io::Output String::create(std::string content) {
+	return io::Output(std::unique_ptr<Producer>(new String(std::move(content))));
 }
 
 String::String(std::string aContent)

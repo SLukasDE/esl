@@ -100,7 +100,7 @@ private:
 
 } /* namespace logging */
 
-extern esl::logging::Logger<> logger;
+extern logging::Logger<> logger;
 
 } /* namespace esl */
 

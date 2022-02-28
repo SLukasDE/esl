@@ -36,8 +36,8 @@ logging::Logger<> logger("esl::io::output::Buffered");
 
 constexpr std::size_t Buffered::prefetchSize;
 
-esl::io::Output Buffered::create(Reader& baseReader) {
-	return esl::io::Output(std::unique_ptr<Reader>(new Buffered(baseReader)));
+io::Output Buffered::create(Reader& baseReader) {
+	return io::Output(std::unique_ptr<Reader>(new Buffered(baseReader)));
 }
 
 Buffered::Buffered(Reader& aBaseReader)

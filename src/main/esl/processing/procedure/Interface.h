@@ -37,12 +37,12 @@ namespace esl {
 namespace processing {
 namespace procedure {
 
-struct Interface : esl::module::Interface {
+struct Interface : module::Interface {
 	/* ******************************************** *
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class Procedure : public object::Interface::Object {
+	class Procedure : public virtual object::Interface::Object {
 	public:
 		/* this method is blocking. */
 		virtual void procedureRun(object::ObjectContext& objectContext) = 0;
@@ -66,12 +66,12 @@ struct Interface : esl::module::Interface {
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateProcedure createProcedure) {
-		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createProcedure));
+	static std::unique_ptr<const module::Interface> createInterface(const char* implementation, CreateProcedure createProcedure) {
+		return std::unique_ptr<const module::Interface>(new Interface(implementation, createProcedure));
 	}
 
 	Interface(const char* implementation, CreateProcedure aCreateProcedure)
-	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
+	: module::Interface(getModule().getId(), getType(), implementation, getModule().getApiVersion()),
 	  createProcedure(aCreateProcedure)
 	{ }
 

@@ -40,8 +40,8 @@ public:
 	Connection() = default;
 	virtual ~Connection() = default;
 
-	virtual Response send(const Request& request, io::Output output, std::function<esl::io::Input (const Response&)> createInput) const = 0;
-	virtual Response send(const Request& request, io::Output output, esl::io::Input input) const = 0;
+	virtual Response send(const Request& request, io::Output output, std::function<io::Input (const Response&)> createInput) const = 0;
+	virtual Response send(const Request& request, io::Output output, io::Input input) const = 0;
 };
 
 } /* namespace client */

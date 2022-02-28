@@ -20,8 +20,8 @@ public:
 	: value(std::move(aValue))
 	{ }
 
-	std::unique_ptr<esl::object::Interface::Object> clone() const override {
-		return std::unique_ptr<esl::object::Interface::Object>(new Value<T>(value));
+	std::unique_ptr<Interface::Object> clone() const override {
+		return std::unique_ptr<Interface::Object>(new Value<T>(value));
 	}
 
 	T& operator=(const T& aValue) {

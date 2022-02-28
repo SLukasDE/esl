@@ -33,7 +33,7 @@ module::Implementation& Tables::getDefault() {
 }
 
 Tables::Tables(const Interface::Settings& settings, const std::string& implementation)
-: tables(esl::getModule().getInterface<Interface>(implementation).createTables(settings))
+: tables(getModule().getInterface<Interface>(implementation).createTables(settings))
 { }
 
 } /* namespace table */

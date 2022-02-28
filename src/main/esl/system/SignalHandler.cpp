@@ -35,13 +35,13 @@ module::Implementation& SignalHandler::getDefault() {
 void SignalHandler::install(SignalType signalType, std::function<void()> handler,
 		const Interface::Settings& settings,
 		const std::string& implementation) {
-	esl::getModule().getInterface<Interface>(implementation).installSignalHandler(signalType, handler, settings);
+	getModule().getInterface<Interface>(implementation).installSignalHandler(signalType, handler, settings);
 }
 
 void SignalHandler::remove(SignalType signalType, std::function<void()> handler,
 		const Interface::Settings& settings,
 		const std::string& implementation) {
-	esl::getModule().getInterface<Interface>(implementation).removeSignalHandler(signalType, handler, settings);
+	getModule().getInterface<Interface>(implementation).removeSignalHandler(signalType, handler, settings);
 }
 
 } /* namespace system */

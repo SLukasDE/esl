@@ -27,7 +27,7 @@ namespace esl {
 namespace database {
 namespace {
 std::vector<Column> emptyColumns;
-esl::logging::Logger<esl::logging::Level::TRACE> logger;
+logging::Logger<logging::Level::TRACE> logger;
 }
 /*
 PreparedStatement::PreparedStatement(PreparedStatement&& other)

@@ -57,7 +57,7 @@ StreamReal::operator bool() const {
 }
 
 bool StreamReal::isEnabled() const {
-	const Interface* interface = esl::getModule().findInterface<Interface>();
+	const Interface* interface = getModule().findInterface<Interface>();
 
 	if(interface == nullptr) {
 		return false;
@@ -67,7 +67,7 @@ bool StreamReal::isEnabled() const {
 
 StreamWriter StreamReal::getStreamWriter(const void* object, const char* function, const char* file, unsigned int lineNo) {
 	Location location(level, object, typeName, function, file, lineNo, std::this_thread::get_id());
-	const Interface* interface = esl::getModule().findInterface<Interface>();
+	const Interface* interface = getModule().findInterface<Interface>();
 
 	if(interface) {
 		return StreamWriter(interface->createOStream(location));

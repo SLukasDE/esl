@@ -35,7 +35,7 @@ namespace output {
 
 class String : public Producer {
 public:
-	static esl::io::Output create(std::string content);
+	static io::Output create(std::string content);
 
 	String(std::string content);
 

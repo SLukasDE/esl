@@ -38,7 +38,7 @@ namespace output {
 
 class Buffered : public Reader {
 public:
-	static esl::io::Output create(Reader& baseReader);
+	static io::Output create(Reader& baseReader);
 
 	Buffered(Reader& baseReader);
 

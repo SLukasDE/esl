@@ -45,11 +45,11 @@ public:
 	Stacktrace(const stacktrace::Interface::Settings& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
-	Stacktrace(const esl::Stacktrace&);
+	Stacktrace(const Stacktrace&);
 
 	void dump(std::ostream& stream) const;
-	void dump(esl::logging::StreamReal& stream, esl::logging::Location location = esl::logging::Location{}) const;
-	inline void dump(esl::logging::StreamEmpty& stream, esl::logging::Location location = esl::logging::Location{}) const { };
+	void dump(logging::StreamReal& stream, logging::Location location = logging::Location{}) const;
+	inline void dump(logging::StreamEmpty& stream, logging::Location location = logging::Location{}) const { };
 
 private:
 	std::unique_ptr<stacktrace::Interface::Stacktrace> stacktrace;
@@ -83,11 +83,11 @@ private:
 
 template <class E>
 StacktraceInjector<E> addStacktrace(const E& e) {
-    return StacktraceInjector<E>(e, esl::Stacktrace());
+    return StacktraceInjector<E>(e, Stacktrace());
 }
 
 template <class E>
-const esl::Stacktrace* getStacktrace(const E& e) {
+const Stacktrace* getStacktrace(const E& e) {
 	return StacktraceInjector<E>::getStacktrace(e);
 }
 
@@ -100,7 +100,7 @@ auto callStacktrace(F f, Args... args) -> decltype(f(args...)) {
 		if(getStacktrace(e)) {
 			throw;
 		}
-		throw esl::addStacktrace(e);
+		throw addStacktrace(e);
     }
     catch (...) {
         throw;

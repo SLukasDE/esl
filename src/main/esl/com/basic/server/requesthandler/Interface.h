@@ -40,12 +40,12 @@ namespace basic {
 namespace server {
 namespace requesthandler {
 
-struct Interface : esl::module::Interface {
+struct Interface : module::Interface {
 	/* ******************************************** *
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class RequestHandler : public object::Interface::Object {
+	class RequestHandler : public virtual object::Interface::Object {
 	public:
 		virtual io::Input accept(RequestContext&) const = 0;
 
@@ -59,9 +59,6 @@ struct Interface : esl::module::Interface {
 
 	using CreateRequestHandler = std::unique_ptr<RequestHandler> (*)(const module::Interface::Settings& settings);
 
-	//using CreateInput = io::Input (*)(RequestContext&, object::Interface::ObjectContext&);
-	//using GetNotifiers = const std::set<std::string>& (*)(const object::Interface::Object*);
-
 	/* ************************************ *
 	 * standard API definition of interface *
 	 * ************************************ */
@@ -74,12 +71,12 @@ struct Interface : esl::module::Interface {
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateRequestHandler createRequestHandler) {
-		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createRequestHandler));
+	static std::unique_ptr<const module::Interface> createInterface(const char* implementation, CreateRequestHandler createRequestHandler) {
+		return std::unique_ptr<const module::Interface>(new Interface(implementation, createRequestHandler));
 	}
 
 	Interface(const char* implementation, CreateRequestHandler aCreateRequestHandler)
-	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
+	: module::Interface(getModule().getId(), getType(), implementation, getModule().getApiVersion()),
 	  createRequestHandler(aCreateRequestHandler)
 	{ }
 

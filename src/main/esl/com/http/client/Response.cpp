@@ -35,9 +35,9 @@ utility::MIME findContentType(const std::map<std::string, std::string>& headers)
 	for(const auto& entry : headers) {
 		if(entry.first == "Content-Type") {
 			// Value could be "text/html; charset=UTF-8", so we have to split for ';' character and we take first element
-			std::vector<std::string> contentTypes = esl::utility::String::split(esl::utility::String::trim(entry.second), ';');
+			std::vector<std::string> contentTypes = utility::String::split(utility::String::trim(entry.second), ';');
 			if(!contentTypes.empty()) {
-				return esl::utility::MIME(esl::utility::String::trim(contentTypes.front()));
+				return utility::MIME(utility::String::trim(contentTypes.front()));
 			}
 			break;
 		}

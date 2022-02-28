@@ -69,7 +69,7 @@ std::string CSV::toRow(const std::vector<std::string>& columns) {
 			row += separator;
 		}
 
-		row += esl::utility::String::toEscape(column, [this](char c) {
+		row += String::toEscape(column, [this](char c) {
 			std::string result;
 
 			if(c == separator) {

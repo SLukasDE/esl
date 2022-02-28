@@ -40,6 +40,13 @@ struct Interface : esl::module::Interface {
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
+	class JobFactory : public object::Interface::Object {
+	public:
+		virtual std::unique_ptr<Job> createJob(const std::vector<std::pair<std::string, std::string>>& settings) = 0;
+	};
+
+	using CreateJobFactory = std::unique_ptr<JobFactory>(*)(const std::vector<std::pair<std::string, std::string>>& settings);
+
 	class Runner { // : public object::Interface::Object {
 	public:
 		virtual ~Runner() = default;

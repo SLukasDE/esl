@@ -30,7 +30,7 @@ namespace http {
 namespace client {
 
 namespace {
-esl::logging::Logger<> logger("esl::com::http::client::ConnectionFactory");
+logging::Logger<> logger("esl::com::http::client::ConnectionFactory");
 }
 
 module::Implementation& ConnectionFactory::getDefault() {
@@ -39,7 +39,7 @@ module::Implementation& ConnectionFactory::getDefault() {
 }
 
 ConnectionFactory::ConnectionFactory(const Interface::Settings& settings, const std::string& implementation)
-: connectionFactory(esl::getModule().getInterface<Interface>(implementation).createConnectionFactory(settings))
+: connectionFactory(getModule().getInterface<Interface>(implementation).createConnectionFactory(settings))
 { }
 
 std::unique_ptr<Connection> ConnectionFactory::createConnection() const {

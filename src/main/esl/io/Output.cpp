@@ -34,7 +34,7 @@ namespace esl {
 namespace io {
 
 namespace {
-esl::logging::Logger<> logger("esl::io::Output");
+logging::Logger<> logger("esl::io::Output");
 
 class ProducerReader : public Producer {
 public:
@@ -73,7 +73,7 @@ std::size_t ProducerReader::produce(Writer& writer) {
 		}
 
 		if(consumedSize > maxBufferSize) {
-			logger.warn << "esl::utility::io::Reader has " << consumedSize << " bytes read but only " << maxBufferSize << " bytes have been allowed to read.\n";
+			logger.warn << "esl::io::Output-ProducerReader::produce has " << consumedSize << " bytes read but only " << maxBufferSize << " bytes have been allowed to read.\n";
 			consumedSize = maxBufferSize;
 		}
 
@@ -89,7 +89,7 @@ std::size_t ProducerReader::produce(Writer& writer) {
 		}
 		else {
 			if(producedSize > currentBufferSize) {
-				logger.warn << "esl::utility::Writer has " << producedSize << " bytes written but only " << currentBufferSize << " bytes have been allwoed to write.\n";
+				logger.warn << "esl::io::Output-ProducerReader::produce has " << producedSize << " bytes written but only " << currentBufferSize << " bytes have been allwoed to write.\n";
 				producedSize = currentBufferSize;
 			}
 

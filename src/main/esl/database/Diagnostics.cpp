@@ -51,7 +51,7 @@ void Diagnostics::dump(std::ostream& stream) const {
     }
 }
 
-void Diagnostics::dump(esl::logging::StreamReal& stream, esl::logging::Location location) const {
+void Diagnostics::dump(logging::StreamReal& stream, logging::Location location) const {
 	stream(location.object, location.function, location.file, location.line) << "Dump " << diagnostics.size() << " diagnostics\n";
 	for(std::vector<Diagnostic>::size_type i = 0; i < diagnostics.size(); ++i) {
 		const Diagnostic& diagnostic = diagnostics[i];

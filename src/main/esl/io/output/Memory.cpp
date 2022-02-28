@@ -28,11 +28,11 @@ namespace io {
 namespace output {
 
 namespace {
-esl::logging::Logger<> logger("esl::com::basic::client::Connection");
+logging::Logger<> logger("esl::io::output::Memory");
 }
 
-esl::io::Output Memory::create(const void* data, std::size_t size) {
-    return esl::io::Output(std::unique_ptr<esl::io::Producer>(new Memory(data, size)));
+io::Output Memory::create(const void* data, std::size_t size) {
+    return io::Output(std::unique_ptr<io::Producer>(new Memory(data, size)));
 }
 
 Memory::Memory(const void* aData, std::size_t aSize)

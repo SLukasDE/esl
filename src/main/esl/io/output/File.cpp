@@ -31,8 +31,8 @@ namespace {
 logging::Logger<> logger("esl::io::output::File");
 }
 
-esl::io::Output File::create(const std::string& filename) {
-	return esl::io::Output(std::unique_ptr<Reader>(new File(filename)));
+io::Output File::create(const std::string& filename) {
+	return io::Output(std::unique_ptr<Reader>(new File(filename)));
 }
 
 File::File(const std::string& filename)

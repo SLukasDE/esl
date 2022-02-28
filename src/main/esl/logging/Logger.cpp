@@ -28,14 +28,14 @@ namespace esl {
 namespace logging {
 
 void setUnblocked(bool isUnblocked) {
-	const Interface* interface = esl::getModule().findInterface<Interface>();
+	const Interface* interface = getModule().findInterface<Interface>();
 	if(interface) {
 		interface->setUnblocked(isUnblocked);
 	}
 }
 
 void setLevel(Level logLevel, const std::string& typeName) {
-	const Interface* interface = esl::getModule().findInterface<Interface>();
+	const Interface* interface = getModule().findInterface<Interface>();
 	if(interface) {
 		interface->setLevel(logLevel, typeName);
 	}
@@ -47,7 +47,7 @@ void addAppender(appender::Interface::Appender& appender) {
 		return;
 	}
 
-	const Interface* interface = esl::getModule().findInterface<Interface>();
+	const Interface* interface = getModule().findInterface<Interface>();
 	if(interface) {
 		appender.handle = interface->addAppender(appender);
 	}
@@ -55,8 +55,8 @@ void addAppender(appender::Interface::Appender& appender) {
 
 #if 0
 unsigned int getLoggerThreadNo(std::thread::id threadId) {
-	esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion());
-	const Interface* interface = static_cast<const Interface*>(esl::getModule().getInterface(Interface::getId(), Interface::getApiVersion()));
+	getModule().getInterface(Interface::getId(), Interface::getApiVersion());
+	const Interface* interface = static_cast<const Interface*>(getModule().getInterface(Interface::getId(), Interface::getApiVersion()));
 
 	if(interface == nullptr) {
 		throw esl::addStacktrace(std::runtime_error("no implementation available for \"esl-logging\""));

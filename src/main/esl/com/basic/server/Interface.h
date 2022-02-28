@@ -39,12 +39,12 @@ namespace com {
 namespace basic {
 namespace server {
 
-struct Interface : esl::module::Interface {
+struct Interface : module::Interface {
 	/* ******************************************** *
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class Socket : public object::Interface::Object {
+	class Socket : public virtual object::Interface::Object {
 	public:
 		virtual ~Socket() = default;
 
@@ -68,12 +68,12 @@ struct Interface : esl::module::Interface {
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateSocket createSocket) {
-		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createSocket));
+	static std::unique_ptr<const module::Interface> createInterface(const char* implementation, CreateSocket createSocket) {
+		return std::unique_ptr<const module::Interface>(new Interface(implementation, createSocket));
 	}
 
 	Interface(const char* implementation, CreateSocket aCreateSocket)
-	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
+	: module::Interface(getModule().getId(), getType(), implementation, getModule().getApiVersion()),
 	  createSocket(aCreateSocket)
 	{ }
 

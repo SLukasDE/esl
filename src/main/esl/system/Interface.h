@@ -38,7 +38,7 @@ SOFTWARE.
 namespace esl {
 namespace system {
 
-struct Interface : esl::module::Interface {
+struct Interface : module::Interface {
 	/* ******************************************** *
 	 * type definitions required for this interface *
 	 * ******************************************** */
@@ -99,16 +99,16 @@ struct Interface : esl::module::Interface {
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation,
+	static std::unique_ptr<const module::Interface> createInterface(const char* implementation,
 			CreateProcess createProcess, InstallSignalHandler installSignalHandler, RemoveSignalHandler removeSignalHandler) {
-		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createProcess, installSignalHandler, removeSignalHandler));
+		return std::unique_ptr<const module::Interface>(new Interface(implementation, createProcess, installSignalHandler, removeSignalHandler));
 	}
 
 	Interface(const char* implementation,
 			CreateProcess aCreateProcess,
 			InstallSignalHandler aInstallSignalHandler,
 			RemoveSignalHandler aRemoveSignalHandler)
-	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
+	: module::Interface(getModule().getId(), getType(), implementation, getModule().getApiVersion()),
 	  createProcess(aCreateProcess),
 	  installSignalHandler(aInstallSignalHandler),
 	  removeSignalHandler(aRemoveSignalHandler)

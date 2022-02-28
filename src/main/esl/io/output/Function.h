@@ -35,7 +35,7 @@ namespace output {
 
 class Function : public Reader {
 public:
-	static esl::io::Output create(std::function<std::size_t(void*, std::size_t)> getDataFunction);
+	static io::Output create(std::function<std::size_t(void*, std::size_t)> getDataFunction);
 
 	Function(std::function<std::size_t(void*, std::size_t)> getDataFunction);
 

@@ -33,7 +33,7 @@ module::Implementation& Appender::getDefault() {
 }
 
 Appender::Appender(const module::Interface::Settings& settings, const std::string& implementation)
-: appender(esl::getModule().getInterface<Interface>(implementation).createAppender(settings))
+: appender(getModule().getInterface<Interface>(implementation).createAppender(settings))
 { }
 
 void Appender::setLayout(const layout::Interface::Layout* layout) {

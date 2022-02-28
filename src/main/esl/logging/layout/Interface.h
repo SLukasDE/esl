@@ -35,7 +35,7 @@ namespace esl {
 namespace logging {
 namespace layout {
 
-struct Interface : esl::module::Interface {
+struct Interface : module::Interface {
 
 	/* ******************************************** *
 	 * type definitions required for this interface *
@@ -60,12 +60,12 @@ struct Interface : esl::module::Interface {
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateLayout createLayout) {
-		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createLayout));
+	static std::unique_ptr<const module::Interface> createInterface(const char* implementation, CreateLayout createLayout) {
+		return std::unique_ptr<const module::Interface>(new Interface(implementation, createLayout));
 	}
 
 	Interface(const char* implementation, CreateLayout aCreateLayout)
-	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
+	: module::Interface(getModule().getId(), getType(), implementation, getModule().getApiVersion()),
 	  createLayout(aCreateLayout)
 	{ }
 

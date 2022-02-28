@@ -43,7 +43,7 @@ struct Interface : module::Interface {
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class RequestHandler : public object::Interface::Object {
+	class RequestHandler : public virtual object::Interface::Object {
 	public:
 		virtual io::Input accept(RequestContext&) const = 0;
 	};
@@ -67,7 +67,7 @@ struct Interface : module::Interface {
 	}
 
 	Interface(const char* implementation, CreateRequestHandler aCreateRequestHandler)
-	: module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
+	: module::Interface(getModule().getId(), getType(), implementation, getModule().getApiVersion()),
 	  createRequestHandler(aCreateRequestHandler)
 	{ }
 

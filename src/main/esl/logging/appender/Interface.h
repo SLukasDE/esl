@@ -27,7 +27,6 @@ SOFTWARE.
 #include <esl/object/Interface.h>
 #include <esl/Module.h>
 #include <esl/logging/Location.h>
-//#include <esl/logging/Interface.h>
 #include <esl/logging/layout/Interface.h>
 
 #include <string> // std::size_t
@@ -39,28 +38,19 @@ namespace logging {
 class Interface;
 namespace appender {
 
-struct Interface : esl::module::Interface {
+struct Interface : module::Interface {
 
 	/* ******************************************** *
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
 	class Appender : public object::Interface::Object {
-		//friend void addAppender(Appender& appender);
 	public:
 		enum class RecordLevel {
 			ALL, SELECTED, OFF
 		};
 
 		~Appender();
-		/*
-		~Appender() {
-			const logging::Interface* interface = esl::getModule().findInterface<logging::Interface>();
-			if(interface) {
-				interface->removeAppender(handle);
-			}
-		}
-		*/
 
 		virtual void setLayout(const layout::Interface::Layout* aLayout) = 0;
 		virtual const layout::Interface::Layout* getLayout() const = 0;
@@ -91,12 +81,12 @@ struct Interface : esl::module::Interface {
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateAppender createAppender) {
-		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createAppender));
+	static std::unique_ptr<const module::Interface> createInterface(const char* implementation, CreateAppender createAppender) {
+		return std::unique_ptr<const module::Interface>(new Interface(implementation, createAppender));
 	}
 
 	Interface(const char* implementation, CreateAppender aCreateAppender)
-	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
+	: module::Interface(getModule().getId(), getType(), implementation, getModule().getApiVersion()),
 	  createAppender(aCreateAppender)
 	{ }
 

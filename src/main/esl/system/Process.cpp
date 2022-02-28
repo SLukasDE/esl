@@ -33,7 +33,7 @@ module::Implementation& Process::getDefault() {
 }
 
 Process::Process(const Interface::Settings& settings, const std::string& implementation)
-: process(esl::getModule().getInterface<Interface>(implementation).createProcess(settings))
+: process(getModule().getInterface<Interface>(implementation).createProcess(settings))
 { }
 
 Transceiver& Process::operator[](const FileDescriptor& fd) {
@@ -52,7 +52,7 @@ const Environment* Process::getEnvironment() const {
 	return process->getEnvironment();
 }
 
-void Process::addFeature(esl::object::Interface::Object& feature) {
+void Process::addFeature(object::Interface::Object& feature) {
 	return process->addFeature(feature);
 }
 

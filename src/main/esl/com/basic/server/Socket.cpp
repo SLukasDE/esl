@@ -34,7 +34,7 @@ module::Implementation& Socket::getDefault() {
 }
 
 Socket::Socket(const Interface::Settings& settings, const std::string& implementation)
-: socket(esl::getModule().getInterface<Interface>(implementation).createSocket(settings))
+: socket(getModule().getInterface<Interface>(implementation).createSocket(settings))
 { }
 
 void Socket::listen(const requesthandler::Interface::RequestHandler& requestHandler, std::function<void()> onReleasedHandler) {

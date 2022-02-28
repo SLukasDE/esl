@@ -30,7 +30,7 @@ namespace {
 const char* dummyMessage = "no implementation available for \"esl::Stacktrace\"";
 
 std::unique_ptr<stacktrace::Interface::Stacktrace> createStacktrace(const std::string& implementation, const stacktrace::Interface::Settings& values) {
-	const stacktrace::Interface* interface = esl::getModule().findInterface<stacktrace::Interface>(implementation);
+	const stacktrace::Interface* interface = getModule().findInterface<stacktrace::Interface>(implementation);
 	return interface ? interface->createStacktrace(values) : nullptr;
 }
 } /* anonymous Namespace */
@@ -48,7 +48,7 @@ Stacktrace::Stacktrace()
 : stacktrace(createStacktrace())
 { }
 */
-Stacktrace::Stacktrace(const esl::Stacktrace& aStacktrace)
+Stacktrace::Stacktrace(const Stacktrace& aStacktrace)
 : stacktrace(aStacktrace.stacktrace ? aStacktrace.stacktrace->clone() : nullptr)
 { }
 
@@ -61,7 +61,7 @@ void Stacktrace::dump(std::ostream& stream) const {
 	}
 }
 
-void Stacktrace::dump(esl::logging::StreamReal& stream, esl::logging::Location location) const {
+void Stacktrace::dump(logging::StreamReal& stream, logging::Location location) const {
 	if(stacktrace) {
 		stacktrace->dump(stream, location);
 	}

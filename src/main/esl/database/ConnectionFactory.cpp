@@ -33,7 +33,7 @@ module::Implementation& ConnectionFactory::getDefault() {
 
 ConnectionFactory::ConnectionFactory(const Interface::Settings& settings, const std::string& implementation)
 : Interface::ConnectionFactory(),
-  connectionFactory(esl::getModule().getInterface<Interface>(implementation).createConnectionFactory(settings))
+  connectionFactory(getModule().getInterface<Interface>(implementation).createConnectionFactory(settings))
 {
 	if(!connectionFactory) {
 		throw std::runtime_error(std::string("Connection-Factory not found for implementation \"") + implementation + "\"");

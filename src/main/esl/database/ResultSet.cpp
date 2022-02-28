@@ -30,7 +30,7 @@ SOFTWARE.
 namespace esl {
 namespace database {
 namespace {
-esl::logging::Logger<esl::logging::Level::TRACE> logger;
+logging::Logger<logging::Level::TRACE> logger;
 }
 
 ResultSet::Binding::Binding(const std::vector<Column>& aColumns)

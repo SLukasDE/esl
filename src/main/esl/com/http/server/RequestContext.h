@@ -35,7 +35,7 @@ namespace com {
 namespace http {
 namespace server {
 
-class RequestContext : public object::Interface::Object {
+class RequestContext : public virtual object::Interface::Object {
 public:
 	virtual Connection& getConnection() const = 0;
 	virtual const Request& getRequest() const = 0;

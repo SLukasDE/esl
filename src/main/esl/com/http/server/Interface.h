@@ -46,7 +46,7 @@ struct Interface : module::Interface {
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class Socket : public object::Interface::Object {
+	class Socket : public virtual object::Interface::Object {
 	public:
 		virtual void addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) = 0;
 
@@ -75,7 +75,7 @@ struct Interface : module::Interface {
 	}
 
 	Interface(const char* implementation, CreateSocket aCreateSocket)
-	: module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
+	: module::Interface(getModule().getId(), getType(), implementation, getModule().getApiVersion()),
 	  createSocket(aCreateSocket)
 	{ }
 

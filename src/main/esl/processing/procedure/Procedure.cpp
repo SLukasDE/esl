@@ -33,7 +33,7 @@ module::Implementation& Procedure::getDefault() {
 }
 
 Procedure::Procedure(const Interface::Settings& settings, const std::string& implementation)
-: procedure(esl::getModule().getInterface<Interface>(implementation).createProcedure(settings))
+: procedure(getModule().getInterface<Interface>(implementation).createProcedure(settings))
 { }
 
 void Procedure::procedureRun(object::ObjectContext& objectContext) {

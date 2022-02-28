@@ -29,8 +29,8 @@ namespace {
 Closed closed;
 }
 
-esl::io::Input Closed::create() {
-	return esl::io::Input(closed);
+io::Input Closed::create() {
+	return io::Input(closed);
 }
 
 std::size_t Closed::write(const void* data, std::size_t size) {

@@ -57,7 +57,7 @@ Arguments::Arguments(Arguments&& other)
 }
 
 Arguments::Arguments(std::string aArgs)
-: args(esl::utility::String::trim(std::move(aArgs), ' '))
+: args(utility::String::trim(std::move(aArgs), ' '))
 {
 	std::vector<char*> arguments;
 

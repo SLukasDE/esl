@@ -34,12 +34,12 @@ namespace com {
 namespace basic {
 namespace client {
 
-struct Interface : esl::module::Interface {
+struct Interface : module::Interface {
 	/* *************************************** *
 	 * definitions required for this interface *
 	 * *************************************** */
 
-	class ConnectionFactory : public object::Interface::Object {
+	class ConnectionFactory : public virtual object::Interface::Object {
 	public:
 		virtual std::unique_ptr<Connection> createConnection() const = 0;
 	};
@@ -59,12 +59,12 @@ struct Interface : esl::module::Interface {
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateConnectionFactory createConnectionFactory) {
-		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createConnectionFactory));
+	static std::unique_ptr<const module::Interface> createInterface(const char* implementation, CreateConnectionFactory createConnectionFactory) {
+		return std::unique_ptr<const module::Interface>(new Interface(implementation, createConnectionFactory));
 	}
 
 	Interface(const char* implementation, CreateConnectionFactory aCreateConnectionFactory)
-	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
+	: module::Interface(getModule().getId(), getType(), implementation, getModule().getApiVersion()),
 	  createConnectionFactory(aCreateConnectionFactory)
 	{ }
 

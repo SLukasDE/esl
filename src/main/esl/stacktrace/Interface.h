@@ -34,7 +34,7 @@ SOFTWARE.
 namespace esl {
 namespace stacktrace {
 
-struct Interface : esl::module::Interface {
+struct Interface : module::Interface {
 	/* ******************************************** *
 	 * type definitions required for this interface *
 	 * ******************************************** */
@@ -45,7 +45,7 @@ struct Interface : esl::module::Interface {
 		virtual ~Stacktrace() = default;
 
 		virtual void dump(std::ostream& stream) const = 0;
-		virtual void dump(esl::logging::StreamReal& stream, esl::logging::Location location) const = 0;
+		virtual void dump(logging::StreamReal& stream, logging::Location location) const = 0;
 		virtual std::unique_ptr<Stacktrace> clone() const = 0;
 	};
 
@@ -63,12 +63,12 @@ struct Interface : esl::module::Interface {
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateStacktrace createStacktrace) {
-		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createStacktrace));
+	static std::unique_ptr<const module::Interface> createInterface(const char* implementation, CreateStacktrace createStacktrace) {
+		return std::unique_ptr<const module::Interface>(new Interface(implementation, createStacktrace));
 	}
 
 	Interface(const char* implementation, CreateStacktrace aCreateStacktrace)
-	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
+	: module::Interface(getModule().getId(), getType(), implementation, getModule().getApiVersion()),
 	  createStacktrace(aCreateStacktrace)
 	{ }
 

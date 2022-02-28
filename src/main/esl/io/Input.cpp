@@ -34,7 +34,7 @@ namespace esl {
 namespace io {
 
 namespace {
-esl::logging::Logger<> logger("esl::io::Input");
+logging::Logger<> logger("esl::io::Input");
 
 class ConsumerWriter : public Consumer {
 public:
@@ -74,7 +74,7 @@ bool ConsumerWriter::consume(Reader& reader) {
 		}
 		else {
 			if(consumedSize > maxBufferSize) {
-				logger.warn << "esl::utility::Reader says " << consumedSize << " bytes read but read at most " << maxBufferSize << " bytes.\n";
+				logger.warn << "esl::io::Input-ConsumerWriter::consume says " << consumedSize << " bytes read but read at most " << maxBufferSize << " bytes.\n";
 				consumedSize = maxBufferSize;
 			}
 
@@ -105,7 +105,7 @@ void ConsumerWriter::flushBuffer() {
 		}
 
 		if(producedSize > currentBufferSize) {
-			logger.warn << "esl::utility::Writer has " << producedSize << " bytes written but only " << currentBufferSize << " bytes have been allowed to write.\n";
+			logger.warn << "esl::io::Input-ConsumerWriter::flushBuffer has " << producedSize << " bytes written but only " << currentBufferSize << " bytes have been allowed to write.\n";
 			producedSize = currentBufferSize;
 		}
 
@@ -315,14 +315,14 @@ Input::operator bool() const noexcept {
 
 Consumer& Input::getConsumer() const {
 	if(consumer == nullptr) {
-        throw esl::addStacktrace(std::runtime_error("calling esl::utility::io::Input::getConsumer() but object is empty."));
+        throw esl::addStacktrace(std::runtime_error("calling esl::io::Input::getConsumer() but object is empty."));
 	}
 	return *consumer;
 }
 
 Writer& Input::getWriter() const {
 	if(writer == nullptr) {
-        throw esl::addStacktrace(std::runtime_error("calling esl::utility::io::Input::getWriter() but object is empty."));
+        throw esl::addStacktrace(std::runtime_error("calling esl::io::Input::getWriter() but object is empty."));
 	}
 	return *writer;
 }

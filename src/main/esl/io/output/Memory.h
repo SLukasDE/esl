@@ -35,7 +35,7 @@ namespace output {
 
 class Memory : public Producer {
 public:
-	static esl::io::Output create(const void* data, std::size_t size);
+	static io::Output create(const void* data, std::size_t size);
 
 	Memory(const void* data, std::size_t size);
 

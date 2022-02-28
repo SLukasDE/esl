@@ -36,7 +36,7 @@ namespace output {
 
 class File : public Reader {
 public:
-	static esl::io::Output create(const std::string& filename);
+	static io::Output create(const std::string& filename);
 
 	File(const std::string& filename);
 

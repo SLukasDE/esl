@@ -41,8 +41,8 @@ public:
 	const Diagnostic* getSQLCode() const;
 
 	void dump(std::ostream& stream) const;
-	void dump(esl::logging::StreamReal& stream, esl::logging::Location location = esl::logging::Location{}) const;
-	inline void dump(esl::logging::StreamEmpty& stream, esl::logging::Location location = esl::logging::Location{}) const { };
+	void dump(logging::StreamReal& stream, logging::Location location = logging::Location{}) const;
+	inline void dump(logging::StreamEmpty& stream, logging::Location location = logging::Location{}) const { };
 
 protected:
 	std::vector<Diagnostic> diagnostics;

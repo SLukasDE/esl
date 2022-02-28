@@ -32,9 +32,9 @@ namespace esl {
 namespace io {
 namespace input {
 
-class Closed : public esl::io::Writer {
+class Closed : public io::Writer {
 public:
-	static esl::io::Input create();
+	static io::Input create();
 
 	std::size_t write(const void* data, std::size_t size) override;
 	std::size_t getSizeWritable() const override;

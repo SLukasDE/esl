@@ -29,7 +29,7 @@ namespace layout {
 
 namespace {
 std::unique_ptr<Interface::Layout> createLayout(const module::Interface::Settings& settings, const std::string& implementation) {
-	const Interface* interface = esl::getModule().findInterface<Interface>(implementation);
+	const Interface* interface = getModule().findInterface<Interface>(implementation);
 	return interface ? interface->createLayout(settings) : nullptr;
 }
 }

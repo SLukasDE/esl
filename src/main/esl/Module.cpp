@@ -37,8 +37,8 @@ public:
 	Module();
 };
 
-typename std::aligned_storage<sizeof(esl::module::Module), alignof(esl::module::Module)>::type moduleBuffer; // memory for the object;
-esl::module::Module* modulePtr = nullptr;
+typename std::aligned_storage<sizeof(module::Module), alignof(module::Module)>::type moduleBuffer; // memory for the object;
+module::Module* modulePtr = nullptr;
 
 Module::Module()
 : module::Module()

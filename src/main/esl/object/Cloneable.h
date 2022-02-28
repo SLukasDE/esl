@@ -8,9 +8,9 @@
 namespace esl {
 namespace object {
 
-class Cloneable : public esl::object::Interface::Object {
+class Cloneable : public virtual Interface::Object {
 public:
-	virtual std::unique_ptr<esl::object::Interface::Object> clone() const = 0;
+	virtual std::unique_ptr<Interface::Object> clone() const = 0;
 };
 
 } /* namespace object */

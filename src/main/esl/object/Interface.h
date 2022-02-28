@@ -35,7 +35,7 @@ SOFTWARE.
 namespace esl {
 namespace object {
 
-struct Interface : esl::module::Interface {
+struct Interface : module::Interface {
 	/* ******************************************** *
 	 * type definitions required for this interface *
 	 * ******************************************** */
@@ -58,12 +58,12 @@ struct Interface : esl::module::Interface {
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateObject createObject) {
-		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createObject));
+	static std::unique_ptr<const module::Interface> createInterface(const char* implementation, CreateObject createObject) {
+		return std::unique_ptr<const module::Interface>(new Interface(implementation, createObject));
 	}
 
 	Interface(const char* implementation, CreateObject aCreateObject)
-	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
+	: module::Interface(getModule().getId(), getType(), implementation, getModule().getApiVersion()),
 	  createObject(aCreateObject)
 	{ }
 
