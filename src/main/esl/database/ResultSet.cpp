@@ -23,14 +23,15 @@ SOFTWARE.
 #include <esl/database/ResultSet.h>
 #include <esl/database/PreparedStatement.h>
 #include <esl/stacktrace/Stacktrace.h>
-#include <esl/logging/Logger.h>
+#include <esl/Logger.h>
 
 #include <stdexcept>
 
 namespace esl {
 namespace database {
+
 namespace {
-logging::Logger<logging::Level::TRACE> logger;
+Logger logger("esl::database::ResultSet");
 }
 
 ResultSet::Binding::Binding(const std::vector<Column>& aColumns)
@@ -147,14 +148,6 @@ Field& ResultSet::operator[](std::size_t index) {
 		}
 	}
 	return fields[index];
-}
-
-std::size_t ResultSet::size() const {
-	logger.warn << "DEPRECATED: Use \"getColumns() ? getColumns()->size() : 0\" instead.\n";
-	if(binding) {
-		binding->getColumns().size();
-	}
-	return 0;
 }
 
 const std::vector<Column>* ResultSet::getColumns() const {

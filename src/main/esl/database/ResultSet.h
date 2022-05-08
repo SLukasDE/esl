@@ -70,7 +70,6 @@ public:
 	const Field& operator[](std::size_t index) const;
 	Field& operator[](std::size_t index);
 
-	std::size_t size() const;
 	const std::vector<Column>* getColumns() const;
 
 	void next();
