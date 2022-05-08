@@ -30,6 +30,9 @@ SOFTWARE.
 #include <esl/object/Interface.h>
 
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace processing {
@@ -55,7 +58,7 @@ struct Interface : esl::module::Interface {
 		virtual void cancel(Handle jobId) = 0;
 	};
 
-	using CreateRunner = std::unique_ptr<Runner> (*)(const Settings& settings);
+	using CreateRunner = std::unique_ptr<Runner> (*)(const std::vector<std::pair<std::string, std::string>>& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *

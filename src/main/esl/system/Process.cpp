@@ -21,7 +21,6 @@ SOFTWARE.
 */
 
 #include <esl/system/Process.h>
-#include <esl/Stacktrace.h>
 #include <esl/Module.h>
 
 namespace esl {
@@ -32,7 +31,7 @@ module::Implementation& Process::getDefault() {
 	return implementation;
 }
 
-Process::Process(const Interface::Settings& settings, const std::string& implementation)
+Process::Process(const std::vector<std::pair<std::string, std::string>>& settings, const std::string& implementation)
 : process(getModule().getInterface<Interface>(implementation).createProcess(settings))
 { }
 

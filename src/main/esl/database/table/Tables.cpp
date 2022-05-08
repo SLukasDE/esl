@@ -32,7 +32,7 @@ module::Implementation& Tables::getDefault() {
 	return implementation;
 }
 
-Tables::Tables(const Interface::Settings& settings, const std::string& implementation)
+Tables::Tables(const std::vector<std::pair<std::string, std::string>>& settings, const std::string& implementation)
 : tables(getModule().getInterface<Interface>(implementation).createTables(settings))
 { }
 

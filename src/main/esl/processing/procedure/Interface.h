@@ -28,10 +28,12 @@ SOFTWARE.
 #include <esl/object/ObjectContext.h>
 #include <esl/Module.h>
 
-#include <string>
-#include <functional>
 #include <cstdint>
+#include <functional>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace processing {
@@ -45,14 +47,10 @@ struct Interface : module::Interface {
 	class Procedure : public virtual object::Interface::Object {
 	public:
 		/* this method is blocking. */
-		virtual void procedureRun(object::ObjectContext& objectContext) = 0;
-
-		/* this method is non-blocking. */
-		virtual void procedureCancel() = 0;
-		//virtual bool procedureWait(std::uint32_t ms) = 0;
+		virtual std::unique_ptr<object::ObjectContext> procedureRun(object::ObjectContext& objectContext) = 0;
 	};
 
-	using CreateProcedure = std::unique_ptr<Procedure> (*)(const Settings& settings);
+	using CreateProcedure = std::unique_ptr<Procedure> (*)(const std::vector<std::pair<std::string, std::string>>& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *

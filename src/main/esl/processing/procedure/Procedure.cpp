@@ -32,16 +32,12 @@ module::Implementation& Procedure::getDefault() {
 	return implementation;
 }
 
-Procedure::Procedure(const Interface::Settings& settings, const std::string& implementation)
+Procedure::Procedure(const std::vector<std::pair<std::string, std::string>>& settings, const std::string& implementation)
 : procedure(getModule().getInterface<Interface>(implementation).createProcedure(settings))
 { }
 
-void Procedure::procedureRun(object::ObjectContext& objectContext) {
-	procedure->procedureRun(objectContext);
-}
-
-void Procedure::procedureCancel() {
-	procedure->procedureCancel();
+std::unique_ptr<object::ObjectContext> Procedure::procedureRun(object::ObjectContext& objectContext) {
+	return procedure->procedureRun(objectContext);
 }
 
 } /* namespace procedure */

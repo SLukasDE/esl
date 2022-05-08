@@ -21,11 +21,9 @@ SOFTWARE.
 */
 
 #include <esl/module/Library.h>
-//#include <esl/Module.h>
-#include <esl/Stacktrace.h>
 
-#include <stdexcept>
 #include <memory>
+#include <stdexcept>
 
 #ifdef linux
 #include <dlfcn.h>

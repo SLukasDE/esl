@@ -68,7 +68,7 @@ unsigned int getLoggerThreadNo(std::thread::id threadId) {
 
 } /* namespace logging */
 
-esl::logging::Logger<> logger("esl");
+logging::Logger<> logger("esl");
 
 } /* namespace esl */
 

@@ -28,6 +28,9 @@ SOFTWARE.
 #include <esl/module/Implementation.h>
 
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace processing {
@@ -37,11 +40,10 @@ class Procedure final : public Interface::Procedure {
 public:
 	static module::Implementation& getDefault();
 
-	Procedure(const Interface::Settings& settings = getDefault().getSettings(),
+	Procedure(const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
-	void procedureRun(object::ObjectContext& objectContext) override;
-	void procedureCancel() override;
+	std::unique_ptr<object::ObjectContext> procedureRun(object::ObjectContext& objectContext) override;
 
 private:
 	std::unique_ptr<Interface::Procedure> procedure;

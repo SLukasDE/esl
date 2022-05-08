@@ -27,6 +27,11 @@ SOFTWARE.
 #include <esl/module/Implementation.h>
 #include <esl/module/Interface.h>
 
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 namespace esl {
 namespace logging {
 namespace appender {
@@ -35,7 +40,7 @@ class Appender : public Interface::Appender {
 public:
 	static module::Implementation& getDefault();
 
-	Appender(const module::Interface::Settings& settings = getDefault().getSettings(),
+	Appender(const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	void setLayout(const layout::Interface::Layout* aLayout) override;

@@ -27,8 +27,10 @@ SOFTWARE.
 #include <esl/com/http/client/Connection.h>
 #include <esl/module/Implementation.h>
 
-#include <string>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace com {
@@ -40,7 +42,7 @@ public:
 	static module::Implementation& getDefault();
 
 	ConnectionFactory(
-			const Interface::Settings& settings = getDefault().getSettings(),
+			const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	std::unique_ptr<Connection> createConnection() const override;

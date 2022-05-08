@@ -23,7 +23,7 @@ SOFTWARE.
 #include <esl/Module.h>
 #include <esl/module/Interface.h>
 #include <esl/logging/layout/Interface.h>
-#include <esl/Stacktrace.h>
+
 #include <stdexcept>
 #include <new>         // placement new
 #include <type_traits> // aligned_storage

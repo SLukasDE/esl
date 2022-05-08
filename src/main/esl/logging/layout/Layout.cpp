@@ -28,7 +28,7 @@ namespace logging {
 namespace layout {
 
 namespace {
-std::unique_ptr<Interface::Layout> createLayout(const module::Interface::Settings& settings, const std::string& implementation) {
+std::unique_ptr<Interface::Layout> createLayout(const std::vector<std::pair<std::string, std::string>>& settings, const std::string& implementation) {
 	const Interface* interface = getModule().findInterface<Interface>(implementation);
 	return interface ? interface->createLayout(settings) : nullptr;
 }
@@ -39,9 +39,9 @@ module::Implementation& Layout::getDefault() {
 	return implementation;
 }
 
-Layout::Layout(const module::Interface::Settings& aSettings, const std::string& aImplementation)
+Layout::Layout(const std::vector<std::pair<std::string, std::string>>& aSettings, const std::string& aImplementation)
 : implementation(aImplementation),
-  settings(std::move(aSettings))
+  settings(aSettings)
 { }
 
 std::string Layout::toString(const Location& location) const {

@@ -32,7 +32,7 @@ module::Implementation& Runner::getDefault() {
 	return implementation;
 }
 
-Runner::Runner(const Interface::Settings& settings, const std::string& implementation)
+Runner::Runner(const std::vector<std::pair<std::string, std::string>>& settings, const std::string& implementation)
 : runner(esl::getModule().getInterface<Interface>(implementation).createRunner(settings))
 { }
 

@@ -28,6 +28,9 @@ SOFTWARE.
 #include <esl/module/Implementation.h>
 
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace com {
@@ -38,7 +41,7 @@ class Socket final : public Interface::Socket {
 public:
 	static module::Implementation& getDefault();
 
-	Socket(const Interface::Settings& settings = getDefault().getSettings(),
+	Socket(const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	void listen(const requesthandler::Interface::RequestHandler& requestHandler, std::function<void()> onReleasedHandler) override;

@@ -29,8 +29,10 @@ SOFTWARE.
 #include <esl/io/Input.h>
 #include <esl/object/Interface.h>
 
-#include <string>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace com {
@@ -48,7 +50,7 @@ struct Interface : module::Interface {
 		virtual io::Input accept(RequestContext&) const = 0;
 	};
 
-	using CreateRequestHandler = std::unique_ptr<RequestHandler> (*)(const module::Interface::Settings& settings);
+	using CreateRequestHandler = std::unique_ptr<RequestHandler> (*)(const std::vector<std::pair<std::string, std::string>>& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *

@@ -29,10 +29,12 @@ SOFTWARE.
 #include <esl/com/basic/server/RequestContext.h>
 #include <esl/com/basic/server/requesthandler/Interface.h>
 
-#include <string>
 #include <functional>
-#include <set>
 #include <memory>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace com {
@@ -54,7 +56,7 @@ struct Interface : module::Interface {
 		virtual bool wait(std::uint32_t ms) = 0;
 	};
 
-	using CreateSocket = std::unique_ptr<Socket> (*)(const Settings& settings);
+	using CreateSocket = std::unique_ptr<Socket> (*)(const std::vector<std::pair<std::string, std::string>>& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *

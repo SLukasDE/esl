@@ -28,6 +28,9 @@ SOFTWARE.
 #include <esl/Module.h>
 
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace com {
@@ -44,7 +47,7 @@ struct Interface : module::Interface {
 		virtual std::unique_ptr<Connection> createConnection() const = 0;
 	};
 
-	using CreateConnectionFactory = std::unique_ptr<ConnectionFactory> (*)(const Settings& settings);
+	using CreateConnectionFactory = std::unique_ptr<ConnectionFactory> (*)(const std::vector<std::pair<std::string, std::string>>& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *

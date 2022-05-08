@@ -22,7 +22,6 @@ SOFTWARE.
 
 #include <esl/io/Input.h>
 #include <esl/io/Reader.h>
-#include <esl/Stacktrace.h>
 #include <esl/logging/Logger.h>
 
 #include <string>
@@ -315,14 +314,14 @@ Input::operator bool() const noexcept {
 
 Consumer& Input::getConsumer() const {
 	if(consumer == nullptr) {
-        throw esl::addStacktrace(std::runtime_error("calling esl::io::Input::getConsumer() but object is empty."));
+        throw std::runtime_error("calling esl::io::Input::getConsumer() but object is empty.");
 	}
 	return *consumer;
 }
 
 Writer& Input::getWriter() const {
 	if(writer == nullptr) {
-        throw esl::addStacktrace(std::runtime_error("calling esl::io::Input::getWriter() but object is empty."));
+        throw std::runtime_error("calling esl::io::Input::getWriter() but object is empty.");
 	}
 	return *writer;
 }

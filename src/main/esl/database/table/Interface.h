@@ -28,8 +28,10 @@ SOFTWARE.
 #include <esl/database/Interface.h>
 #include <esl/Module.h>
 
-#include <string>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace database {
@@ -40,11 +42,11 @@ struct Interface : module::Interface {
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class Tables : public object::Interface::Object {
+	class Tables : public virtual object::Interface::Object {
 	public:
 	};
 
-	using CreateTables = std::unique_ptr<Tables> (*)(const Settings& settings);
+	using CreateTables = std::unique_ptr<Tables> (*)(const std::vector<std::pair<std::string, std::string>>& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *

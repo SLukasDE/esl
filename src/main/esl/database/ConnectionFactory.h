@@ -26,8 +26,10 @@ SOFTWARE.
 #include <esl/database/Interface.h>
 #include <esl/module/Implementation.h>
 
-#include <string>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace database {
@@ -36,7 +38,7 @@ class ConnectionFactory : public Interface::ConnectionFactory {
 public:
 	static module::Implementation& getDefault();
 
-	ConnectionFactory(const Interface::Settings& settings = getDefault().getSettings(),
+	ConnectionFactory(const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	std::unique_ptr<Connection> createConnection() override;

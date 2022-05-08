@@ -29,9 +29,11 @@ SOFTWARE.
 #include <esl/logging/Location.h>
 #include <esl/logging/layout/Interface.h>
 
-#include <string> // std::size_t
-#include <ostream>
 #include <memory>
+#include <ostream>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace logging {
@@ -67,7 +69,7 @@ struct Interface : module::Interface {
 		void* handle = nullptr;
 	};
 
-	using CreateAppender = std::unique_ptr<Appender> (*)(const Settings& settings);
+	using CreateAppender = std::unique_ptr<Appender> (*)(const std::vector<std::pair<std::string, std::string>>& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *

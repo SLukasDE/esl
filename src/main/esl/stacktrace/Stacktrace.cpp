@@ -20,16 +20,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/Stacktrace.h>
+#include <esl/stacktrace/Stacktrace.h>
 #include <esl/stacktrace/Interface.h>
 #include <esl/Module.h>
 
 namespace esl {
+namespace stacktrace {
 
 namespace {
-const char* dummyMessage = "no implementation available for \"esl::Stacktrace\"";
+const char* dummyMessage = "no implementation available for \"esl::stacktrace::Stacktrace\"";
 
-std::unique_ptr<stacktrace::Interface::Stacktrace> createStacktrace(const std::string& implementation, const stacktrace::Interface::Settings& values) {
+std::unique_ptr<Interface::Stacktrace> createStacktrace(const std::string& implementation, const std::vector<std::pair<std::string, std::string>>& values) {
 	const stacktrace::Interface* interface = getModule().findInterface<stacktrace::Interface>(implementation);
 	return interface ? interface->createStacktrace(values) : nullptr;
 }
@@ -40,7 +41,7 @@ module::Implementation& Stacktrace::getDefault() {
 	return implementation;
 }
 
-Stacktrace::Stacktrace(const stacktrace::Interface::Settings& settings, const std::string& implementation)
+Stacktrace::Stacktrace(const std::vector<std::pair<std::string, std::string>>& settings, const std::string& implementation)
 : stacktrace(createStacktrace(implementation, settings))
 { }
 /*
@@ -70,4 +71,5 @@ void Stacktrace::dump(logging::StreamReal& stream, logging::Location location) c
 	}
 }
 
+} /* namespace stacktrace */
 } /* namespace esl */

@@ -26,8 +26,10 @@ SOFTWARE.
 #include <esl/database/table/Interface.h>
 #include <esl/module/Implementation.h>
 
-#include <string>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace database {
@@ -37,7 +39,7 @@ class Tables final : public Interface::Tables {
 public:
 	static module::Implementation& getDefault();
 
-	Tables(const Interface::Settings& settings = getDefault().getSettings(),
+	Tables(const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
 private:

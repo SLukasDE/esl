@@ -29,9 +29,11 @@ SOFTWARE.
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
 
-#include <string>
-#include <set>
 #include <memory>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
 
 namespace esl {
@@ -57,7 +59,7 @@ struct Interface : module::Interface {
 		virtual std::set<std::string> getNotifiers() const = 0;
 	};
 
-	using CreateRequestHandler = std::unique_ptr<RequestHandler> (*)(const module::Interface::Settings& settings);
+	using CreateRequestHandler = std::unique_ptr<RequestHandler> (*)(const std::vector<std::pair<std::string, std::string>>& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *

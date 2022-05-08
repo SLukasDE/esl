@@ -31,7 +31,7 @@ module::Implementation& ConnectionFactory::getDefault() {
 	return implementation;
 }
 
-ConnectionFactory::ConnectionFactory(const Interface::Settings& settings, const std::string& implementation)
+ConnectionFactory::ConnectionFactory(const std::vector<std::pair<std::string, std::string>>& settings, const std::string& implementation)
 : Interface::ConnectionFactory(),
   connectionFactory(getModule().getInterface<Interface>(implementation).createConnectionFactory(settings))
 {

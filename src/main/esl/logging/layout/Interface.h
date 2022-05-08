@@ -28,8 +28,10 @@ SOFTWARE.
 #include <esl/Module.h>
 #include <esl/logging/Location.h>
 
-#include <string>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace logging {
@@ -46,7 +48,7 @@ struct Interface : module::Interface {
 		virtual std::string toString(const Location& location) const = 0;
 	};
 
-	using CreateLayout = std::unique_ptr<Layout> (*)(const Settings& settings);
+	using CreateLayout = std::unique_ptr<Layout> (*)(const std::vector<std::pair<std::string, std::string>>& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *

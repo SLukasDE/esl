@@ -31,9 +31,11 @@ SOFTWARE.
 #include <esl/system/FileDescriptor.h>
 #include <esl/object/Interface.h>
 
-#include <string>
 #include <functional>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace system {
@@ -83,9 +85,9 @@ struct Interface : module::Interface {
 		virtual const void* getNativeHandle() const = 0;
 	};
 
-	using CreateProcess = std::unique_ptr<Process>(*)(const Interface::Settings& setting);
-	using InstallSignalHandler = void (*)(SignalType signalType, std::function<void()> handler, const Interface::Settings& setting);
-	using RemoveSignalHandler = void (*)(SignalType signalType, std::function<void()> handler, const Interface::Settings& setting);
+	using CreateProcess = std::unique_ptr<Process>(*)(const std::vector<std::pair<std::string, std::string>>& setting);
+	using InstallSignalHandler = void (*)(SignalType signalType, std::function<void()> handler, const std::vector<std::pair<std::string, std::string>>& setting);
+	using RemoveSignalHandler = void (*)(SignalType signalType, std::function<void()> handler, const std::vector<std::pair<std::string, std::string>>& setting);
 
 	/* ************************************ *
 	 * standard API definition of interface *

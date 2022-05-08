@@ -28,11 +28,12 @@ SOFTWARE.
 #include <esl/object/Interface.h>
 #include <esl/module/Implementation.h>
 
-#include <utility>
-#include <functional>
-#include <string>
 #include <cstdint>
+#include <functional>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace com {
@@ -43,7 +44,7 @@ class Socket final : public Interface::Socket {
 public:
 	static module::Implementation& getDefault();
 
-	Socket(const Interface::Settings& settings = getDefault().getSettings(),
+	Socket(const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	void addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) override;

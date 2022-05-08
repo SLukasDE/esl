@@ -23,16 +23,14 @@ SOFTWARE.
 #ifndef ESL_MODULE_INTERFACE_H_
 #define ESL_MODULE_INTERFACE_H_
 
+#include <string>
 #include <utility>
 #include <vector>
-#include <string>
 
 namespace esl {
 namespace module {
 
 struct Interface {
-	using Settings = std::vector<std::pair<std::string, std::string>>;
-
 	Interface(std::string aModule, std::string aType, std::string aImplementation, std::string aApiVersion)
 	: module(std::move(aModule)),
 	  type(std::move(aType)),

@@ -27,6 +27,10 @@ SOFTWARE.
 #include <esl/module/Implementation.h>
 
 #include <functional>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace system {
@@ -40,11 +44,11 @@ public:
 	SignalHandler() = delete;
 
 	static void install(SignalType signalType, std::function<void()> handler,
-			const Interface::Settings& settings = getDefault().getSettings(),
+			const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	static void remove(SignalType signalType, std::function<void()> handler,
-			const Interface::Settings& settings = getDefault().getSettings(),
+			const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 };
 

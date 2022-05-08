@@ -30,8 +30,10 @@ SOFTWARE.
 #include <esl/system/FileDescriptor.h>
 #include <esl/module/Implementation.h>
 
-#include <string>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace system {
@@ -40,7 +42,7 @@ class Process final : public Interface::Process {
 public:
 	static module::Implementation& getDefault();
 
-	Process(const Interface::Settings& settings = getDefault().getSettings(),
+	Process(const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	Transceiver& operator[](const FileDescriptor& fd) override;

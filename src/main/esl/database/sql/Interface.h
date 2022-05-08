@@ -29,8 +29,10 @@ SOFTWARE.
 #include <esl/database/Interface.h>
 #include <esl/database/table/Interface.h>
 
-#include <string>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace database {
@@ -41,13 +43,13 @@ struct Interface : module::Interface {
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class Engine : public object::Interface::Object {
+	class Engine : public virtual object::Interface::Object {
 	public:
 		virtual void addTables(const std::string& id, std::unique_ptr<table::Interface::Tables> tables) = 0;
 		virtual std::unique_ptr<database::Interface::ConnectionFactory> createConnectionFactory() = 0;
 	};
 
-	using CreateEngine = std::unique_ptr<Engine> (*)(const Interface::Settings& settings);
+	using CreateEngine = std::unique_ptr<Engine> (*)(const std::vector<std::pair<std::string, std::string>>& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *

@@ -27,9 +27,10 @@ SOFTWARE.
 #include <esl/module/Implementation.h>
 #include <esl/module/Interface.h>
 
-#include <utility>
-#include <string>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace logging {
@@ -39,14 +40,14 @@ class Layout final : public Interface::Layout {
 public:
 	static module::Implementation& getDefault();
 
-	Layout(const module::Interface::Settings& settings = getDefault().getSettings(),
+	Layout(const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	std::string toString(const Location& location) const override;
 
 private:
 	const std::string implementation;
-	module::Interface::Settings settings;
+	std::vector<std::pair<std::string, std::string>> settings;
 
 	mutable std::unique_ptr<Interface::Layout> layout;
 };

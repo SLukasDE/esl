@@ -45,7 +45,7 @@ struct Interface : module::Interface {
 		virtual ~Object() = default;
 	};
 
-	using CreateObject = std::unique_ptr<Object>(*)(const Settings&);
+	using CreateObject = std::unique_ptr<Object>(*)(const std::vector<std::pair<std::string, std::string>>&);
 
 	/* ************************************ *
 	 * standard API definition of interface *

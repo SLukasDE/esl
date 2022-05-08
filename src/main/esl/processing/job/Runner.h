@@ -30,6 +30,9 @@ SOFTWARE.
 #include <esl/module/Implementation.h>
 
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace processing {
@@ -39,7 +42,7 @@ class Runner : public Interface::Runner {
 public:
 	static module::Implementation& getDefault();
 
-	Runner(const Interface::Settings& settings = getDefault().getSettings(),
+	Runner(const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	Handle addJob(std::unique_ptr<Job> job) override;

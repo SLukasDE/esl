@@ -47,6 +47,8 @@ public:
 
 	Field() = default;
 	Field(const Field&);
+	Field(Field&& field);
+
 	Field(Column::Type columnType);
 	Field(ResultSet& resultSet, std::size_t columnIndex);
 	Field(bool value);
@@ -71,6 +73,7 @@ public:
 	std::string asString() const;
 
 	Field& operator=(const Field&);
+	Field& operator=(Field&& other);
 	Field& operator=(std::nullptr_t);
 	Field& operator=(bool value);
 	Field& operator=(int value);
@@ -94,9 +97,6 @@ public:
 	Type getSimpleType() const;
 
 private:
-	Field(Field&& field);
-	Field& operator=(Field&& other);
-
 	template<typename T>
 	static std::string toString(T t);
 

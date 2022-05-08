@@ -19,37 +19,71 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-#if 0
-#ifndef ESL_PROCESSING_DAEMON_DAEMON_H_
-#define ESL_PROCESSING_DAEMON_DAEMON_H_
 
-#include <esl/processing/daemon/Interface.h>
-#include <esl/module/Implementation.h>
+#ifndef ESL_UTILITY_UNIQUEREF_H_
+#define ESL_UTILITY_UNIQUEREF_H_
 
 #include <memory>
+#include <stdexcept>
 
 namespace esl {
-namespace processing {
-namespace daemon {
+namespace utility {
 
-class Daemon final : public Interface::Daemon {
+template <typename T>
+class UniqueRef {
 public:
-	static module::Implementation& getDefault();
+	UniqueRef(const T& aValue) = delete;
+	UniqueRef(T&& aValue) = delete;
 
-	Daemon(const Interface::Settings& settings = getDefault().getSettings(),
-			const std::string& implementation = getDefault().getImplementation());
+	UniqueRef(T* aValue)
+    : value(aValue)
+    {
+        if(!value) {
+            throw std::runtime_error("Initialization of esl::utility::UniqueRef with nullptr");
+        }
+    }
 
-	bool start(std::function<void()> onReleasedHandler) override;
-	void release() override;
-	bool wait(std::uint32_t ms) override;
+	UniqueRef(std::unique_ptr<T> aValue)
+    : value(std::move(aValue))
+    {
+        if(!value) {
+            throw std::runtime_error("Initialization of esl::utility::UniqueRef with nullptr");
+        }
+    }
+
+	T& operator=(const T& aValue) = delete;
+	T& operator=(T&& aValue) = delete;
+
+	const T& operator*() const noexcept {
+		return *value;
+	}
+
+	T& operator*() noexcept {
+		return *value;
+	}
+
+	const T& operator->() const noexcept {
+		return *value;
+	}
+
+	T& operator->() noexcept {
+		return *value;
+	}
+
+	const T& get() const noexcept {
+		return *value;
+	}
+
+	T& get() noexcept {
+		return *value;
+	}
 
 private:
-	std::unique_ptr<Interface::Daemon> daemon;
+	std::unique_ptr<T> value;
 };
 
-} /* namespace daemon */
-} /* namespace processing */
+
+} /* namespace utility */
 } /* namespace esl */
 
-#endif /* ESL_PROCESSING_DAEMON_DAEMON_H_ */
-#endif
+#endif /* ESL_UTILITY_UNIQUEREF_H_ */

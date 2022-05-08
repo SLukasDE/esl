@@ -19,36 +19,24 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-#if 0
-#include <esl/processing/daemon/Daemon.h>
-#include <esl/Module.h>
+
+#ifndef ESL_OBJECT_EVENT_H_
+#define ESL_OBJECT_EVENT_H_
+
+#include <esl/object/Interface.h>
+
+#include <string>
+#include <vector>
 
 namespace esl {
-namespace processing {
-namespace daemon {
+namespace object {
 
-module::Implementation& Daemon::getDefault() {
-	static module::Implementation implementation;
-	return implementation;
-}
+class Event : public virtual Interface::Object {
+public:
+	virtual void onEvent(const Interface::Object& object) const = 0;
+};
 
-Daemon::Daemon(const Interface::Settings& settings, const std::string& implementation)
-: daemon(esl::getModule().getInterface<Interface>(implementation).createDaemon(settings))
-{ }
-
-bool Daemon::start(std::function<void()> onReleasedHandler) {
-	return daemon->start(onReleasedHandler);
-}
-
-void Daemon::release() {
-	daemon->release();
-}
-
-bool Daemon::wait(std::uint32_t ms) {
-	return daemon->wait(ms);
-}
-
-} /* namespace daemon */
-} /* namespace processing */
+} /* namespace object */
 } /* namespace esl */
-#endif
+
+#endif /* ESL_OBJECT_EVENT_H_ */

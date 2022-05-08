@@ -32,7 +32,7 @@ module::Implementation& Engine::getDefault() {
 	return implementation;
 }
 
-Engine::Engine(const Interface::Settings& settings, const std::string& implementation)
+Engine::Engine(const std::vector<std::pair<std::string, std::string>>& settings, const std::string& implementation)
 : engine(getModule().getInterface<Interface>(implementation).createEngine(settings))
 { }
 

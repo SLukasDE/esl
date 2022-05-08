@@ -33,7 +33,7 @@ module::Implementation& Socket::getDefault() {
 	return implementation;
 }
 
-Socket::Socket(const Interface::Settings& settings, const std::string& implementation)
+Socket::Socket(const std::vector<std::pair<std::string, std::string>>& settings, const std::string& implementation)
 : socket(getModule().getInterface<Interface>(implementation).createSocket(settings))
 { }
 

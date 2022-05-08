@@ -22,7 +22,6 @@ SOFTWARE.
 
 #include <esl/io/Output.h>
 #include <esl/io/Writer.h>
-#include <esl/Stacktrace.h>
 #include <esl/logging/Logger.h>
 
 #include <string>
@@ -296,14 +295,14 @@ Output::operator bool() const noexcept {
 
 Producer& Output::getProducer() const noexcept {
 	if(producer == nullptr) {
-        throw esl::addStacktrace(std::runtime_error("calling Output::getProducer() but object is empty."));
+        throw std::runtime_error("calling Output::getProducer() but object is empty.");
 	}
 	return *producer;
 }
 
 Reader& Output::getReader() const noexcept {
 	if(reader == nullptr) {
-        throw esl::addStacktrace(std::runtime_error("calling Output::getReader() but object is empty."));
+        throw std::runtime_error("calling Output::getReader() but object is empty.");
 	}
 	return *reader;
 }

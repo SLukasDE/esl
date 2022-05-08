@@ -28,8 +28,11 @@ SOFTWARE.
 #include <esl/logging/Location.h>
 #include <esl/logging/StreamReal.h>
 
-#include <ostream>
 #include <memory>
+#include <ostream>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace stacktrace {
@@ -49,7 +52,7 @@ struct Interface : module::Interface {
 		virtual std::unique_ptr<Stacktrace> clone() const = 0;
 	};
 
-	using CreateStacktrace = std::unique_ptr<Stacktrace> (*)(const Interface::Settings& settings);
+	using CreateStacktrace = std::unique_ptr<Stacktrace> (*)(const std::vector<std::pair<std::string, std::string>>& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *

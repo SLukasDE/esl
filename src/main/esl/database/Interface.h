@@ -28,11 +28,12 @@ SOFTWARE.
 #include <esl/object/Interface.h>
 #include <esl/database/Connection.h>
 
-#include <string>
-#include <functional>
 #include <cstdint>
-#include <vector>
+#include <functional>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace database {
@@ -47,7 +48,7 @@ struct Interface : module::Interface {
 	    virtual std::unique_ptr<Connection> createConnection() = 0;
 	};
 
-	using CreateConnectionFactory = std::unique_ptr<ConnectionFactory>(*)(const object::Interface::Settings& settings);
+	using CreateConnectionFactory = std::unique_ptr<ConnectionFactory>(*)(const std::vector<std::pair<std::string, std::string>>& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *

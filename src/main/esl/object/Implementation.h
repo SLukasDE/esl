@@ -20,33 +20,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/com/http/client/ConnectionFactory.h>
-#include <esl/logging/Logger.h>
-#include <esl/Module.h>
+#ifndef ESL_OBJECT_IMPLEMENTATION_H_
+#define ESL_OBJECT_IMPLEMENTATION_H_
+
+#include <esl/object/Interface.h>
+
+#include <string>
 
 namespace esl {
-namespace com {
-namespace http {
-namespace client {
+namespace object {
 
-namespace {
-logging::Logger<> logger("esl::com::http::client::ConnectionFactory");
-}
+class Implementation : public virtual Interface::Object {
+public:
+	virtual const std::string& getImplementationName() const = 0;
+};
 
-module::Implementation& ConnectionFactory::getDefault() {
-	static module::Implementation implementation;
-	return implementation;
-}
-
-ConnectionFactory::ConnectionFactory(const std::vector<std::pair<std::string, std::string>>& settings, const std::string& implementation)
-: connectionFactory(getModule().getInterface<Interface>(implementation).createConnectionFactory(settings))
-{ }
-
-std::unique_ptr<Connection> ConnectionFactory::createConnection() const {
-	return connectionFactory->createConnection();
-}
-
-} /* namespace client */
-} /* namespace http */
-} /* namespace com */
+} /* namespace object */
 } /* namespace esl */
+
+#endif /* ESL_OBJECT_IMPLEMENTATION_H_ */

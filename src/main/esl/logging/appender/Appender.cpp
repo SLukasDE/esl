@@ -32,7 +32,7 @@ module::Implementation& Appender::getDefault() {
 	return implementation;
 }
 
-Appender::Appender(const module::Interface::Settings& settings, const std::string& implementation)
+Appender::Appender(const std::vector<std::pair<std::string, std::string>>& settings, const std::string& implementation)
 : appender(getModule().getInterface<Interface>(implementation).createAppender(settings))
 { }
 

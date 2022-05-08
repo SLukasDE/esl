@@ -33,13 +33,13 @@ module::Implementation& SignalHandler::getDefault() {
 }
 
 void SignalHandler::install(SignalType signalType, std::function<void()> handler,
-		const Interface::Settings& settings,
+		const std::vector<std::pair<std::string, std::string>>& settings,
 		const std::string& implementation) {
 	getModule().getInterface<Interface>(implementation).installSignalHandler(signalType, handler, settings);
 }
 
 void SignalHandler::remove(SignalType signalType, std::function<void()> handler,
-		const Interface::Settings& settings,
+		const std::vector<std::pair<std::string, std::string>>& settings,
 		const std::string& implementation) {
 	getModule().getInterface<Interface>(implementation).removeSignalHandler(signalType, handler, settings);
 }

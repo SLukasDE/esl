@@ -20,8 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_STACKTRACE_H_
-#define ESL_STACKTRACE_H_
+#ifndef ESL_STACKTRACE_STACKTRACE_H_
+#define ESL_STACKTRACE_STACKTRACE_H_
 
 #ifndef BOOST_STACKTRACE_USE_ADDR2LINE
 #define BOOST_STACKTRACE_USE_ADDR2LINE
@@ -33,16 +33,23 @@ SOFTWARE.
 #include <esl/logging/StreamEmpty.h>
 #include <esl/module/Implementation.h>
 
-#include <ostream>
 #include <memory>
+#include <ostream>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
+namespace stacktrace {
+
+template <class T>
+class StacktraceInjector;
 
 class Stacktrace {
 public:
 	static module::Implementation& getDefault();
 
-	Stacktrace(const stacktrace::Interface::Settings& settings = getDefault().getSettings(),
+	Stacktrace(const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	Stacktrace(const Stacktrace&);
@@ -51,13 +58,34 @@ public:
 	void dump(logging::StreamReal& stream, logging::Location location = logging::Location{}) const;
 	inline void dump(logging::StreamEmpty& stream, logging::Location location = logging::Location{}) const { };
 
+	template <class E>
+	static StacktraceInjector<E> add(const E& e);
+
+	template <class E>
+	static const Stacktrace* get(const E& e);
+
+	template<typename F, typename... Args>
+	static auto call(F f, Args... args) -> decltype(f(args...)) {
+		try {
+			return f(args...);
+	    }
+		catch (std::exception& e) {
+			if(get(e)) {
+				throw;
+			}
+			throw add(e);
+	    }
+	    catch (...) {
+	        throw;
+	    }
+	}
+
 private:
-	std::unique_ptr<stacktrace::Interface::Stacktrace> stacktrace;
+	std::unique_ptr<Interface::Stacktrace> stacktrace;
 };
 
 template <class T>
-class
-StacktraceInjector: public T /*, public std::exception */ {
+class StacktraceInjector : public T {
 public:
     explicit StacktraceInjector(T const & x, const Stacktrace& aStacktrace)
     : T(x),
@@ -82,31 +110,16 @@ private:
 };
 
 template <class E>
-StacktraceInjector<E> addStacktrace(const E& e) {
+StacktraceInjector<E> Stacktrace::add(const E& e) {
     return StacktraceInjector<E>(e, Stacktrace());
 }
 
 template <class E>
-const Stacktrace* getStacktrace(const E& e) {
+const Stacktrace* Stacktrace::get(const E& e) {
 	return StacktraceInjector<E>::getStacktrace(e);
 }
 
-template<typename F, typename... Args>
-auto callStacktrace(F f, Args... args) -> decltype(f(args...)) {
-	try {
-		return f(args...);
-    }
-	catch (std::exception& e) {
-		if(getStacktrace(e)) {
-			throw;
-		}
-		throw addStacktrace(e);
-    }
-    catch (...) {
-        throw;
-    }
-}
-
+} /* namespace stacktrace */
 } /* namespace esl */
 
-#endif /* ESL_STACKTRACE_H_ */
+#endif /* ESL_STACKTRACE_STACKTRACE_H_ */

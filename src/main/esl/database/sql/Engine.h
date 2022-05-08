@@ -27,8 +27,10 @@ SOFTWARE.
 #include <esl/database/table/Interface.h>
 #include <esl/module/Implementation.h>
 
-#include <string>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace database {
@@ -38,7 +40,7 @@ class Engine final : public Interface::Engine {
 public:
 	static module::Implementation& getDefault();
 
-	Engine(const Interface::Settings& settings = getDefault().getSettings(),
+	Engine(const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
 	void addTables(const std::string& id, std::unique_ptr<table::Interface::Tables> tables) override;
