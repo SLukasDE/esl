@@ -20,35 +20,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/system/exception/ProcessError.h>
+#ifndef ESL_OBJECT_CANCEL_H_
+#define ESL_OBJECT_CANCEL_H_
+
+#include <esl/object/Interface.h>
+
+#include <string>
+#include <vector>
 
 namespace esl {
-namespace system {
-namespace exception {
+namespace object {
 
-namespace {
-static constexpr const char* defaultMessage = "process error";
-}
+class Cancel : public virtual Interface::Object {
+public:
+	virtual void onCancel() const = 0;
+};
 
-ProcessError::ProcessError(int aErrorCode)
-: std::runtime_error(defaultMessage),
-  errorCode(aErrorCode)
-{ }
-
-ProcessError::ProcessError(int aErrorCode, const char* message)
-: std::runtime_error(message),
-  errorCode(aErrorCode)
-{ }
-
-ProcessError::ProcessError(int aErrorCode, const std::string& message)
-: std::runtime_error(message),
-  errorCode(aErrorCode)
-{ }
-
-int ProcessError::getErrorCode() const noexcept {
-	return errorCode;
-}
-
-} /* namespace exception */
-} /* namespace system */
+} /* namespace object */
 } /* namespace esl */
+
+#endif /* ESL_OBJECT_CANCEL_H_ */

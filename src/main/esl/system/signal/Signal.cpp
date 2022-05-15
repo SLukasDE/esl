@@ -20,23 +20,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_OBJECT_EVENT_H_
-#define ESL_OBJECT_EVENT_H_
+#include <esl/system/signal/Signal.h>
 
-#include <esl/object/Interface.h>
+#include <esl/Module.h>
 
-#include <string>
-#include <vector>
 
 namespace esl {
-namespace object {
+namespace system {
+namespace signal {
 
-class Event : public virtual Interface::Object {
-public:
-	virtual void onEvent(const Interface::Object& object) = 0;
-};
+Interface::Handle Signal::install(object::Event& event, SignalType signalType) {
+	const Interface* interface = esl::getModule().findInterface<Interface>();
+	if(interface) {
+		return interface->install(event, signalType);
+	}
+	return Interface::Handle();
+}
 
-} /* namespace object */
+} /* namespace signal */
+} /* namespace system */
 } /* namespace esl */
-
-#endif /* ESL_OBJECT_EVENT_H_ */

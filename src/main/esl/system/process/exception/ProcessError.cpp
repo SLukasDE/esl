@@ -20,21 +20,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_PROCESSING_JOB_CONTEXT_H_
-#define ESL_PROCESSING_JOB_CONTEXT_H_
+#include <esl/system/process/exception/ProcessError.h>
 
 namespace esl {
-namespace processing {
-namespace job {
+namespace system {
+namespace process {
+namespace exception {
 
-class Context {
-public:
-	Context() = default;
-	virtual ~Context() = default;
-};
+namespace {
+static constexpr const char* defaultMessage = "process error";
+}
 
-} /* namespace job */
-} /* namespace processing */
+ProcessError::ProcessError(int aErrorCode)
+: std::runtime_error(defaultMessage),
+  errorCode(aErrorCode)
+{ }
+
+ProcessError::ProcessError(int aErrorCode, const char* message)
+: std::runtime_error(message),
+  errorCode(aErrorCode)
+{ }
+
+ProcessError::ProcessError(int aErrorCode, const std::string& message)
+: std::runtime_error(message),
+  errorCode(aErrorCode)
+{ }
+
+int ProcessError::getErrorCode() const noexcept {
+	return errorCode;
+}
+
+} /* namespace process */
+} /* namespace exception */
+} /* namespace system */
 } /* namespace esl */
-
-#endif /* ESL_PROCESSING_JOB_CONTEXT_H_ */

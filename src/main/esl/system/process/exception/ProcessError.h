@@ -20,39 +20,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_SYSTEM_SIGNALHANDLER_H_
-#define ESL_SYSTEM_SIGNALHANDLER_H_
+#ifndef ESL_SYSTEM_PROCESS_EXCEPTION_PROCESSERROR_H_
+#define ESL_SYSTEM_PROCESS_EXCEPTION_PROCESSERROR_H_
 
-#include <esl/system/Interface.h>
-#include <esl/module/Implementation.h>
-
-#include <functional>
-#include <memory>
 #include <string>
-#include <utility>
-#include <vector>
+#include <stdexcept>
 
 namespace esl {
 namespace system {
+namespace process {
+namespace exception {
 
-class SignalHandler final {
+class ProcessError : public std::runtime_error {
 public:
-	using SignalType = Interface::SignalType;
+	explicit ProcessError(int errorCode);
+	explicit ProcessError(int errorCode, const char* message);
+	explicit ProcessError(int errorCode, const std::string& message);
 
-	static module::Implementation& getDefault();
+	int getErrorCode() const noexcept;
 
-	SignalHandler() = delete;
-
-	static void install(SignalType signalType, std::function<void()> handler,
-			const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
-			const std::string& implementation = getDefault().getImplementation());
-
-	static void remove(SignalType signalType, std::function<void()> handler,
-			const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
-			const std::string& implementation = getDefault().getImplementation());
+private:
+	int errorCode;
 };
 
+} /* namespace exception */
+} /* namespace process */
 } /* namespace system */
 } /* namespace esl */
 
-#endif /* ESL_SYSTEM_SIGNALHANDLER_H_ */
+#endif /* ESL_SYSTEM_PROCESS_EXCEPTION_PROCESSERROR_H_ */

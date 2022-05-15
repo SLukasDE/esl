@@ -20,38 +20,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_SYSTEM_ENVIRONMENT_H_
-#define ESL_SYSTEM_ENVIRONMENT_H_
+#ifndef ESL_SYSTEM_PROCESS_ARGUMENTS_H_
+#define ESL_SYSTEM_PROCESS_ARGUMENTS_H_
 
 #include <string>
-#include <vector>
-#include <utility>
 
 namespace esl {
 namespace system {
+namespace process {
 
-class Environment {
+class Arguments {
 public:
-	Environment();
-	Environment(const Environment&) = delete;
-	Environment(Environment&& other);
-	Environment(std::vector<std::pair<std::string, std::string>> values);
-	~Environment();
+	Arguments() = default;
+	Arguments(const Arguments& other);
+	Arguments(Arguments&& other);
+	Arguments(std::string args);
+	Arguments(std::size_t argc, const char** argv);
+	~Arguments();
 
-	Environment& operator=(const Environment&) = delete;
-	Environment& operator=(Environment&& other);
+	Arguments& operator=(const Arguments& other);
+	Arguments& operator=(Arguments&& other);
 
-	const std::vector<std::pair<std::string, std::string>>& getValues() const noexcept;
-	char* const* getEnvp() const noexcept;
+	const std::string& getArgs() const noexcept;
+	std::size_t getArgc() const noexcept;
+	char** getArgv() const noexcept;
 
 private:
-	std::vector<std::pair<std::string, std::string>> values;
+	static const char* argumentSize(const char* src, std::size_t& length);
+	static const char* argumentCopy(const char* src, char* dst);
 
-	std::size_t envc = 0;
-	char** envp = nullptr;
+	std::string args;
+	std::size_t argc = 0;
+	char** argv = nullptr;
 };
 
+} /* namespace process */
 } /* namespace system */
 } /* namespace esl */
 
-#endif /* ESL_SYSTEM_ENVIRONMENT_H_ */
+#endif /* ESL_SYSTEM_PROCESS_ARGUMENTS_H_ */

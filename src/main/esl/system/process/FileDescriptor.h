@@ -20,47 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_SYSTEM_TRANSCEIVER_H_
-#define ESL_SYSTEM_TRANSCEIVER_H_
-
-#include <esl/io/Input.h>
-#include <esl/io/Output.h>
-
-#include <boost/filesystem.hpp>
+#ifndef ESL_SYSTEM_PROCESS_FILEDESCRIPTOR_H_
+#define ESL_SYSTEM_PROCESS_FILEDESCRIPTOR_H_
 
 namespace esl {
 namespace system {
+namespace process {
 
-class Transceiver {
+class FileDescriptor {
 public:
-	Transceiver() = default;
-	Transceiver(const Transceiver&) = delete;
-	Transceiver(Transceiver&&) = delete;
+	int getId() const noexcept;
 
-	Transceiver& operator=(const Transceiver&) = delete;
-	Transceiver& operator=(Transceiver&& other) = delete;
+	static FileDescriptor& getOut();
+	static FileDescriptor& getErr();
+	static FileDescriptor& getIn();
 
-	void operator>>(io::Input&& input);
-	void operator>>(boost::filesystem::path path);
-
-	void operator<<(io::Output&& output);
-	void operator<<(boost::filesystem::path path);
-
-	const io::Input& getInput() const noexcept;
-	const boost::filesystem::path& getInputPath() const noexcept;
-
-	const io::Output& getOutput() const noexcept;
-	const boost::filesystem::path& getOutputPath() const noexcept;
+	static bool isOut(const FileDescriptor& fileDescriptor) noexcept;
+	static bool isErr(const FileDescriptor& fileDescriptor) noexcept;
+	static bool isIn(const FileDescriptor& fileDescriptor) noexcept;
 
 private:
-	io::Input input;
-	boost::filesystem::path inputPath;
+	FileDescriptor(int id);
 
-	io::Output output;
-	boost::filesystem::path outputPath;
+	int id = -1;
 };
 
+} /* namespace process */
 } /* namespace system */
 } /* namespace esl */
 
-#endif /* ESL_SYSTEM_TRANSCEIVER_H_ */
+#endif /* ESL_SYSTEM_PROCESS_FILEDESCRIPTOR_H_ */

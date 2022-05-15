@@ -20,59 +20,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/database/PreparedStatement.h>
+
+#include <esl/database/PreparedBulkStatement.h>
 #include <esl/logging/Logger.h>
 
 namespace esl {
 namespace database {
 namespace {
 std::vector<Column> emptyColumns;
-logging::Logger<logging::Level::TRACE> logger("esl::database::PreparedStatement");
+logging::Logger<logging::Level::TRACE> logger("esl::database::PreparedBulkStatement");
 }
-/*
-PreparedStatement::PreparedStatement(PreparedStatement&& other)
-: binding(std::move(other.binding))
-{ }
-*/
-PreparedStatement::PreparedStatement(std::unique_ptr<Binding> aBinding)
-: binding(std::move(aBinding))
-{ }
 
-PreparedStatement::operator bool() const noexcept {
-	return binding ? true : false;
-}
 /*
-PreparedStatement& PreparedStatement::operator=(PreparedStatement&& other) {
-	if(this != &other) {
-		binding = std::move(other.binding);
-	}
-	return *this;
+PreparedBulkStatement::PreparedBulkStatement() {
+}
+
+PreparedBulkStatement::~PreparedBulkStatement() {
 }
 */
-const std::vector<Column>& PreparedStatement::getResultColumns() const {
-	if(binding) {
-		return binding->getResultColumns();
-	}
-	return emptyColumns;
-}
-
-ResultSet PreparedStatement::execute() {
-    return execute(std::vector<Field>());
-}
-
-ResultSet PreparedStatement::execute(const std::vector<Field>& fields) {
-	if(binding) {
-		return binding->execute(fields);
-	}
-	return ResultSet();
-}
-
-void* PreparedStatement::getNativeHandle() const {
-	if(binding) {
-		return binding->getNativeHandle();
-	}
-	return nullptr;
-}
 
 } /* namespace database */
 } /* namespace esl */

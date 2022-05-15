@@ -20,12 +20,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/system/Environment.h>
+#include <esl/system/process/Environment.h>
 
 #include <cstring>
 
 namespace esl {
 namespace system {
+namespace process {
 
 Environment::Environment()
 : envc(0),
@@ -97,5 +98,6 @@ char* const* Environment::getEnvp() const noexcept {
 	return envp;
 }
 
+} /* namespace process */
 } /* namespace system */
 } /* namespace esl */

@@ -20,48 +20,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/system/Transceiver.h>
-
-#include <memory>
+#include <esl/system/thread/Pool.h>
 
 namespace esl {
 namespace system {
+namespace thread {
 
-void Transceiver::operator>>(io::Input&& aInput) {
-	input = std::move(aInput);
-	inputPath = "";
+Pool::Pool() {
 }
 
-void Transceiver::operator>>(boost::filesystem::path path) {
-	input = io::Input();
-	inputPath = std::move(path);
+Pool::~Pool() {
 }
 
-void Transceiver::operator<<(io::Output&& aOutput) {
-	output = std::move(aOutput);
-	outputPath = "";
-}
-
-void Transceiver::operator<<(boost::filesystem::path path) {
-	output = io::Output();
-	outputPath = std::move(path);
-}
-
-const io::Input& Transceiver::getInput() const noexcept {
-	return input;
-}
-
-const boost::filesystem::path& Transceiver::getInputPath() const noexcept {
-	return inputPath;
-}
-
-const io::Output& Transceiver::getOutput() const noexcept {
-	return output;
-}
-
-const boost::filesystem::path& Transceiver::getOutputPath() const noexcept {
-	return outputPath;
-}
-
+} /* namespace thread */
 } /* namespace system */
 } /* namespace esl */

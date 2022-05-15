@@ -20,30 +20,65 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/system/SignalHandler.h>
-#include <esl/Module.h>
-
+#include <esl/system/process/FileDescriptor.h>
 
 namespace esl {
 namespace system {
+namespace process {
 
-module::Implementation& SignalHandler::getDefault() {
-	static module::Implementation implementation;
-	return implementation;
+namespace {
+constexpr int stdInHandle = 0;
+constexpr int stdOutHandle = 1;
+constexpr int stdErrHandle = 2;
 }
 
-void SignalHandler::install(SignalType signalType, std::function<void()> handler,
-		const std::vector<std::pair<std::string, std::string>>& settings,
-		const std::string& implementation) {
-	getModule().getInterface<Interface>(implementation).installSignalHandler(signalType, handler, settings);
+FileDescriptor::FileDescriptor(int aId)
+: id(aId)
+{ }
+
+int FileDescriptor::getId() const noexcept {
+	return id;
 }
 
-void SignalHandler::remove(SignalType signalType, std::function<void()> handler,
-		const std::vector<std::pair<std::string, std::string>>& settings,
-		const std::string& implementation) {
-	getModule().getInterface<Interface>(implementation).removeSignalHandler(signalType, handler, settings);
+FileDescriptor& FileDescriptor::getOut() {
+	static FileDescriptor out(stdOutHandle);
+	return out;
 }
 
+FileDescriptor& FileDescriptor::getErr() {
+	static FileDescriptor err(stdErrHandle);
+	return err;
+}
+
+FileDescriptor& FileDescriptor::getIn() {
+	static FileDescriptor in(stdInHandle);
+	return in;
+}
+
+bool FileDescriptor::isOut(const FileDescriptor& fileDescriptor) noexcept {
+	if(&fileDescriptor == &getOut()) {
+		return true;
+	}
+
+	return fileDescriptor.getId() == getOut().getId();
+}
+
+bool FileDescriptor::isErr(const FileDescriptor& fileDescriptor) noexcept {
+	if(&fileDescriptor == &getErr()) {
+		return true;
+	}
+
+	return fileDescriptor.getId() == getErr().getId();
+}
+
+bool FileDescriptor::isIn(const FileDescriptor& fileDescriptor) noexcept {
+	if(&fileDescriptor == &getIn()) {
+		return true;
+	}
+
+	return fileDescriptor.getId() == getIn().getId();
+}
+
+} /* namespace process */
 } /* namespace system */
 } /* namespace esl */
-

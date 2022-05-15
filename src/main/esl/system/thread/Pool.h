@@ -20,31 +20,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_SYSTEM_FILEDESCRIPTOR_H_
-#define ESL_SYSTEM_FILEDESCRIPTOR_H_
+#ifndef ESL_SYSTEM_THREAD_POOL_H_
+#define ESL_SYSTEM_THREAD_POOL_H_
 
 namespace esl {
 namespace system {
+namespace thread {
 
-class FileDescriptor {
+class Pool {
 public:
-	int getId() const noexcept;
-
-	static FileDescriptor& getOut();
-	static FileDescriptor& getErr();
-	static FileDescriptor& getIn();
-
-	static bool isOut(const FileDescriptor& fileDescriptor) noexcept;
-	static bool isErr(const FileDescriptor& fileDescriptor) noexcept;
-	static bool isIn(const FileDescriptor& fileDescriptor) noexcept;
-
-private:
-	FileDescriptor(int id);
-
-	int id = -1;
+	Pool();
+	virtual ~Pool();
 };
 
+} /* namespace thread */
 } /* namespace system */
 } /* namespace esl */
 
-#endif /* ESL_SYSTEM_FILEDESCRIPTOR_H_ */
+#endif /* ESL_SYSTEM_THREAD_POOL_H_ */

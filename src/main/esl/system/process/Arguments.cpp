@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/system/Arguments.h>
+#include <esl/system/process/Arguments.h>
 #include <esl/utility/String.h>
 
 #include <vector>
@@ -28,6 +28,7 @@ SOFTWARE.
 
 namespace esl {
 namespace system {
+namespace process {
 
 Arguments::Arguments(const Arguments& other)
 : args(other.args),
@@ -227,5 +228,6 @@ const char* Arguments::argumentCopy(const char* src, char* dst) {
 	return src;
 }
 
+} /* namespace process */
 } /* namespace system */
 } /* namespace esl */

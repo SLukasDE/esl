@@ -20,30 +20,54 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/processing/job/Runner.h>
+#include <esl/system/process/Process.h>
 #include <esl/Module.h>
 
 namespace esl {
-namespace processing {
-namespace job {
+namespace system {
+namespace process {
 
-module::Implementation& Runner::getDefault() {
+module::Implementation& Process::getDefault() {
 	static module::Implementation implementation;
 	return implementation;
 }
 
-Runner::Runner(const std::vector<std::pair<std::string, std::string>>& settings, const std::string& implementation)
-: runner(esl::getModule().getInterface<Interface>(implementation).createRunner(settings))
+Process::Process(const std::vector<std::pair<std::string, std::string>>& settings, const std::string& implementation)
+: process(getModule().getInterface<Interface>(implementation).createProcess(settings))
 { }
 
-Handle Runner::addJob(std::unique_ptr<Job> job) {
-	return runner->addJob(std::move(job));
+Transceiver& Process::operator[](const FileDescriptor& fd) {
+	return (*process)[fd];
 }
 
-void Runner::cancel(Handle jobId) {
-	runner->cancel(jobId);
+void Process::setWorkingDir(std::string workingDir) {
+	process->setWorkingDir(std::move(workingDir));
 }
 
-} /* namespace job */
-} /* namespace processing */
+void Process::setEnvironment(std::unique_ptr<Environment> environment) {
+	process->setEnvironment(std::move(environment));
+}
+
+const Environment* Process::getEnvironment() const {
+	return process->getEnvironment();
+}
+
+void Process::addFeature(object::Interface::Object& feature) {
+	return process->addFeature(feature);
+}
+
+void Process::sendSignal(SignalType signal) const {
+	process->sendSignal(signal);
+}
+
+const void* Process::getNativeHandle() const {
+	return process->getNativeHandle();
+}
+
+int Process::execute(Arguments arguments) const {
+	return process->execute(std::move(arguments));
+}
+
+} /* namespace process */
+} /* namespace system */
 } /* namespace esl */

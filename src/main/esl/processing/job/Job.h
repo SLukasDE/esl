@@ -23,7 +23,19 @@ SOFTWARE.
 #ifndef ESL_PROCESSING_JOB_JOB_H_
 #define ESL_PROCESSING_JOB_JOB_H_
 
-#include <esl/processing/job/Handle.h>
+#include <esl/processing/job/Interface.h>
+#include <esl/module/Implementation.h>
+#include <esl/processing/procedure/Interface.h>
+#include <esl/module/Interface.h>
+#include <esl/object/Interface.h>
+#include <esl/object/ObjectContext.h>
+
+#include <chrono>
+#include <memory>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace processing {
@@ -31,12 +43,29 @@ namespace job {
 
 class Context;
 
-class Job {
+class Job final : public Interface::Job {
 public:
-	virtual ~Job() = 0;
+	static module::Implementation& getDefault();
 
-	virtual Handle run(Context& conext) = 0;
-	virtual void cancel() = 0;
+	Job(const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
+			const std::string& implementation = getDefault().getImplementation());
+
+	Handle runJob(std::unique_ptr<procedure::Interface::Procedure> procedure, std::unique_ptr<object::ObjectContext> objectContext) override;
+	Handle runJob(procedure::Interface::Procedure& procedure, std::unique_ptr<object::ObjectContext> objectContext) override;
+	std::unique_ptr<object::ObjectContext> cancelJob(Handle jobId) override;
+
+	Status getJobStatus(Handle jobId) const override;
+	std::vector<Handle> getJobHandles() const override;
+	void sendEvent(const object::Interface::Object& object) const override;
+
+	std::set<Handle> waitForJobStatus(const std::set<Handle>& jobIds, const std::set<Status>& status) const override;
+	std::set<Handle> waitForJobStatus(const std::set<Handle>& jobIds, const std::set<Status>& status, std::chrono::milliseconds timeout) const override;
+
+	std::unique_ptr<object::ObjectContext> waitForJobDone(Handle jobId) override;
+	std::unique_ptr<object::ObjectContext> waitForJobDone(Handle jobId, std::chrono::milliseconds timeout) override;
+
+private:
+	std::unique_ptr<Interface::Job> job;
 };
 
 } /* namespace job */

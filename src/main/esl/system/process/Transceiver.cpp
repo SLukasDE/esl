@@ -20,52 +20,50 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/system/Process.h>
-#include <esl/Module.h>
+#include <esl/system/process/Transceiver.h>
+
+#include <memory>
 
 namespace esl {
 namespace system {
+namespace process {
 
-module::Implementation& Process::getDefault() {
-	static module::Implementation implementation;
-	return implementation;
+void Transceiver::operator>>(io::Input&& aInput) {
+	input = std::move(aInput);
+	inputPath = "";
 }
 
-Process::Process(const std::vector<std::pair<std::string, std::string>>& settings, const std::string& implementation)
-: process(getModule().getInterface<Interface>(implementation).createProcess(settings))
-{ }
-
-Transceiver& Process::operator[](const FileDescriptor& fd) {
-	return (*process)[fd];
+void Transceiver::operator>>(boost::filesystem::path path) {
+	input = io::Input();
+	inputPath = std::move(path);
 }
 
-void Process::setWorkingDir(std::string workingDir) {
-	process->setWorkingDir(std::move(workingDir));
+void Transceiver::operator<<(io::Output&& aOutput) {
+	output = std::move(aOutput);
+	outputPath = "";
 }
 
-void Process::setEnvironment(std::unique_ptr<Environment> environment) {
-	process->setEnvironment(std::move(environment));
+void Transceiver::operator<<(boost::filesystem::path path) {
+	output = io::Output();
+	outputPath = std::move(path);
 }
 
-const Environment* Process::getEnvironment() const {
-	return process->getEnvironment();
+const io::Input& Transceiver::getInput() const noexcept {
+	return input;
 }
 
-void Process::addFeature(object::Interface::Object& feature) {
-	return process->addFeature(feature);
+const boost::filesystem::path& Transceiver::getInputPath() const noexcept {
+	return inputPath;
 }
 
-void Process::sendSignal(Interface::SignalType signal) const {
-	process->sendSignal(signal);
+const io::Output& Transceiver::getOutput() const noexcept {
+	return output;
 }
 
-const void* Process::getNativeHandle() const {
-	return process->getNativeHandle();
+const boost::filesystem::path& Transceiver::getOutputPath() const noexcept {
+	return outputPath;
 }
 
-int Process::execute(Arguments arguments) const {
-	return process->execute(std::move(arguments));
-}
-
+} /* namespace process */
 } /* namespace system */
 } /* namespace esl */

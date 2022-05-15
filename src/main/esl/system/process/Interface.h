@@ -20,16 +20,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_SYSTEM_INTERFACE_H_
-#define ESL_SYSTEM_INTERFACE_H_
+#ifndef ESL_SYSTEM_PROCESS_INTERFACE_H_
+#define ESL_SYSTEM_PROCESS_INTERFACE_H_
 
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
-#include <esl/system/Transceiver.h>
-#include <esl/system/Arguments.h>
-#include <esl/system/Environment.h>
-#include <esl/system/FileDescriptor.h>
+#include <esl/system/process/Transceiver.h>
+#include <esl/system/process/Arguments.h>
+#include <esl/system/process/Environment.h>
+#include <esl/system/process/FileDescriptor.h>
 #include <esl/object/Interface.h>
+#include <esl/system/SignalType.h>
 
 #include <functional>
 #include <memory>
@@ -39,32 +40,12 @@ SOFTWARE.
 
 namespace esl {
 namespace system {
+namespace process {
 
 struct Interface : module::Interface {
 	/* ******************************************** *
 	 * type definitions required for this interface *
 	 * ******************************************** */
-
-	enum class SignalType {
-	    unknown,
-		hangUp, // ?, controlling terminal closed
-	    interrupt, // interrupt process stream, ctrl-C
-	    quit,      // like ctrl-C but with a core dump, interruption by error in code, ctl-/
-		ill,
-		trap,
-		abort,
-		busError,
-		floatingPointException,
-		segmentationViolation,
-		user1,
-		user2,
-		alarm,
-		child,
-		stackFault,
-	    terminate, // terminate whenever/soft kill, typically sends SIGHUP as well?
-	    pipe,
-		kill       // terminate immediately/hard kill, use when 15 doesn't work or when something disasterous might happen if process is allowed to cont., kill -9
-	};
 
 	class Process {
 	public:
@@ -86,42 +67,33 @@ struct Interface : module::Interface {
 	};
 
 	using CreateProcess = std::unique_ptr<Process>(*)(const std::vector<std::pair<std::string, std::string>>& setting);
-	using InstallSignalHandler = void (*)(SignalType signalType, std::function<void()> handler, const std::vector<std::pair<std::string, std::string>>& setting);
-	using RemoveSignalHandler = void (*)(SignalType signalType, std::function<void()> handler, const std::vector<std::pair<std::string, std::string>>& setting);
 
 	/* ************************************ *
 	 * standard API definition of interface *
 	 * ************************************ */
 
 	static inline const char* getType() {
-		return "esl-system";
+		return "esl-system-process";
 	}
 
 	/* ************************************ *
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	static std::unique_ptr<const module::Interface> createInterface(const char* implementation,
-			CreateProcess createProcess, InstallSignalHandler installSignalHandler, RemoveSignalHandler removeSignalHandler) {
-		return std::unique_ptr<const module::Interface>(new Interface(implementation, createProcess, installSignalHandler, removeSignalHandler));
+	static std::unique_ptr<const module::Interface> createInterface(const char* implementation, CreateProcess createProcess) {
+		return std::unique_ptr<const module::Interface>(new Interface(implementation, createProcess));
 	}
 
-	Interface(const char* implementation,
-			CreateProcess aCreateProcess,
-			InstallSignalHandler aInstallSignalHandler,
-			RemoveSignalHandler aRemoveSignalHandler)
+	Interface(const char* implementation, CreateProcess aCreateProcess)
 	: module::Interface(getModule().getId(), getType(), implementation, getModule().getApiVersion()),
-	  createProcess(aCreateProcess),
-	  installSignalHandler(aInstallSignalHandler),
-	  removeSignalHandler(aRemoveSignalHandler)
+	  createProcess(aCreateProcess)
 	{ }
 
 	CreateProcess createProcess;
-	InstallSignalHandler installSignalHandler;
-	RemoveSignalHandler removeSignalHandler;
 };
 
+} /* namespace process */
 } /* namespace system */
 } /* namespace esl */
 
-#endif /* ESL_SYSTEM_INTERFACE_H_ */
+#endif /* ESL_SYSTEM_PROCESS_INTERFACE_H_ */

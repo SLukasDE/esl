@@ -20,63 +20,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/system/FileDescriptor.h>
+#ifndef ESL_SYSTEM_PROCESS_ENVIRONMENT_H_
+#define ESL_SYSTEM_PROCESS_ENVIRONMENT_H_
+
+#include <string>
+#include <vector>
+#include <utility>
 
 namespace esl {
 namespace system {
+namespace process {
 
-namespace {
-constexpr int stdInHandle = 0;
-constexpr int stdOutHandle = 1;
-constexpr int stdErrHandle = 2;
-}
+class Environment {
+public:
+	Environment();
+	Environment(const Environment&) = delete;
+	Environment(Environment&& other);
+	Environment(std::vector<std::pair<std::string, std::string>> values);
+	~Environment();
 
-FileDescriptor::FileDescriptor(int aId)
-: id(aId)
-{ }
+	Environment& operator=(const Environment&) = delete;
+	Environment& operator=(Environment&& other);
 
-int FileDescriptor::getId() const noexcept {
-	return id;
-}
+	const std::vector<std::pair<std::string, std::string>>& getValues() const noexcept;
+	char* const* getEnvp() const noexcept;
 
-FileDescriptor& FileDescriptor::getOut() {
-	static FileDescriptor out(stdOutHandle);
-	return out;
-}
+private:
+	std::vector<std::pair<std::string, std::string>> values;
 
-FileDescriptor& FileDescriptor::getErr() {
-	static FileDescriptor err(stdErrHandle);
-	return err;
-}
+	std::size_t envc = 0;
+	char** envp = nullptr;
+};
 
-FileDescriptor& FileDescriptor::getIn() {
-	static FileDescriptor in(stdInHandle);
-	return in;
-}
-
-bool FileDescriptor::isOut(const FileDescriptor& fileDescriptor) noexcept {
-	if(&fileDescriptor == &getOut()) {
-		return true;
-	}
-
-	return fileDescriptor.getId() == getOut().getId();
-}
-
-bool FileDescriptor::isErr(const FileDescriptor& fileDescriptor) noexcept {
-	if(&fileDescriptor == &getErr()) {
-		return true;
-	}
-
-	return fileDescriptor.getId() == getErr().getId();
-}
-
-bool FileDescriptor::isIn(const FileDescriptor& fileDescriptor) noexcept {
-	if(&fileDescriptor == &getIn()) {
-		return true;
-	}
-
-	return fileDescriptor.getId() == getIn().getId();
-}
-
+} /* namespace process */
 } /* namespace system */
 } /* namespace esl */
+
+#endif /* ESL_SYSTEM_PROCESS_ENVIRONMENT_H_ */

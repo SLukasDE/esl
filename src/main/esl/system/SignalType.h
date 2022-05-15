@@ -20,17 +20,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_PROCESSING_JOB_HANDLE_H_
-#define ESL_PROCESSING_JOB_HANDLE_H_
+#ifndef ESL_SYSTEM_SIGNALTYPE_H_
+#define ESL_SYSTEM_SIGNALTYPE_H_
 
 namespace esl {
-namespace processing {
-namespace job {
+namespace system {
 
-using Handle = int;
+enum class SignalType {
+    unknown,
+	hangUp, // ?, controlling terminal closed
+    interrupt, // interrupt process stream, ctrl-C
+    quit,      // like ctrl-C but with a core dump, interruption by error in code, ctl-/
+	ill,
+	trap,
+	abort,
+	busError,
+	floatingPointException,
+	segmentationViolation,
+	user1,
+	user2,
+	alarm,
+	child,
+	stackFault,
+    terminate, // terminate whenever/soft kill, typically sends SIGHUP as well?
+    pipe,
+	kill       // terminate immediately/hard kill, use when 15 doesn't work or when something disasterous might happen if process is allowed to cont., kill -9
+};
 
-} /* namespace job */
-} /* namespace processing */
+} /* namespace system */
 } /* namespace esl */
 
-#endif /* ESL_PROCESSING_JOB_HANDLE_H_ */
+#endif /* ESL_SYSTEM_SIGNALTYPE_H_ */

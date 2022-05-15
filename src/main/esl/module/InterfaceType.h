@@ -20,40 +20,49 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_SYSTEM_ARGUMENTS_H_
-#define ESL_SYSTEM_ARGUMENTS_H_
+#ifndef ESL_MODULE_INTERFACETYPE_H_
+#define ESL_MODULE_INTERFACETYPE_H_
 
 #include <string>
 
 namespace esl {
-namespace system {
+namespace module {
 
-class Arguments {
+class InterfaceType {
 public:
-	Arguments() = default;
-	Arguments(const Arguments& other);
-	Arguments(Arguments&& other);
-	Arguments(std::string args);
-	Arguments(std::size_t argc, const char** argv);
-	~Arguments();
+	enum Type {
+		esl__com__basic__client,
+		esl__com__basic__server,
+		esl__com__basic__server__requesthandler,
+		esl__com__http__client,
+		esl__com__http__server,
+		esl__com__http__server__requesthandler,
+		esl__database,
+		esl__object
+	};
 
-	Arguments& operator=(const Arguments& other);
-	Arguments& operator=(Arguments&& other);
+	InterfaceType() = default;
+	InterfaceType(Type type) noexcept;
+	explicit InterfaceType(std::string type) noexcept;
 
-	const std::string& getArgs() const noexcept;
-	std::size_t getArgc() const noexcept;
-	char** getArgv() const noexcept;
+	explicit operator bool() const noexcept;
+
+	bool operator==(Type type) const noexcept;
+	bool operator==(const InterfaceType& interfaceType) const noexcept;
+
+	bool operator!=(Type type) const noexcept;
+	bool operator!=(const InterfaceType& interfaceType) const noexcept;
+
+	const std::string& toString() const noexcept;
+	static const std::string& toString(Type type) noexcept;
 
 private:
-	static const char* argumentSize(const char* src, std::size_t& length);
-	static const char* argumentCopy(const char* src, char* dst);
-
-	std::string args;
-	std::size_t argc = 0;
-	char** argv = nullptr;
+	bool hasEnum = false;
+	Type enumType = esl__object;
+	std::string stringType;
 };
 
-} /* namespace system */
+} /* namespace module */
 } /* namespace esl */
 
-#endif /* ESL_SYSTEM_ARGUMENTS_H_ */
+#endif /* ESL_MODULE_INTERFACETYPE_H_ */

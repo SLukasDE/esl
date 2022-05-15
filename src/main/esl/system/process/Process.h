@@ -20,14 +20,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_PROCESSING_JOB_RUNNER_H_
-#define ESL_PROCESSING_JOB_RUNNER_H_
+#ifndef ESL_SYSTEM_PROCESS_PROCESS_H_
+#define ESL_SYSTEM_PROCESS_PROCESS_H_
 
-#include <esl/processing/job/Interface.h>
-#include <esl/processing/job/Context.h>
-#include <esl/processing/job/Handle.h>
-#include <esl/processing/job/Job.h>
+#include <esl/system/process/Interface.h>
+#include <esl/system/process/Transceiver.h>
+#include <esl/system/process/Arguments.h>
+#include <esl/system/process/Environment.h>
+#include <esl/system/process/FileDescriptor.h>
 #include <esl/module/Implementation.h>
+#include <esl/system/SignalType.h>
 
 #include <memory>
 #include <string>
@@ -35,25 +37,35 @@ SOFTWARE.
 #include <vector>
 
 namespace esl {
-namespace processing {
-namespace job {
+namespace system {
+namespace process {
 
-class Runner : public Interface::Runner {
+class Process final : public Interface::Process {
 public:
 	static module::Implementation& getDefault();
 
-	Runner(const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
+	Process(const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
-	Handle addJob(std::unique_ptr<Job> job) override;
-	void cancel(Handle jobId) override;
+	Transceiver& operator[](const FileDescriptor& fd) override;
+
+	void setWorkingDir(std::string workingDir) override;
+	void setEnvironment(std::unique_ptr<Environment> environment) override;
+	const Environment* getEnvironment() const override;
+
+	void addFeature(object::Interface::Object& feature) override;
+
+	void sendSignal(SignalType signal) const override;
+	const void* getNativeHandle() const override;
+
+	int execute(Arguments arguments) const override;
 
 private:
-	std::unique_ptr<Interface::Runner> runner;
+	std::unique_ptr<Interface::Process> process;
 };
 
-} /* namespace job */
-} /* namespace processing */
+} /* namespace process */
+} /* namespace system */
 } /* namespace esl */
 
-#endif /* ESL_PROCESSING_JOB_RUNNER_H_ */
+#endif /* ESL_SYSTEM_PROCESS_PROCESS_H_ */

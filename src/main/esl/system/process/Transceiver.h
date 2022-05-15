@@ -20,49 +20,49 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_SYSTEM_PROCESS_H_
-#define ESL_SYSTEM_PROCESS_H_
+#ifndef ESL_SYSTEM_PROCESS_TRANSCEIVER_H_
+#define ESL_SYSTEM_PROCESS_TRANSCEIVER_H_
 
-#include <esl/system/Interface.h>
-#include <esl/system/Transceiver.h>
-#include <esl/system/Arguments.h>
-#include <esl/system/Environment.h>
-#include <esl/system/FileDescriptor.h>
-#include <esl/module/Implementation.h>
+#include <esl/io/Input.h>
+#include <esl/io/Output.h>
 
-#include <memory>
-#include <string>
-#include <utility>
-#include <vector>
+#include <boost/filesystem.hpp>
 
 namespace esl {
 namespace system {
+namespace process {
 
-class Process final : public Interface::Process {
+class Transceiver {
 public:
-	static module::Implementation& getDefault();
+	Transceiver() = default;
+	Transceiver(const Transceiver&) = delete;
+	Transceiver(Transceiver&&) = delete;
 
-	Process(const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
-			const std::string& implementation = getDefault().getImplementation());
+	Transceiver& operator=(const Transceiver&) = delete;
+	Transceiver& operator=(Transceiver&& other) = delete;
 
-	Transceiver& operator[](const FileDescriptor& fd) override;
+	void operator>>(io::Input&& input);
+	void operator>>(boost::filesystem::path path);
 
-	void setWorkingDir(std::string workingDir) override;
-	void setEnvironment(std::unique_ptr<Environment> environment) override;
-	const Environment* getEnvironment() const override;
+	void operator<<(io::Output&& output);
+	void operator<<(boost::filesystem::path path);
 
-	void addFeature(object::Interface::Object& feature) override;
+	const io::Input& getInput() const noexcept;
+	const boost::filesystem::path& getInputPath() const noexcept;
 
-	void sendSignal(Interface::SignalType signal) const override;
-	const void* getNativeHandle() const override;
-
-	int execute(Arguments arguments) const override;
+	const io::Output& getOutput() const noexcept;
+	const boost::filesystem::path& getOutputPath() const noexcept;
 
 private:
-	std::unique_ptr<Interface::Process> process;
+	io::Input input;
+	boost::filesystem::path inputPath;
+
+	io::Output output;
+	boost::filesystem::path outputPath;
 };
 
+} /* namespace process */
 } /* namespace system */
 } /* namespace esl */
 
-#endif /* ESL_SYSTEM_PROCESS_H_ */
+#endif /* ESL_SYSTEM_PROCESS_TRANSCEIVER_H_ */

@@ -20,8 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_DATABASE_PREPAREDSTATEMENT_H_
-#define ESL_DATABASE_PREPAREDSTATEMENT_H_
+#ifndef ESL_DATABASE_PREPAREDBULKSTATEMENT_H_
+#define ESL_DATABASE_PREPAREDBULKSTATEMENT_H_
 
 #include <esl/database/Column.h>
 #include <esl/database/ResultSet.h>
@@ -33,7 +33,7 @@ SOFTWARE.
 namespace esl {
 namespace database {
 
-class PreparedStatement {
+class PreparedBulkStatement {
 public:
 	class Binding {
 	public:
@@ -47,31 +47,33 @@ public:
 		virtual void* getNativeHandle() const = 0;
 	};
 
-	PreparedStatement() = default;
-	PreparedStatement(const PreparedStatement&) = delete;
-	PreparedStatement(PreparedStatement&&) = default;
-	PreparedStatement(std::unique_ptr<Binding> binding);
+	PreparedBulkStatement() = default;
+	PreparedBulkStatement(const PreparedBulkStatement&) = delete;
+	PreparedBulkStatement(PreparedBulkStatement&&) = default;
+	PreparedBulkStatement(std::unique_ptr<Binding> binding);
 
-	~PreparedStatement() = default;
+	~PreparedBulkStatement(); // NOT DEFAULT !!!! Destructor has to flush not executed Statements if available
 
 	explicit operator bool() const noexcept;
 
-	PreparedStatement& operator=(const PreparedStatement&) = delete;
-	PreparedStatement& operator=(PreparedStatement&& other) = default;
+	PreparedBulkStatement& operator=(const PreparedBulkStatement&) = delete;
+	PreparedBulkStatement& operator=(PreparedBulkStatement&& other) = default;
 
 	const std::vector<Column>& getParameterColumns() const;
 	const std::vector<Column>& getResultColumns() const;
 
-	ResultSet execute(const std::vector<Field>& fields);
+	PreparedBulkStatement& execute(const std::vector<Field>& fields);
 
-	ResultSet execute();
+	PreparedBulkStatement& execute();
 
     template<typename... Args>
-	ResultSet execute(Args... args) {
+    PreparedBulkStatement& execute(Args... args) {
 	    std::vector<Field> fields;
 	    addArguments(fields, args...);
 	    return execute(fields);
     }
+
+    void flush();
 
 	void* getNativeHandle() const;
 
@@ -116,4 +118,4 @@ private:
 } /* namespace database */
 } /* namespace esl */
 
-#endif /* ESL_DATABASE_PREPAREDSTATEMENT_H_ */
+#endif /* ESL_DATABASE_PREPAREDBULKSTATEMENT_H_ */

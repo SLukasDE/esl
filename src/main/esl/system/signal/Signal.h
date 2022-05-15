@@ -20,30 +20,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_SYSTEM_EXCEPTION_PROCESSERROR_H_
-#define ESL_SYSTEM_EXCEPTION_PROCESSERROR_H_
+#ifndef ESL_SYSTEM_SIGNAL_SIGNAL_H_
+#define ESL_SYSTEM_SIGNAL_SIGNAL_H_
 
-#include <string>
-#include <stdexcept>
+#include <esl/system/signal/Interface.h>
+#include <esl/system/SignalType.h>
+#include <esl/object/Event.h>
 
 namespace esl {
 namespace system {
-namespace exception {
+namespace signal {
 
-class ProcessError : public std::runtime_error {
+class Signal final {
 public:
-	explicit ProcessError(int errorCode);
-	explicit ProcessError(int errorCode, const char* message);
-	explicit ProcessError(int errorCode, const std::string& message);
+	Signal() = delete;
 
-	int getErrorCode() const noexcept;
-
-private:
-	int errorCode;
+	static Interface::Handle install(object::Event& event, SignalType signalType);
 };
 
-} /* namespace exception */
+} /* namespace signal */
 } /* namespace system */
 } /* namespace esl */
 
-#endif /* ESL_SYSTEM_EXCEPTION_PROCESSERROR_H_ */
+#endif /* ESL_SYSTEM_SIGNAL_SIGNAL_H_ */
