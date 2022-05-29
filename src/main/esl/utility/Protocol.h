@@ -23,39 +23,23 @@ SOFTWARE.
 #ifndef ESL_UTILITY_PROTOCOL_H_
 #define ESL_UTILITY_PROTOCOL_H_
 
+#include <esl/utility/Enum.h>
+
 #include <string>
 
 namespace esl {
 namespace utility {
 
-class Protocol {
-public:
-	enum Type {
-		file,
-		http,
-		https
-	};
-
-	Protocol() = default;
-	Protocol(Type type) noexcept;
-	explicit Protocol(std::string type) noexcept;
-
-	explicit operator bool() const noexcept;
-
-	bool operator==(Type type) const noexcept;
-	bool operator==(const Protocol& aProtocol) const noexcept;
-
-	bool operator!=(Type type) const noexcept;
-	bool operator!=(const Protocol& aProtocol) const noexcept;
-
-	const std::string& toString() const noexcept;
-	static const std::string& toString(Type type) noexcept;
-
-private:
-	bool hasEnum = false;
-	Type enumType = file;
-	std::string stringType;
+enum ProtocolType {
+	file,
+	http,
+	https
 };
+
+using Protocol = Enum<ProtocolType, ProtocolType::file>;
+
+template<>
+const std::string& Protocol::toString(ProtocolType protocolType) noexcept;
 
 } /* namespace utility */
 } /* namespace esl */

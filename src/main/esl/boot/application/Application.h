@@ -51,8 +51,6 @@ public:
 	Interface::Application& addFile(const boost::filesystem::path& filename) override;
 
 	Interface::Application& addProcedure(std::unique_ptr<esl::processing::procedure::Interface::Procedure> procedure) override;
-	//Interface::Application& addProcedureContext(ProcedureContext procedureContext) override;
-
 	Interface::Application& addObject(const std::string& id, std::unique_ptr<esl::object::Interface::Object> object) override;
 
 	Interface::Application& run(esl::object::ObjectContext& objectContext) override;

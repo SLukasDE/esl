@@ -22,71 +22,20 @@ SOFTWARE.
 
 #include <esl/utility/MIME.h>
 
-#include <algorithm>
-
 namespace esl {
 namespace utility {
 
-namespace {
+template<>
+const std::string& MIME::toString(MimeType mimeType) noexcept {
+	static const std::string strEmpty;
+	static const std::string strTextPlain = "text/plain";
+	static const std::string strTextHtml = "text/html";
+	static const std::string strTextXml = "text/xml";
+	static const std::string strTextCsv = "text/comma-separated-values";
+	static const std::string strApplicationXml = "application/xml";
+	static const std::string strApplicationJson = "application/json";
 
-const std::string strEmpty;
-const std::string strTextPlain = "text/plain";
-const std::string strTextHtml = "text/html";
-const std::string strTextXml = "text/xml";
-const std::string strTextCsv = "text/comma-separated-values";
-const std::string strApplicationXml = "application/xml";
-const std::string strApplicationJson = "application/json";
-
-}
-
-MIME::MIME(Type type) noexcept
-: hasEnum(true),
-  enumType(type)
-{ }
-
-MIME::MIME(std::string type) noexcept
-: hasEnum(false),
-  stringType(std::move(type))
-{ }
-
-MIME::operator bool() const noexcept {
-	return hasEnum || !stringType.empty();
-}
-
-bool MIME::operator==(MIME::Type type) const noexcept {
-	return (*this == MIME(type));
-}
-
-bool MIME::operator==(const MIME& aMime) const noexcept {
-	if(hasEnum && aMime.hasEnum) {
-		return enumType == aMime.enumType;
-	}
-	return toString() == aMime.toString();
-}
-
-bool MIME::operator!=(MIME::Type type) const noexcept {
-	return (*this != MIME(type));
-}
-
-bool MIME::operator!=(const MIME& aMime) const noexcept {
-	if(hasEnum && aMime.hasEnum) {
-		return enumType != aMime.enumType;
-	}
-	return toString() != aMime.toString();
-}
-
-const std::string& MIME::toString() const noexcept {
-	if(hasEnum) {
-		return toString(enumType);
-	}
-
-	return stringType;
-}
-
-const std::string& MIME::toString(MIME::Type mimeType) noexcept {
 	switch(mimeType) {
-	//case empty:
-	//	return strEmpty;
 	case textPlain:
 		return strTextPlain;
 	case textHtml:

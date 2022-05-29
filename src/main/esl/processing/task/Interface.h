@@ -20,8 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_PROCESSING_JOB_INTERFACE_H_
-#define ESL_PROCESSING_JOB_INTERFACE_H_
+#ifndef ESL_PROCESSING_TASK_INTERFACE_H_
+#define ESL_PROCESSING_TASK_INTERFACE_H_
 
 #include <esl/processing/procedure/Interface.h>
 #include <esl/module/Interface.h>
@@ -38,14 +38,14 @@ SOFTWARE.
 
 namespace esl {
 namespace processing {
-namespace job {
+namespace task {
 
 struct Interface : esl::module::Interface {
 	/* ******************************************** *
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class Job : public object::Interface::Object {
+	class Task : public object::Interface::Object {
 	public:
 		using Handle = int;
 		enum class Status {
@@ -54,49 +54,50 @@ struct Interface : esl::module::Interface {
 			done
 		};
 
-		virtual Handle runJob(std::unique_ptr<procedure::Interface::Procedure> procedure, std::unique_ptr<object::ObjectContext> objectContext) = 0;
-		virtual Handle runJob(procedure::Interface::Procedure& procedure, std::unique_ptr<object::ObjectContext> objectContext) = 0;
-		virtual std::unique_ptr<object::ObjectContext> cancelJob(Handle jobId) = 0;
+		virtual Handle runTask(std::unique_ptr<procedure::Interface::Procedure> procedure, std::unique_ptr<object::ObjectContext> objectContext) = 0;
+		virtual Handle runTask(procedure::Interface::Procedure& procedure, std::unique_ptr<object::ObjectContext> objectContext) = 0;
+		virtual std::unique_ptr<object::ObjectContext> cancelTask(const Handle& taskId) = 0;
 
-		virtual Status getJobStatus(Handle jobId) const = 0;
-		virtual std::vector<Handle> getJobHandles() const = 0;
-		virtual void sendEvent(const object::Interface::Object& object) const = 0;
+		virtual Status getTaskStatus(const Handle& taskId) const = 0;
+		virtual std::vector<Handle> getTaskHandles() const = 0;
 
-		virtual std::set<Handle> waitForJobStatus(const std::set<Handle>& jobIds, const std::set<Status>& status) const = 0;
-		virtual std::set<Handle> waitForJobStatus(const std::set<Handle>& jobIds, const std::set<Status>& status, std::chrono::milliseconds timeout) const = 0;
+		virtual void sendEvent(const Handle& taskId, const object::Interface::Object& object) const = 0;
 
-		virtual std::unique_ptr<object::ObjectContext> waitForJobDone(Handle jobId) = 0;
-		virtual std::unique_ptr<object::ObjectContext> waitForJobDone(Handle jobId, std::chrono::milliseconds timeout) = 0;
+		virtual std::set<Handle> waitForTaskStatus(const std::set<Handle>& taskIds, const std::set<Status>& status) const = 0;
+		virtual std::set<Handle> waitForTaskStatus(const std::set<Handle>& taskIds, const std::set<Status>& status, std::chrono::milliseconds timeout) const = 0;
+
+		virtual std::unique_ptr<object::ObjectContext> waitForTaskDone(Handle taskId) = 0;
+		virtual std::unique_ptr<object::ObjectContext> waitForTaskDone(Handle taskId, std::chrono::milliseconds timeout) = 0;
 	};
 
-	using CreateJob = std::unique_ptr<Job> (*)(const std::vector<std::pair<std::string, std::string>>& settings);
+	using CreateTask = std::unique_ptr<Task> (*)(const std::vector<std::pair<std::string, std::string>>& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *
 	 * ************************************ */
 
 	static inline const char* getType() {
-		return "esl-processing-job";
+		return "esl-processing-task";
 	}
 
 	/* ************************************ *
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateJob createJob) {
-		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createJob));
+	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateTask createTask) {
+		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createTask));
 	}
 
-	Interface(const char* implementation, CreateJob aCreateJob)
+	Interface(const char* implementation, CreateTask aCreateTask)
 	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
-	  createJob(aCreateJob)
+	  createTask(aCreateTask)
 	{ }
 
-	CreateJob createJob;
+	CreateTask createTask;
 };
 
-} /* namespace job */
+} /* namespace task */
 } /* namespace processing */
 } /* namespace esl */
 
-#endif /* ESL_PROCESSING_JOB_INTERFACE_H_ */
+#endif /* ESL_PROCESSING_TASK_INTERFACE_H_ */

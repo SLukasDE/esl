@@ -56,7 +56,7 @@ void Process::addFeature(object::Interface::Object& feature) {
 	return process->addFeature(feature);
 }
 
-void Process::sendSignal(SignalType signal) const {
+void Process::sendSignal(const utility::Signal& signal) const {
 	process->sendSignal(signal);
 }
 

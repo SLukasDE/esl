@@ -29,7 +29,7 @@ SOFTWARE.
 #include <esl/system/process/Environment.h>
 #include <esl/system/process/FileDescriptor.h>
 #include <esl/module/Implementation.h>
-#include <esl/system/SignalType.h>
+#include <esl/utility/Signal.h>
 
 #include <memory>
 #include <string>
@@ -55,7 +55,7 @@ public:
 
 	void addFeature(object::Interface::Object& feature) override;
 
-	void sendSignal(SignalType signal) const override;
+	void sendSignal(const utility::Signal& signal) const override;
 	const void* getNativeHandle() const override;
 
 	int execute(Arguments arguments) const override;

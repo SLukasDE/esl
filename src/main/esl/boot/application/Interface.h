@@ -24,7 +24,6 @@ SOFTWARE.
 #define ESL_BOOT_APPLICATION_INTERFACE_H_
 
 #include <esl/boot/ObjectContext.h>
-//#include <esl/boot/application/ProcedureContext.h>
 
 #include <esl/Module.h>
 #include <esl/module/Interface.h>
@@ -61,7 +60,6 @@ struct Interface : esl::module::Interface {
 		virtual Application& addFile(const boost::filesystem::path& filename) = 0;
 
 		virtual Application& addProcedure(std::unique_ptr<esl::processing::procedure::Interface::Procedure> procedure) = 0;
-//		virtual Application& addProcedureContext(ProcedureContext procedureContext) = 0;
 
 		virtual Application& addObject(const std::string& id, std::unique_ptr<esl::object::Interface::Object> object) = 0;
 

@@ -23,42 +23,26 @@ SOFTWARE.
 #ifndef ESL_UTILITY_MIME_H_
 #define ESL_UTILITY_MIME_H_
 
+#include <esl/utility/Enum.h>
+
 #include <string>
 
 namespace esl {
 namespace utility {
 
-class MIME {
-public:
-	enum Type {
-		textPlain,
-		textHtml,
-		textXml,
-		textCsv,
-		applicationXml,
-		applicationJson
-	};
-
-	MIME() = default;
-	MIME(Type type) noexcept;
-	explicit MIME(std::string type) noexcept;
-
-	explicit operator bool() const noexcept;
-
-	bool operator==(Type type) const noexcept;
-	bool operator==(const MIME& aMime) const noexcept;
-
-	bool operator!=(Type type) const noexcept;
-	bool operator!=(const MIME& aMime) const noexcept;
-
-	const std::string& toString() const noexcept;
-	static const std::string& toString(Type mimeType) noexcept;
-
-private:
-	bool hasEnum = false;
-	Type enumType = textPlain;
-	std::string stringType;
+enum MimeType {
+	textPlain,
+	textHtml,
+	textXml,
+	textCsv,
+	applicationXml,
+	applicationJson
 };
+
+using MIME = Enum<MimeType, MimeType::textPlain>;
+
+template<>
+const std::string& MIME::toString(MimeType mimeType) noexcept;
 
 } /* namespace utility */
 } /* namespace esl */

@@ -23,41 +23,27 @@ SOFTWARE.
 #ifndef ESL_UTILITY_HTTPMETHOD_H_
 #define ESL_UTILITY_HTTPMETHOD_H_
 
+#include <esl/utility/Enum.h>
+
 #include <string>
 
 namespace esl {
 namespace utility {
 
-class HttpMethod {
-public:
-	enum Type {
-		httpGet,
-		httpPut,
-		httpPost,
-		httpDelete,
-		httpHead,
-		httpPatch,
-		httpOptions
-	};
-
-	HttpMethod() = default;
-	HttpMethod(Type type) noexcept;
-	explicit HttpMethod(std::string type) noexcept;
-
-	bool operator==(Type type) const noexcept;
-	bool operator==(const HttpMethod& aMime) const noexcept;
-
-	bool operator!=(Type type) const noexcept;
-	bool operator!=(const HttpMethod& aMime) const noexcept;
-
-	const std::string& toString() const noexcept;
-	static const std::string& toString(Type mimeType) noexcept;
-
-private:
-	bool hasEnum = false;
-	Type enumType = httpGet;
-	std::string stringType;
+enum HttpMethodType {
+	httpGet,
+	httpPut,
+	httpPost,
+	httpDelete,
+	httpHead,
+	httpPatch,
+	httpOptions
 };
+
+using HttpMethod = Enum<HttpMethodType, HttpMethodType::httpGet>;
+
+template<>
+const std::string& HttpMethod::toString(HttpMethodType httpMethodType) noexcept;
 
 } /* namespace utility */
 } /* namespace esl */

@@ -22,64 +22,17 @@ SOFTWARE.
 
 #include <esl/utility/Protocol.h>
 
-#include <algorithm>
-
 namespace esl {
 namespace utility {
 
-namespace {
-const std::string strEmpty;
-const std::string strFile = "file";
-const std::string strHttp = "http";
-const std::string strHttps = "https";
-}
+template<>
+const std::string& Protocol::toString(ProtocolType protocolType) noexcept {
+	static const std::string strEmpty;
+	static const std::string strFile = "file";
+	static const std::string strHttp = "http";
+	static const std::string strHttps = "https";
 
-Protocol::Protocol(Type type) noexcept
-: hasEnum(true),
-  enumType(type)
-{ }
-
-Protocol::Protocol(std::string type) noexcept
-: hasEnum(false),
-  stringType(std::move(type))
-{ }
-
-Protocol::operator bool() const noexcept {
-	return hasEnum || !stringType.empty();
-}
-
-bool Protocol::operator==(Protocol::Type type) const noexcept {
-	return (*this == Protocol(type));
-}
-
-bool Protocol::operator==(const Protocol& aProtocol) const noexcept {
-	if(hasEnum && aProtocol.hasEnum) {
-		return enumType == aProtocol.enumType;
-	}
-	return toString() == aProtocol.toString();
-}
-
-bool Protocol::operator!=(Protocol::Type type) const noexcept {
-	return (*this != Protocol(type));
-}
-
-bool Protocol::operator!=(const Protocol& aProtocol) const noexcept {
-	if(hasEnum && aProtocol.hasEnum) {
-		return enumType != aProtocol.enumType;
-	}
-	return toString() != aProtocol.toString();
-}
-
-const std::string& Protocol::toString() const noexcept {
-	if(hasEnum) {
-		return toString(enumType);
-	}
-
-	return stringType;
-}
-
-const std::string& Protocol::toString(Protocol::Type type) noexcept {
-	switch(type) {
+	switch(protocolType) {
 	case file:
 		return strFile;
 	case http:

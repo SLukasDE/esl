@@ -20,34 +20,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_SYSTEM_SIGNALTYPE_H_
-#define ESL_SYSTEM_SIGNALTYPE_H_
+#ifndef ESL_UTILITY_EVENT_H_
+#define ESL_UTILITY_EVENT_H_
+
+#include <esl/object/Interface.h>
+#include <esl/utility/Enum.h>
+
+#include <string>
 
 namespace esl {
-namespace system {
+namespace utility {
 
-enum class SignalType {
-    unknown,
-	hangUp, // ?, controlling terminal closed
-    interrupt, // interrupt process stream, ctrl-C
-    quit,      // like ctrl-C but with a core dump, interruption by error in code, ctl-/
-	ill,
-	trap,
-	abort,
-	busError,
-	floatingPointException,
-	segmentationViolation,
-	user1,
-	user2,
-	alarm,
-	child,
-	stackFault,
-    terminate, // terminate whenever/soft kill, typically sends SIGHUP as well?
-    pipe,
-	kill       // terminate immediately/hard kill, use when 15 doesn't work or when something disasterous might happen if process is allowed to cont., kill -9
+class Event : public object::Interface::Object {
+public:
+	enum EnumType {
+		unknown,
+		stop,
+		stopping,
+		stopped
+	};
+
+	using Type = Enum<EnumType, EnumType::unknown>;
+
+	Event(const Type& aType, const object::Interface::Object& aSender);
+
+	const Type& getType() const noexcept;
+	const object::Interface::Object& getSender() const noexcept;
+
+private:
+	const Type type;
+	const object::Interface::Object& sender;
 };
 
-} /* namespace system */
+template<>
+const std::string& Enum<Event::EnumType, Event::EnumType::unknown>::toString(Event::EnumType eventType) noexcept;
+
+} /* namespace utility */
 } /* namespace esl */
 
-#endif /* ESL_SYSTEM_SIGNALTYPE_H_ */
+#endif /* ESL_UTILITY_EVENT_H_ */

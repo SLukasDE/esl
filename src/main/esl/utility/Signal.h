@@ -20,23 +20,43 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_OBJECT_CANCEL_H_
-#define ESL_OBJECT_CANCEL_H_
+#ifndef ESL_UTILITY_SIGNAL_H_
+#define ESL_UTILITY_SIGNAL_H_
 
-#include <esl/object/Interface.h>
+#include <esl/utility/Enum.h>
 
 #include <string>
-#include <vector>
 
 namespace esl {
-namespace object {
+namespace utility {
 
-class Cancel : public virtual Interface::Object {
-public:
-	virtual void onCancel() const = 0;
+enum SignalType {
+    unknown,
+	hangUp, // ?, controlling terminal closed
+    interrupt, // interrupt process stream, ctrl-C
+    quit,      // like ctrl-C but with a core dump, interruption by error in code, ctl-/
+	ill,
+	trap,
+	abort,
+	busError,
+	floatingPointException,
+	segmentationViolation,
+	user1,
+	user2,
+	alarm,
+	child,
+	stackFault,
+    terminate, // terminate whenever/soft kill, typically sends SIGHUP as well?
+    pipe,
+	kill       // terminate immediately/hard kill, use when 15 doesn't work or when something disasterous might happen if process is allowed to cont., kill -9
 };
 
-} /* namespace object */
+using Signal = Enum<SignalType, SignalType::unknown>;
+
+template<>
+const std::string& Signal::toString(SignalType signalType) noexcept;
+
+} /* namespace utility */
 } /* namespace esl */
 
-#endif /* ESL_OBJECT_CANCEL_H_ */
+#endif /* ESL_UTILITY_SIGNAL_H_ */

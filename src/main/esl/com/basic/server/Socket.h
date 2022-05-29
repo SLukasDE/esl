@@ -25,8 +25,10 @@ SOFTWARE.
 
 #include <esl/com/basic/server/Interface.h>
 #include <esl/com/basic/server/requesthandler/Interface.h>
+#include <esl/object/Event.h>
 #include <esl/module/Implementation.h>
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
@@ -44,11 +46,21 @@ public:
 	Socket(const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
-	void listen(const requesthandler::Interface::RequestHandler& requestHandler, std::function<void()> onReleasedHandler) override;
+	void listen(const requesthandler::Interface::RequestHandler& requestHandler, object::Event* eventHandler) override;
 	void release() override;
-	bool wait(std::uint32_t ms) override;
+	//bool wait(std::uint32_t ms) override;
 
 private:
+	class InternalEventHandler : public object::Event {
+	public:
+		InternalEventHandler(Socket& socket);
+		void onEvent(const object::Interface::Object& object) override;
+
+		Socket& socket;
+	} internalEventHandler;
+	friend class InternalEvent;
+	object::Event* externalEventHandler = nullptr;
+
 	std::unique_ptr<Interface::Socket> socket;
 };
 

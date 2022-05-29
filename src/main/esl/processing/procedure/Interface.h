@@ -24,6 +24,7 @@ SOFTWARE.
 #define ESL_PROCESSING_PROCEDURE_INTERFACE_H_
 
 #include <esl/module/Interface.h>
+//#include <esl/object/Event.h>
 #include <esl/object/Interface.h>
 #include <esl/object/ObjectContext.h>
 #include <esl/Module.h>
@@ -47,7 +48,10 @@ struct Interface : module::Interface {
 	class Procedure : public virtual object::Interface::Object {
 	public:
 		/* this method is blocking. */
-		virtual std::unique_ptr<object::ObjectContext> procedureRun(object::ObjectContext& objectContext) = 0;
+		virtual std::unique_ptr<object::ObjectContext> procedureRun(object::ObjectContext& objectContext/*, object::Event* eventHandler*/) = 0;
+
+		/* this method is non-blocking. */
+		virtual void procedureCancel() { };
 	};
 
 	using CreateProcedure = std::unique_ptr<Procedure> (*)(const std::vector<std::pair<std::string, std::string>>& settings);

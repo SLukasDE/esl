@@ -22,61 +22,21 @@ SOFTWARE.
 
 #include <esl/utility/HttpMethod.h>
 
-#include <algorithm>
-
 namespace esl {
 namespace utility {
 
-namespace {
-const std::string strEmpty;
-const std::string strHttpGet = "GET";
-const std::string strHttpPut = "PUT";
-const std::string strHttpPost = "POST";
-const std::string strHttpDelete = "DELETE";
-const std::string strHttpHead = "HEAD";
-const std::string strHttpPatch = "PATCH";
-const std::string strHttpOptions = "OPTIONS";
-}
+template<>
+const std::string& HttpMethod::toString(HttpMethodType httpMethodType) noexcept {
+	static const std::string strEmpty;
+	static const std::string strHttpGet = "GET";
+	static const std::string strHttpPut = "PUT";
+	static const std::string strHttpPost = "POST";
+	static const std::string strHttpDelete = "DELETE";
+	static const std::string strHttpHead = "HEAD";
+	static const std::string strHttpPatch = "PATCH";
+	static const std::string strHttpOptions = "OPTIONS";
 
-HttpMethod::HttpMethod(Type type) noexcept
-: hasEnum(true),
-  enumType(type)
-{ }
-
-HttpMethod::HttpMethod(std::string type) noexcept
-: hasEnum(false),
-  stringType(std::move(type))
-{ }
-
-bool HttpMethod::operator==(HttpMethod::Type type) const noexcept {
-	return (*this == HttpMethod(type));
-}
-
-bool HttpMethod::operator==(const HttpMethod& aMime) const noexcept {
-	if(hasEnum && aMime.hasEnum) {
-		return enumType == aMime.enumType;
-	}
-	return toString() == aMime.toString();
-}
-
-bool HttpMethod::operator!=(HttpMethod::Type type) const noexcept {
-	return (*this != HttpMethod(type));
-}
-
-bool HttpMethod::operator!=(const HttpMethod& aMime) const noexcept {
-	return (*this != aMime);
-}
-
-const std::string& HttpMethod::toString() const noexcept {
-	if(hasEnum) {
-		return toString(enumType);
-	}
-
-	return stringType;
-}
-
-const std::string& HttpMethod::toString(HttpMethod::Type mimeType) noexcept {
-	switch(mimeType) {
+	switch(httpMethodType) {
 	case httpGet:
 		return strHttpGet;
 	case httpPut:

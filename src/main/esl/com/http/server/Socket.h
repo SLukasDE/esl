@@ -25,11 +25,11 @@ SOFTWARE.
 
 #include <esl/com/http/server/Interface.h>
 #include <esl/com/http/server/requesthandler/Interface.h>
-#include <esl/object/Interface.h>
+#include <esl/object/Event.h>
 #include <esl/module/Implementation.h>
 
 #include <cstdint>
-#include <functional>
+//#include <functional>
 #include <memory>
 #include <string>
 #include <utility>
@@ -49,12 +49,23 @@ public:
 
 	void addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) override;
 
-	void listen(const requesthandler::Interface::RequestHandler& requestHandler, std::function<void()> onReleasedHandler) override;
+	void listen(const requesthandler::Interface::RequestHandler& requestHandler, object::Event* eventHandler) override;
 	void release() override;
-	bool wait(std::uint32_t ms) override;
+	//bool wait(std::uint32_t ms) override;
 
 private:
+	class InternalEventHandler : public object::Event {
+	public:
+		InternalEventHandler(Socket& socket);
+		void onEvent(const object::Interface::Object& object) override;
+
+		Socket& socket;
+	} internalEventHandler;
+	friend class InternalEvent;
+	object::Event* externalEventHandler = nullptr;
+
 	std::unique_ptr<Interface::Socket> socket;
+
 };
 
 } /* namespace server */

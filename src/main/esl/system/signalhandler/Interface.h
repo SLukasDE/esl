@@ -20,14 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_SYSTEM_SIGNAL_INTERFACE_H_
-#define ESL_SYSTEM_SIGNAL_INTERFACE_H_
+#ifndef ESL_SYSTEM_SIGNALHANDLER_INTERFACE_H_
+#define ESL_SYSTEM_SIGNALHANDLER_INTERFACE_H_
 
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
 #include <esl/object/Interface.h>
 #include <esl/object/Event.h>
-#include <esl/system/SignalType.h>
+#include <esl/utility/Signal.h>
 
 #include <memory>
 #include <string>
@@ -36,44 +36,43 @@ SOFTWARE.
 
 namespace esl {
 namespace system {
-namespace signal {
+namespace signalhandler {
 
 struct Interface : module::Interface {
 	/* ******************************************** *
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	using Handle = std::unique_ptr<object::Interface::Object>;
-	using Install = Handle (*)(object::Event& event, SignalType signalType);
+	using SignalHandler = std::unique_ptr<object::Interface::Object>;
+
+	using CreateSignalHandler = SignalHandler (*)(const std::vector<std::pair<std::string, std::string>>& settings, object::Event& event, const utility::Signal& signal);
 
 	/* ************************************ *
 	 * standard API definition of interface *
 	 * ************************************ */
 
 	static inline const char* getType() {
-		return "esl-system-signal";
+		return "esl-system-signalhandler";
 	}
 
 	/* ************************************ *
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	static std::unique_ptr<const module::Interface> createInterface(const char* implementation,
-			Install install) {
-		return std::unique_ptr<const module::Interface>(new Interface(implementation, install));
+	static std::unique_ptr<const module::Interface> createInterface(const char* implementation, CreateSignalHandler createSignalHandler) {
+		return std::unique_ptr<const module::Interface>(new Interface(implementation, createSignalHandler));
 	}
 
-	Interface(const char* implementation,
-			Install aInstall)
+	Interface(const char* implementation, CreateSignalHandler aCreateSignalHandler)
 	: module::Interface(getModule().getId(), getType(), implementation, getModule().getApiVersion()),
-	  install(aInstall)
+	  createSignalHandler(aCreateSignalHandler)
 	{ }
 
-	Install install;
+	CreateSignalHandler createSignalHandler;
 };
 
-} /* namespace signal */
+} /* namespace signalhandler */
 } /* namespace system */
 } /* namespace esl */
 
-#endif /* ESL_SYSTEM_SIGNAL_INTERFACE_H_ */
+#endif /* ESL_SYSTEM_SIGNALHANDLER_INTERFACE_H_ */

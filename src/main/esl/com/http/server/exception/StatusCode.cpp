@@ -41,19 +41,19 @@ static constexpr const char* message5xx = "server error";
 StatusCode::StatusCode(unsigned short aStatusCode)
 : std::runtime_error(getMessage(aStatusCode)),
   statusCode(aStatusCode),
-  mimeType(utility::MIME::textHtml)
+  mimeType(utility::MIME::Type::textHtml)
 { }
 
 StatusCode::StatusCode(unsigned short aStatusCode, const char* message)
 : std::runtime_error(message),
   statusCode(aStatusCode),
-  mimeType(utility::MIME::textHtml)
+  mimeType(utility::MIME::Type::textHtml)
 { }
 
 StatusCode::StatusCode(unsigned short aStatusCode, const std::string& message)
 : std::runtime_error(message),
   statusCode(aStatusCode),
-  mimeType(utility::MIME::textHtml)
+  mimeType(utility::MIME::Type::textHtml)
 { }
 
 StatusCode::StatusCode(unsigned short aStatusCode, utility::MIME aMimeType)

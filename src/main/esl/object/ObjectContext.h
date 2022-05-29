@@ -25,6 +25,7 @@ SOFTWARE.
 
 #include <esl/object/Interface.h>
 
+#include <set>
 #include <string>
 #include <memory>
 
@@ -44,6 +45,7 @@ public:
 	}
 
 	virtual void addObject(const std::string& id, std::unique_ptr<Interface::Object> object) = 0;
+	virtual std::set<std::string> getObjectIds() const = 0;
 
 protected:
 	virtual Interface::Object* findRawObject(const std::string& id) = 0;

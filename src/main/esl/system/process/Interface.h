@@ -30,7 +30,7 @@ SOFTWARE.
 #include <esl/system/process/Environment.h>
 #include <esl/system/process/FileDescriptor.h>
 #include <esl/object/Interface.h>
-#include <esl/system/SignalType.h>
+#include <esl/utility/Signal.h>
 
 #include <functional>
 #include <memory>
@@ -62,7 +62,7 @@ struct Interface : module::Interface {
 
 		virtual int execute(Arguments arguments) const = 0;
 
-		virtual void sendSignal(SignalType signal) const = 0;
+		virtual void sendSignal(const utility::Signal& signal) const = 0;
 		virtual const void* getNativeHandle() const = 0;
 	};
 

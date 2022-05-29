@@ -21,6 +21,7 @@ SOFTWARE.
 */
 
 #include <esl/com/basic/server/Socket.h>
+#include <esl/utility/Event.h>
 #include <esl/Module.h>
 
 namespace esl {
@@ -34,19 +35,44 @@ module::Implementation& Socket::getDefault() {
 }
 
 Socket::Socket(const std::vector<std::pair<std::string, std::string>>& settings, const std::string& implementation)
-: socket(getModule().getInterface<Interface>(implementation).createSocket(settings))
+: internalEventHandler(*this),
+  socket(getModule().getInterface<Interface>(implementation).createSocket(settings))
 { }
 
-void Socket::listen(const requesthandler::Interface::RequestHandler& requestHandler, std::function<void()> onReleasedHandler) {
-	socket->listen(requestHandler, onReleasedHandler);
+void Socket::listen(const requesthandler::Interface::RequestHandler& requestHandler, object::Event* eventHandler) {
+	object::Event* tmpExternalEventHandler = externalEventHandler;
+	externalEventHandler = eventHandler;
+
+	try {
+		socket->listen(requestHandler, eventHandler ? &internalEventHandler : nullptr);
+	}
+	catch(...) {
+		externalEventHandler = tmpExternalEventHandler;
+		throw;
+	}
 }
 
 void Socket::release() {
 	socket->release();
 }
 
-bool Socket::wait(std::uint32_t ms) {
-	return socket->wait(ms);
+
+Socket::InternalEventHandler::InternalEventHandler(Socket& aSocket)
+: socket(aSocket)
+{ }
+
+void Socket::InternalEventHandler::onEvent(const object::Interface::Object& object) {
+	if(!socket.externalEventHandler) {
+		return;
+	}
+
+	const utility::Event* eventPtr = dynamic_cast<const utility::Event*>(&object);
+	if(eventPtr && &eventPtr->getSender() == socket.socket.get()) {
+		socket.externalEventHandler->onEvent(utility::Event(eventPtr->getType(), socket));
+		return;
+	}
+
+	socket.externalEventHandler->onEvent(object);
 }
 
 } /* namespace server */

@@ -20,26 +20,45 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_SYSTEM_SIGNAL_SIGNAL_H_
-#define ESL_SYSTEM_SIGNAL_SIGNAL_H_
-
-#include <esl/system/signal/Interface.h>
-#include <esl/system/SignalType.h>
-#include <esl/object/Event.h>
+#include <esl/utility/Event.h>
 
 namespace esl {
-namespace system {
-namespace signal {
+namespace utility {
 
-class Signal final {
-public:
-	Signal() = delete;
+Event::Event(const Type& aType, const object::Interface::Object& aSender)
+: type(aType),
+  sender(aSender)
+{ }
 
-	static Interface::Handle install(object::Event& event, SignalType signalType);
-};
+const Event::Type& Event::getType() const noexcept {
+	return type;
+}
 
-} /* namespace signal */
-} /* namespace system */
+const object::Interface::Object& Event::getSender() const noexcept {
+	return sender;
+}
+
+template<>
+const std::string& Event::Type::toString(Event::EnumType eventType) noexcept {
+	static const std::string strEmpty;
+	static const std::string strUnknown = "unknown";
+	static const std::string strStop = "stop";
+	static const std::string strStopping = "stopping";
+	static const std::string strStopped = "stopped";
+
+	switch(eventType) {
+	case Event::unknown:
+		return strUnknown;
+	case Event::stop:
+		return strStop;
+	case Event::stopping:
+		return strStopping;
+	case Event::stopped:
+		return strStopped;
+	}
+
+	return strEmpty;
+}
+
+} /* namespace utility */
 } /* namespace esl */
-
-#endif /* ESL_SYSTEM_SIGNAL_SIGNAL_H_ */

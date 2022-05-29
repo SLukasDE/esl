@@ -25,12 +25,13 @@ SOFTWARE.
 
 #include <esl/module/Interface.h>
 #include <esl/object/Interface.h>
+#include <esl/object/Event.h>
 #include <esl/Module.h>
 #include <esl/com/http/server/RequestContext.h>
 #include <esl/com/http/server/requesthandler/Interface.h>
 
 #include <cstdint>
-#include <functional>
+//#include <functional>
 #include <memory>
 #include <string>
 #include <utility>
@@ -51,9 +52,9 @@ struct Interface : module::Interface {
 		virtual void addTLSHost(const std::string& hostname, std::vector<unsigned char> certificate, std::vector<unsigned char> key) = 0;
 
 		/* this method is non-blocking. A separate thread will be opened to listen */
-		virtual void listen(const requesthandler::Interface::RequestHandler& requestHandler, std::function<void()> onReleasedHandler) = 0;
+		virtual void listen(const requesthandler::Interface::RequestHandler& requestHandler, object::Event* eventHandler) = 0;
 		virtual void release() = 0;
-		virtual bool wait(std::uint32_t ms) = 0;
+		//virtual bool wait(std::uint32_t ms) = 0;
 	};
 
 	using CreateSocket = std::unique_ptr<Socket> (*)(const std::vector<std::pair<std::string, std::string>>& settings);
