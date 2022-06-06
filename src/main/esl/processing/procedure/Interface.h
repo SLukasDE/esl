@@ -48,7 +48,8 @@ struct Interface : module::Interface {
 	class Procedure : public virtual object::Interface::Object {
 	public:
 		/* this method is blocking. */
-		virtual std::unique_ptr<object::ObjectContext> procedureRun(object::ObjectContext& objectContext/*, object::Event* eventHandler*/) = 0;
+		//virtual std::unique_ptr<object::ObjectContext> procedureRun(object::ObjectContext& objectContext) = 0;
+		virtual void procedureRun(object::ObjectContext& objectContext) = 0;
 
 		/* this method is non-blocking. */
 		virtual void procedureCancel() { };

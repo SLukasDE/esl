@@ -24,6 +24,8 @@ SOFTWARE.
 #define ESL_DATABASE_CONNECTION_H_
 
 #include <esl/database/PreparedStatement.h>
+#include <esl/database/PreparedBulkStatement.h>
+#include <esl/object/Implementations.h>
 
 #include <memory>
 #include <string>
@@ -31,18 +33,15 @@ SOFTWARE.
 namespace esl {
 namespace database {
 
-class Connection {
+class Connection : public object::Implementations {
 public:
-	Connection() = default;
-	virtual ~Connection() = default;
-
 	virtual PreparedStatement prepare(const std::string& sql) const = 0;
-	virtual ResultSet getTable(const std::string& tableName) = 0;
+	virtual PreparedBulkStatement prepareBulk(const std::string& sql) const = 0;
+	//virtual ResultSet getTable(const std::string& tableName) = 0;
 
 	virtual void commit() const = 0;
 	virtual void rollback() const = 0;
 
-//    virtual void close() = 0;
 	virtual bool isClosed() const = 0;
 
 	virtual void* getNativeHandle() const = 0;

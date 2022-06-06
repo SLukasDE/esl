@@ -20,15 +20,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_SYSTEM_SIGNALHANDLER_INTERFACE_H_
-#define ESL_SYSTEM_SIGNALHANDLER_INTERFACE_H_
+#ifndef ESL_SYSTEM_SIGNAL_INTERFACE_H_
+#define ESL_SYSTEM_SIGNAL_INTERFACE_H_
 
 #include <esl/module/Interface.h>
 #include <esl/Module.h>
 #include <esl/object/Interface.h>
-#include <esl/object/Event.h>
+//#include <esl/object/Event.h>
 #include <esl/utility/Signal.h>
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <utility>
@@ -36,43 +37,47 @@ SOFTWARE.
 
 namespace esl {
 namespace system {
-namespace signalhandler {
+namespace signal {
 
 struct Interface : module::Interface {
 	/* ******************************************** *
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	using SignalHandler = std::unique_ptr<object::Interface::Object>;
+	class Signal : public object::Interface::Object {
+	public:
+		using Handler = std::unique_ptr<object::Interface::Object>;
+		virtual Handler createHandler(const utility::Signal& signal, std::function<void()> function) = 0;
+	};
 
-	using CreateSignalHandler = SignalHandler (*)(const std::vector<std::pair<std::string, std::string>>& settings, object::Event& event, const utility::Signal& signal);
+	using CreateSignal = std::unique_ptr<Signal>(*)(const std::vector<std::pair<std::string, std::string>>& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *
 	 * ************************************ */
 
 	static inline const char* getType() {
-		return "esl-system-signalhandler";
+		return "esl-system-signal";
 	}
 
 	/* ************************************ *
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	static std::unique_ptr<const module::Interface> createInterface(const char* implementation, CreateSignalHandler createSignalHandler) {
-		return std::unique_ptr<const module::Interface>(new Interface(implementation, createSignalHandler));
+	static std::unique_ptr<const module::Interface> createInterface(const char* implementation, CreateSignal createSignal) {
+		return std::unique_ptr<const module::Interface>(new Interface(implementation, createSignal));
 	}
 
-	Interface(const char* implementation, CreateSignalHandler aCreateSignalHandler)
+	Interface(const char* implementation, CreateSignal aCreateSignal)
 	: module::Interface(getModule().getId(), getType(), implementation, getModule().getApiVersion()),
-	  createSignalHandler(aCreateSignalHandler)
+	  createSignal(aCreateSignal)
 	{ }
 
-	CreateSignalHandler createSignalHandler;
+	CreateSignal createSignal;
 };
 
-} /* namespace signalhandler */
+} /* namespace signal */
 } /* namespace system */
 } /* namespace esl */
 
-#endif /* ESL_SYSTEM_SIGNALHANDLER_INTERFACE_H_ */
+#endif /* ESL_SYSTEM_SIGNAL_INTERFACE_H_ */

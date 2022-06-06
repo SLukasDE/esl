@@ -20,10 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_BOOT_APPLICATION_BASICAPPLICATION_H_
-#define ESL_BOOT_APPLICATION_BASICAPPLICATION_H_
+#ifndef ESL_BOOT_CONTEXT_BASICCONTEXT_H_
+#define ESL_BOOT_CONTEXT_BASICCONTEXT_H_
 
-#include <esl/boot/application/Application.h>
+#include <esl/boot/context/Context.h>
 #include <esl/processing/procedure/Interface.h>
 #include <esl/object/Interface.h>
 #include <esl/database/Interface.h>
@@ -37,107 +37,107 @@ SOFTWARE.
 
 namespace esl {
 namespace boot {
-namespace application {
+namespace context {
 
 template<typename T>
-class BasicApplication {
+class BasicContext {
 public:
-	BasicApplication(const std::vector<std::pair<std::string, std::string>>& settings)
-	: impl(settings)
+	BasicContext(const std::vector<std::pair<std::string, std::string>>& settings = Context::getDefault().getSettings(),
+			const std::string& implementation = Context::getDefault().getImplementation())
+	: context(settings, implementation)
 	{ }
 
-    explicit operator bool() const {
-    	return impl();
-    }
-
     T& addData(const std::string& configuration) {
-		impl.addData(configuration);
+    	context.addData(configuration);
 		return *static_cast<T*>(this);
 	}
 
 	T& addFile(const boost::filesystem::path& filename) {
-		impl.addFile(filename);
+		context.addFile(filename);
 		return *static_cast<T*>(this);
 	}
 
-	T& addProcedure(std::unique_ptr<esl::processing::procedure::Interface::Procedure> procedure) {
-		impl.addProcedure(std::move(procedure));
+	T& addProcedure(std::unique_ptr<processing::procedure::Interface::Procedure> procedure) {
+		context.addProcedure(std::move(procedure));
 		return *static_cast<T*>(this);
 	}
-/*
-	T& addProcedureContext(ProcedureContext procedureContext) {
-		impl.addProcedureContext(procedureContext);
-		return *static_cast<T*>(this);
-	}
-*/
-	T& addObject(const std::string& id, std::unique_ptr<esl::object::Interface::Object> object) {
-		impl.addObject(id, std::move(object));
+
+	T& add(const std::string& id, std::unique_ptr<object::Interface::Object> object) {
+		context.add(id, std::move(object));
 		return *static_cast<T*>(this);
 	}
 
 	/* Helper methods */
-	T& addDatabase(const std::string& id, std::unique_ptr<esl::database::Interface::ConnectionFactory> connectionFactory) {
-		impl.addDatabase(id, std::move(connectionFactory));
+	T& add(const std::string& id, std::unique_ptr<database::Interface::ConnectionFactory> connectionFactory) {
+		context.add(id, std::move(connectionFactory));
 		return *static_cast<T*>(this);
 	}
 
-	T& addBasicClient(const std::string& id, std::unique_ptr<esl::com::basic::client::Interface::ConnectionFactory> connectionFactory) {
-		impl.addBasicClient(id, std::move(connectionFactory));
+	T& add(const std::string& id, std::unique_ptr<com::basic::client::Interface::ConnectionFactory> connectionFactory) {
+		context.add(id, std::move(connectionFactory));
 		return *static_cast<T*>(this);
 	}
 
-	T& addHttpClient(const std::string& id, std::unique_ptr<esl::com::http::client::Interface::ConnectionFactory> connectionFactory) {
-		impl.addHttpClient(id, std::move(connectionFactory));
+	T& add(const std::string& id, std::unique_ptr<com::http::client::Interface::ConnectionFactory> connectionFactory) {
+		context.add(id, std::move(connectionFactory));
 		return *static_cast<T*>(this);
 	}
 
-	T& run(esl::object::ObjectContext& objectContext) {
-		impl.run(objectContext);
+	T& run(object::ObjectContext& objectContext) {
+		context.run(objectContext);
 		return *static_cast<T*>(this);
 	}
 
-	T& run(esl::object::ObjectContext& objectContext, int argc, const char *argv[]) {
-		impl.Interface::Application::run(objectContext, argc, argv);
+	T& run(object::ObjectContext& objectContext, int argc, const char *argv[]) {
+		context.Interface::Context::run(objectContext, argc, argv);
 		return *static_cast<T*>(this);
 	}
 
 	T& run() {
-		impl.Interface::Application::run();
+		context.Interface::Context::run();
 		return *static_cast<T*>(this);
 	}
 
 	T& run(int argc, const char *argv[]) {
-		impl.Interface::Application::run(argc, argv);
+		context.Interface::Context::run(argc, argv);
 		return *static_cast<T*>(this);
 	}
 
 	/* Helper methods */
-	int main(esl::object::ObjectContext& objectContext) {
-		return impl.main(objectContext);
+	int main(object::ObjectContext& objectContext) {
+		return context.main(objectContext);
 	}
 
-	int main(esl::object::ObjectContext& objectContext, int argc, const char *argv[]) {
-		return impl.main(objectContext, argc, argv);
+	int main(object::ObjectContext& objectContext, int argc, const char *argv[]) {
+		return context.main(objectContext, argc, argv);
 	}
 
 	int main() {
-		return impl.main();
+		return context.main();
 	}
 
 	int main(int argc, const char *argv[]) {
-		return impl.main(argc, argv);
+		return context.main(argc, argv);
 	}
 
 	int getReturnCode() const {
-		return impl.getReturnCode();
+		return context.getReturnCode();
+	}
+
+	void addObject(const std::string& id, std::unique_ptr<object::Interface::Object> object) {
+		context.addObject(id, std::move(object));
+	}
+
+	std::set<std::string> getObjectIds() const {
+		return context.getObjectIds();
 	}
 
 private:
-	Application impl;
+	Context context;
 };
 
-} /* namespace application */
+} /* namespace context */
 } /* namespace boot */
 } /* namespace esl */
 
-#endif /* ESL_BOOT_APPLICATION_BASICAPPLICATION_H_ */
+#endif /* ESL_BOOT_CONTEXT_BASICCONTEXT_H_ */

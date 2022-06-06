@@ -37,21 +37,13 @@ Procedure::Procedure(const std::vector<std::pair<std::string, std::string>>& set
 //: internalEventHandler(*this),
 : procedure(getModule().getInterface<Interface>(implementation).createProcedure(settings))
 { }
-
-std::unique_ptr<object::ObjectContext> Procedure::procedureRun(object::ObjectContext& objectContext/*, object::Event* eventHandler*/) {
 /*
-	object::Event* tmpExternalEventHandler = externalEventHandler;
-	externalEventHandler = eventHandler;
-
-	try {
-		return procedure->procedureRun(objectContext, eventHandler ? &internalEventHandler : nullptr);
-	}
-	catch(...) {
-		externalEventHandler = tmpExternalEventHandler;
-		throw;
-	}
-*/
+std::unique_ptr<object::ObjectContext> Procedure::procedureRun(object::ObjectContext& objectContext) {
 	return procedure->procedureRun(objectContext);
+}
+*/
+void Procedure::procedureRun(object::ObjectContext& objectContext) {
+	procedure->procedureRun(objectContext);
 }
 
 void Procedure::procedureCancel() {

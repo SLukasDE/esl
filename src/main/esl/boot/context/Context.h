@@ -20,11 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_BOOT_APPLICATION_APPLICATION_H_
-#define ESL_BOOT_APPLICATION_APPLICATION_H_
+#ifndef ESL_BOOT_CONTEXT_CONTEXT_H_
+#define ESL_BOOT_CONTEXT_CONTEXT_H_
 
-#include <esl/boot/application/Interface.h>
-#include <esl/boot/application/ProcedureContext.h>
+#include <esl/boot/context/Interface.h>
 #include <esl/processing/procedure/Interface.h>
 
 #include <esl/module/Implementation.h>
@@ -32,37 +31,42 @@ SOFTWARE.
 #include <boost/filesystem/path.hpp>
 
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
 namespace esl {
 namespace boot {
-namespace application {
+namespace context {
 
-class Application final : public Interface::Application {
+class Context final : public Interface::Context {
 public:
 	static module::Implementation& getDefault();
 
-	Application(const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
+	Context(const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
-	Interface::Application& addData(const std::string& configuration) override;
-	Interface::Application& addFile(const boost::filesystem::path& filename) override;
-
-	Interface::Application& addProcedure(std::unique_ptr<esl::processing::procedure::Interface::Procedure> procedure) override;
-	Interface::Application& addObject(const std::string& id, std::unique_ptr<esl::object::Interface::Object> object) override;
-
-	Interface::Application& run(esl::object::ObjectContext& objectContext) override;
-
+	Interface::Context& addData(const std::string& configuration) override;
+	Interface::Context& addFile(const boost::filesystem::path& filename) override;
+	Interface::Context& addReference(const std::string& destinationId, const std::string& sourceId) override;
 	int getReturnCode() const override;
 
+	void onEvent(const object::Interface::Object& object) override;
+	std::set<std::string> getObjectIds() const override;
+	void procedureRun(object::ObjectContext& objectContext) override;
+
+protected:
+	object::Interface::Object* findRawObject(const std::string& id) override;
+	const object::Interface::Object* findRawObject(const std::string& id) const override;
+	void addRawObject(const std::string& id, std::unique_ptr<object::Interface::Object> object) override;
+
 private:
-	std::unique_ptr<Interface::Application> application;
+	std::unique_ptr<Interface::Context> context;
 };
 
-} /* namespace application */
+} /* namespace context */
 } /* namespace boot */
 } /* namespace esl */
 
-#endif /* ESL_BOOT_APPLICATION_APPLICATION_H_ */
+#endif /* ESL_BOOT_CONTEXT_CONTEXT_H_ */

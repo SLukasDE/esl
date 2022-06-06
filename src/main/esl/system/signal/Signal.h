@@ -20,21 +20,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/boot/application/HttpContext.h>
+#ifndef ESL_SYSTEM_SIGNAL_SIGNAL_H_
+#define ESL_SYSTEM_SIGNAL_SIGNAL_H_
+
+#include <esl/module/Implementation.h>
+#include <esl/system/signal/Interface.h>
+#include <esl/utility/Signal.h>
+
+#include <functional>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
-namespace boot {
-namespace application {
+namespace system {
+namespace signal {
 
-HttpContext::HttpContext() {
-	// TODO Auto-generated constructor stub
+class Signal : public Interface::Signal {
+public:
+	static module::Implementation& getDefault();
 
-}
+	Signal(const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
+			const std::string& implementation = getDefault().getImplementation());
+	Handler createHandler(const utility::Signal& signal, std::function<void()> function) override;
 
-HttpContext::~HttpContext() {
-	// TODO Auto-generated destructor stub
-}
+private:
+	std::unique_ptr<Interface::Signal> signal;
+};
 
-} /* namespace application */
-} /* namespace boot */
+} /* namespace signal */
+} /* namespace system */
 } /* namespace esl */
+
+#endif /* ESL_SYSTEM_SIGNAL_SIGNAL_H_ */

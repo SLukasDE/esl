@@ -20,21 +20,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_SYSTEM_THREAD_POOL_H_
-#define ESL_SYSTEM_THREAD_POOL_H_
+#ifndef ESL_OBJECT_METADATA_H_
+#define ESL_OBJECT_METADATA_H_
+
+#include <esl/object/Interface.h>
+
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
-namespace system {
-namespace thread {
+namespace object {
 
-class Pool {
+class MetaData : public virtual Interface::Object {
 public:
-	Pool();
-	virtual ~Pool();
+	virtual std::vector<std::pair<std::string, std::string>> getMetaData() const = 0;
 };
 
-} /* namespace thread */
-} /* namespace system */
+} /* namespace object */
 } /* namespace esl */
 
-#endif /* ESL_SYSTEM_THREAD_POOL_H_ */
+#endif /* ESL_OBJECT_METADATA_H_ */

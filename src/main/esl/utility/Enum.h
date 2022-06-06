@@ -24,6 +24,7 @@ SOFTWARE.
 #define ESL_UTILITY_ENUM_H_
 
 #include <memory>
+#include <stdexcept>
 #include <string>
 
 namespace esl {
@@ -70,6 +71,17 @@ public:
 			return enumType != aEnum.enumType;
 		}
 		return toString() != aEnum.toString();
+	}
+
+	bool isEnumType() const noexcept {
+		return hasEnum;
+	}
+
+	EnumType getEnumType() const {
+		if(!hasEnum) {
+			throw std::runtime_error("cannot get enum type because it's a string");
+		}
+		return enumType;
 	}
 
 	const std::string& toString() const noexcept {

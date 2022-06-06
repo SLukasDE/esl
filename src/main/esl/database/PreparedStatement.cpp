@@ -49,6 +49,13 @@ PreparedStatement& PreparedStatement::operator=(PreparedStatement&& other) {
 	return *this;
 }
 */
+const std::vector<Column>& PreparedStatement::getParameterColumns() const {
+	if(binding) {
+		return binding->getParameterColumns();
+	}
+	return emptyColumns;
+}
+
 const std::vector<Column>& PreparedStatement::getResultColumns() const {
 	if(binding) {
 		return binding->getResultColumns();

@@ -34,22 +34,26 @@ namespace object {
 
 class ObjectContext : public virtual Interface::Object {
 public:
-	template<typename T>
-	T* findObject(const std::string& id = "") {
+	template<typename T = object::Interface::Object>
+	T* findObject(const std::string& id) {
 		return dynamic_cast<T*>(findRawObject(id));
 	}
 
 	template<typename T>
-	const T* findObject(const std::string& id = "") const {
+	const T* findObject(const std::string& id) const {
 		return dynamic_cast<const T*>(findRawObject(id));
 	}
 
-	virtual void addObject(const std::string& id, std::unique_ptr<Interface::Object> object) = 0;
+	template<typename T = object::Interface::Object>
+	void addObject(const std::string& id, std::unique_ptr<T> t) {
+		addRawObject(id, std::unique_ptr<object::Interface::Object>(t.release()));
+	}
 	virtual std::set<std::string> getObjectIds() const = 0;
 
 protected:
 	virtual Interface::Object* findRawObject(const std::string& id) = 0;
 	virtual const Interface::Object* findRawObject(const std::string& id) const = 0;
+	virtual void addRawObject(const std::string& id, std::unique_ptr<Interface::Object> object) = 0;
 };
 
 } /* namespace object */

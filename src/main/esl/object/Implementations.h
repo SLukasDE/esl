@@ -20,21 +20,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_BOOT_APPLICATION_BASICCONTEXT_H_
-#define ESL_BOOT_APPLICATION_BASICCONTEXT_H_
+#ifndef ESL_OBJECT_IMPLEMENTATIONS_H_
+#define ESL_OBJECT_IMPLEMENTATIONS_H_
+
+#include <esl/object/Interface.h>
+
+#include <set>
+#include <string>
 
 namespace esl {
-namespace boot {
-namespace application {
+namespace object {
 
-class BasicContext {
+class Implementations : public virtual Interface::Object {
 public:
-	BasicContext();
-	virtual ~BasicContext();
+	virtual const std::set<std::string>& getImplementations() const = 0;
 };
 
-} /* namespace application */
-} /* namespace boot */
+} /* namespace object */
 } /* namespace esl */
 
-#endif /* ESL_BOOT_APPLICATION_BASICCONTEXT_H_ */
+#endif /* ESL_OBJECT_IMPLEMENTATIONS_H_ */

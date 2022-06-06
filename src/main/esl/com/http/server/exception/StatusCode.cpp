@@ -45,7 +45,7 @@ StatusCode::StatusCode(unsigned short aStatusCode)
 { }
 
 StatusCode::StatusCode(unsigned short aStatusCode, const char* message)
-: std::runtime_error(message),
+: std::runtime_error(message ? message : getMessage(aStatusCode)),
   statusCode(aStatusCode),
   mimeType(utility::MIME::Type::textHtml)
 { }
@@ -63,7 +63,7 @@ StatusCode::StatusCode(unsigned short aStatusCode, utility::MIME aMimeType)
 { }
 
 StatusCode::StatusCode(unsigned short aStatusCode, utility::MIME aMimeType, const char* message)
-: std::runtime_error(message),
+: std::runtime_error(message ? message : getMessage(aStatusCode)),
   statusCode(aStatusCode),
   mimeType(std::move(aMimeType))
 { }

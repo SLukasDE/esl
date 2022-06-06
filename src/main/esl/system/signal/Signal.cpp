@@ -20,21 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_BOOT_APPLICATION_HTTPCONTEXT_H_
-#define ESL_BOOT_APPLICATION_HTTPCONTEXT_H_
+#include <esl/system/signal/Signal.h>
 
 namespace esl {
-namespace boot {
-namespace application {
+namespace system {
+namespace signal {
 
-class HttpContext {
-public:
-	HttpContext();
-	virtual ~HttpContext();
-};
+module::Implementation& Signal::getDefault() {
+	static module::Implementation implementation;
+	return implementation;
+}
 
-} /* namespace application */
-} /* namespace boot */
+Signal::Signal(const std::vector<std::pair<std::string, std::string>>& settings, const std::string& implementation)
+: signal(getModule().getInterface<Interface>(implementation).createSignal(settings))
+{ }
+
+Signal::Handler Signal::createHandler(const utility::Signal& signalType, std::function<void()> function) {
+	return signal->createHandler(signalType, function);
+}
+
+} /* namespace signal */
+} /* namespace system */
 } /* namespace esl */
-
-#endif /* ESL_BOOT_APPLICATION_HTTPCONTEXT_H_ */

@@ -40,10 +40,7 @@ public:
 		virtual ~Binding() = default;
 
 		virtual const std::vector<Column>& getParameterColumns() const = 0;
-		virtual const std::vector<Column>& getResultColumns() const = 0;
-		virtual ResultSet execute(const std::vector<Field>& fields) = 0;
-		//virtual void executeBulk(const std::vector<std::vector<Field>>& fieldArrays) = 0;
-
+		virtual void execute(const std::vector<Field>& fields) = 0;
 		virtual void* getNativeHandle() const = 0;
 	};
 
@@ -60,11 +57,8 @@ public:
 	PreparedBulkStatement& operator=(PreparedBulkStatement&& other) = default;
 
 	const std::vector<Column>& getParameterColumns() const;
-	const std::vector<Column>& getResultColumns() const;
 
 	PreparedBulkStatement& execute(const std::vector<Field>& fields);
-
-	PreparedBulkStatement& execute();
 
     template<typename... Args>
     PreparedBulkStatement& execute(Args... args) {

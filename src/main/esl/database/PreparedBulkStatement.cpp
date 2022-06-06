@@ -31,13 +31,34 @@ std::vector<Column> emptyColumns;
 logging::Logger<logging::Level::TRACE> logger("esl::database::PreparedBulkStatement");
 }
 
-/*
-PreparedBulkStatement::PreparedBulkStatement() {
+PreparedBulkStatement::PreparedBulkStatement(std::unique_ptr<Binding> aBinding)
+: binding(std::move(aBinding))
+{ }
+
+PreparedBulkStatement::operator bool() const noexcept {
+	return binding ? true : false;
 }
 
-PreparedBulkStatement::~PreparedBulkStatement() {
+const std::vector<Column>& PreparedBulkStatement::getParameterColumns() const {
+	if(binding) {
+		return binding->getParameterColumns();
+	}
+	return emptyColumns;
 }
-*/
+
+PreparedBulkStatement& PreparedBulkStatement::execute(const std::vector<Field>& fields) {
+	if(binding) {
+		binding->execute(fields);
+	}
+	return *this;
+}
+
+void* PreparedBulkStatement::getNativeHandle() const {
+	if(binding) {
+		return binding->getNativeHandle();
+	}
+	return nullptr;
+}
 
 } /* namespace database */
 } /* namespace esl */

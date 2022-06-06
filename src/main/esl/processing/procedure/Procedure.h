@@ -44,7 +44,8 @@ public:
 	Procedure(const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
-	std::unique_ptr<object::ObjectContext> procedureRun(object::ObjectContext& objectContext/*, object::Event* eventHandler*/) override;
+	//std::unique_ptr<object::ObjectContext> procedureRun(object::ObjectContext& objectContext) override;
+	void procedureRun(object::ObjectContext& objectContext) override;
 	void procedureCancel() override;
 
 private:

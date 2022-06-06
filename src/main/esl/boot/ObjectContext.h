@@ -34,17 +34,17 @@ SOFTWARE.
 namespace esl {
 namespace boot {
 
-class ObjectContext final : public esl::object::ObjectContext {
+class ObjectContext final : public object::ObjectContext {
 public:
-	void addObject(const std::string& id, std::unique_ptr<esl::object::Interface::Object> object) override;
 	std::set<std::string> getObjectIds() const override;
 
 protected:
-	esl::object::Interface::Object* findRawObject(const std::string& id) override;
-	const esl::object::Interface::Object* findRawObject(const std::string& id) const override;
+	object::Interface::Object* findRawObject(const std::string& id) override;
+	const object::Interface::Object* findRawObject(const std::string& id) const override;
+	void addRawObject(const std::string& id, std::unique_ptr<object::Interface::Object> object) override;
 
 private:
-	std::map<std::string, std::unique_ptr<esl::object::Interface::Object>> objects;
+	std::map<std::string, std::unique_ptr<object::Interface::Object>> objects;
 };
 
 } /* namespace boot */

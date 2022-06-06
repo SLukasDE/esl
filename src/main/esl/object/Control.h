@@ -20,22 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_OBJECT_IMPLEMENTATION_H_
-#define ESL_OBJECT_IMPLEMENTATION_H_
+#ifndef ESL_OBJECT_CONTROL_H_
+#define ESL_OBJECT_CONTROL_H_
 
 #include <esl/object/Interface.h>
 
+#include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
 namespace object {
 
-class Implementation : public virtual Interface::Object {
+class Control : public virtual Interface::Object {
 public:
-	virtual const std::string& getImplementationName() const = 0;
+	virtual std::vector<std::pair<std::string, std::unique_ptr<Interface::Object>>> doControl(const std::string& command, const std::vector<std::pair<std::string, std::unique_ptr<Interface::Object>>>& arguments) const = 0;
 };
 
 } /* namespace object */
 } /* namespace esl */
 
-#endif /* ESL_OBJECT_IMPLEMENTATION_H_ */
+#endif /* ESL_OBJECT_CONTROL_H_ */
