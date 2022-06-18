@@ -64,8 +64,8 @@ public:
 	enum Base64Variant {
 		base64, base64url
 	};
-	static std::string toBase64(const std::string& str, Base64Variant base64Variant = base64url);
-	static std::string fromBase64(const std::string& base64str);
+	static std::string toBase64(const std::string& str, Base64Variant base64Variant = base64url, bool withPadding = false);
+	static std::string fromBase64(const std::string& base64str, bool acceptFormatting = false);
 
 private:
 	String() = default;

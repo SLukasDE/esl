@@ -29,7 +29,7 @@ SOFTWARE.
 #include <esl/object/Event.h>
 #include <esl/object/Interface.h>
 #include <esl/object/Value.h>
-#include <esl/object/ObjectContext.h>
+#include <esl/object/Context.h>
 #include <esl/processing/procedure/Interface.h>
 
 #include <boost/filesystem/path.hpp>
@@ -48,7 +48,7 @@ struct Interface : module::Interface {
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class Context : public object::Event, public object::ObjectContext, public processing::procedure::Interface::Procedure {
+	class Context : public object::Event, public object::Context, public processing::procedure::Interface::Procedure {
 	public:
 		using ArgumentsByVector = object::Value<std::vector<std::string>>;
 		using ReturnCodeObject = object::Value<int>;
@@ -63,22 +63,17 @@ struct Interface : module::Interface {
 		 * virtual void onEvent(const object::Interface::Object& object) = 0;
 		 */
 
-		/* From ObjectContext:
+		/* From Context:
 		 * -------------------
 		 * virtual std::set<std::string> getObjectIds() const = 0;
 		 */
 
 		/* From Procedure:
 		 * ---------------
-		 * virtual void procedureRun(object::ObjectContext& objectContext) = 0;
+		 * virtual void procedureRun(object::Context& objectContext) = 0;
 		 */
 
 		/* Helper methods */
-		Context& run(object::ObjectContext& objectContext) {
-			procedureRun(objectContext);
-			return *this;
-		}
-
 		template<typename T = object::Interface::Object>
 		Context& add(const std::string& id, std::unique_ptr<T> t) {
 			addRawObject(id, std::move(t));
@@ -95,7 +90,12 @@ struct Interface : module::Interface {
 			return addReference("", id);
 		}
 
-		Context& run(object::ObjectContext& objectContext, int argc, const char *argv[]) {
+		Context& run(object::Context& objectContext) {
+			procedureRun(objectContext);
+			return *this;
+		}
+
+		Context& run(object::Context& objectContext, int argc, const char *argv[]) {
 			std::unique_ptr<ArgumentsByVector> argumentsObject(new ArgumentsByVector({}));
 			for(int i=0; i<argc; ++i) {
 				argumentsObject->get().push_back(argv[i]);
@@ -124,11 +124,11 @@ struct Interface : module::Interface {
 			return run(objectContext, argc, argv);
 		}
 
-		int main(object::ObjectContext& objectContext) {
+		int main(object::Context& objectContext) {
 			return run(objectContext).getReturnCode();
 		}
 
-		int main(object::ObjectContext& objectContext, int argc, const char *argv[]) {
+		int main(object::Context& objectContext, int argc, const char *argv[]) {
 			return run(objectContext, argc, argv).getReturnCode();
 		}
 
@@ -141,7 +141,7 @@ struct Interface : module::Interface {
 		}
 
 	protected:
-		/* From ObjectContext:
+		/* From Context:
 		 * -------------------
 		 * virtual object::Interface::Object* findRawObject(const std::string& id) = 0;
 		 * virtual const object::Interface::Object* findRawObject(const std::string& id) const = 0;

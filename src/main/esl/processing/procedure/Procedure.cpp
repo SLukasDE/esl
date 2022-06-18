@@ -34,41 +34,20 @@ module::Implementation& Procedure::getDefault() {
 }
 
 Procedure::Procedure(const std::vector<std::pair<std::string, std::string>>& settings, const std::string& implementation)
-//: internalEventHandler(*this),
 : procedure(getModule().getInterface<Interface>(implementation).createProcedure(settings))
 { }
 /*
-std::unique_ptr<object::ObjectContext> Procedure::procedureRun(object::ObjectContext& objectContext) {
+std::unique_ptr<object::Context> Procedure::procedureRun(object::Context& context) {
 	return procedure->procedureRun(objectContext);
 }
 */
-void Procedure::procedureRun(object::ObjectContext& objectContext) {
-	procedure->procedureRun(objectContext);
+void Procedure::procedureRun(object::Context& context) {
+	procedure->procedureRun(context);
 }
 
 void Procedure::procedureCancel() {
 	procedure->procedureCancel();
 }
-
-/*
-Procedure::InternalEventHandler::InternalEventHandler(Procedure& aProcedure)
-: procedure(aProcedure)
-{ }
-
-void Procedure::InternalEventHandler::onEvent(const object::Interface::Object& object) {
-	if(!procedure.externalEventHandler) {
-		return;
-	}
-
-	const utility::Event* eventPtr = dynamic_cast<const utility::Event*>(&object);
-	if(eventPtr && &eventPtr->getSender() == procedure.procedure.get()) {
-		procedure.externalEventHandler->onEvent(utility::Event(eventPtr->getType(), procedure));
-		return;
-	}
-
-	procedure.externalEventHandler->onEvent(object);
-}
-*/
 
 } /* namespace procedure */
 } /* namespace processing */

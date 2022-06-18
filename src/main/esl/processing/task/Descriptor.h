@@ -20,34 +20,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_BOOT_OBJECTCONTEXT_H_
-#define ESL_BOOT_OBJECTCONTEXT_H_
+#ifndef ESL_PROCESSING_TASK_DESCRIPTOR_H_
+#define ESL_PROCESSING_TASK_DESCRIPTOR_H_
 
-#include <esl/object/Interface.h>
 #include <esl/object/Context.h>
+#include <esl/processing/procedure/Interface.h>
+#include <esl/processing/task/Status.h>
 
-#include <map>
+#include <functional>
 #include <memory>
-#include <set>
-#include <string>
 
 namespace esl {
-namespace boot {
+namespace processing {
+namespace task {
 
-class ObjectContext final : public object::Context {
+struct Descriptor {
 public:
-	std::set<std::string> getObjectIds() const override;
-
-protected:
-	object::Interface::Object* findRawObject(const std::string& id) override;
-	const object::Interface::Object* findRawObject(const std::string& id) const override;
-	void addRawObject(const std::string& id, std::unique_ptr<object::Interface::Object> object) override;
-
-private:
-	std::map<std::string, std::unique_ptr<object::Interface::Object>> objects;
+	std::unique_ptr<procedure::Interface::Procedure> procedure;
+	std::unique_ptr<object::Context> context;
+	unsigned int priority;
+	std::function<void(Status)> onStateChanged;
 };
 
-} /* namespace boot */
+} /* namespace task */
+} /* namespace processing */
 } /* namespace esl */
 
-#endif /* ESL_BOOT_OBJECTCONTEXT_H_ */
+#endif /* ESL_PROCESSING_TASK_DESCRIPTOR_H_ */

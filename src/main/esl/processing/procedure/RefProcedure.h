@@ -20,34 +20,36 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_BOOT_OBJECTCONTEXT_H_
-#define ESL_BOOT_OBJECTCONTEXT_H_
+#ifndef ESL_PROCESSING_PROCEDURE_REFPROCEDURE_H_
+#define ESL_PROCESSING_PROCEDURE_REFPROCEDURE_H_
 
-#include <esl/object/Interface.h>
+#include <esl/processing/procedure/Interface.h>
 #include <esl/object/Context.h>
 
-#include <map>
-#include <memory>
-#include <set>
-#include <string>
-
 namespace esl {
-namespace boot {
+namespace processing {
+namespace procedure {
 
-class ObjectContext final : public object::Context {
+class RefProcedure final : public Interface::Procedure {
 public:
-	std::set<std::string> getObjectIds() const override;
+	RefProcedure(Interface::Procedure& aRefProcedure)
+	: refProcedure(aRefProcedure)
+	{ }
 
-protected:
-	object::Interface::Object* findRawObject(const std::string& id) override;
-	const object::Interface::Object* findRawObject(const std::string& id) const override;
-	void addRawObject(const std::string& id, std::unique_ptr<object::Interface::Object> object) override;
+	void procedureRun(object::Context& context) override {
+		refProcedure.procedureRun(context);
+	}
+
+	void procedureCancel() override {
+		refProcedure.procedureCancel();
+	}
 
 private:
-	std::map<std::string, std::unique_ptr<object::Interface::Object>> objects;
+	Interface::Procedure& refProcedure;
 };
 
-} /* namespace boot */
+} /* namespace procedure */
+} /* namespace processing */
 } /* namespace esl */
 
-#endif /* ESL_BOOT_OBJECTCONTEXT_H_ */
+#endif /* ESL_PROCESSING_PROCEDURE_REFPROCEDURE_H_ */

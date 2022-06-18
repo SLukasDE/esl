@@ -208,7 +208,7 @@ char String::fromEscapeSequence(std::string::const_iterator& escapeSequenceItera
 	return c;
 }
 
-std::string String::toBase64(const std::string& str, Base64Variant base64Variant) {
+std::string String::toBase64(const std::string& str, Base64Variant base64Variant, bool withPadding) {
 	std::string result;
 
 	for(std::size_t i = 0; i < str.size(); i += 3) {
@@ -234,7 +234,7 @@ std::string String::toBase64(const std::string& str, Base64Variant base64Variant
 					result += base64Chars[(packed64 >> (6 * (3 - j))) & 0x3f];
 				}
 			}
-			else {
+			else if(withPadding) {
 				if(base64Variant == base64url) {
 					result += "%3d";
 				}
@@ -247,22 +247,61 @@ std::string String::toBase64(const std::string& str, Base64Variant base64Variant
 	return result;
 }
 
-std::string String::fromBase64(const std::string& base64str) {
+std::string String::fromBase64(const std::string& base64str, bool acceptFormatting) {
 	std::string str;
 
 	std::size_t bufferIndex = 0;
 	unsigned char buffer[4];
+	bool isNewLineCR = true;
+	bool isNewLineLF = true;
+	bool hasCharacters = false;
 
 	for(std::size_t pos = 0; pos < base64str.size(); ++pos) {
 		// abort if characater base64str[pos] is end symbol
 		if(base64str[pos] == '=') {
 			break;
 		}
+
+		if(acceptFormatting) {
+			if(base64str[pos] == 10) {
+				if(isNewLineLF) {
+					break;
+				}
+				else {
+					isNewLineLF = true;
+					continue;
+				}
+			}
+			if(base64str[pos] == 13) {
+				if(isNewLineCR) {
+					break;
+				}
+				else {
+					isNewLineCR = true;
+					continue;
+				}
+			}
+
+			if(base64str[pos] == ' ' || base64str[pos] == 8) {
+				if(hasCharacters) {
+					break;
+				}
+				else {
+					isNewLineCR = true;
+					isNewLineLF = true;
+					continue;
+				}
+			}
+		}
+
 		// abort if characater base64str[pos] is not base64
 		if(std::isalnum(base64str[pos]) == 0 && base64str[pos] != '+' && base64str[pos] != '/' && base64str[pos] != '-' && base64str[pos] != '_') {
 			break;
 		}
 
+		isNewLineCR = false;
+		isNewLineLF = false;
+		hasCharacters = true;
 		buffer[bufferIndex] = base64str[pos];
 		++bufferIndex;
 

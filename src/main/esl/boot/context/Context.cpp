@@ -59,7 +59,7 @@ std::set<std::string> Context::getObjectIds() const {
 	return context->getObjectIds();
 }
 
-void Context::procedureRun(object::ObjectContext& objectContext) {
+void Context::procedureRun(object::Context& objectContext) {
 	context->procedureRun(objectContext);
 }
 

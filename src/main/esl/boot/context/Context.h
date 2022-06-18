@@ -24,9 +24,9 @@ SOFTWARE.
 #define ESL_BOOT_CONTEXT_CONTEXT_H_
 
 #include <esl/boot/context/Interface.h>
-#include <esl/processing/procedure/Interface.h>
-
 #include <esl/module/Implementation.h>
+#include <esl/object/Context.h>
+#include <esl/processing/procedure/Interface.h>
 
 #include <boost/filesystem/path.hpp>
 
@@ -54,7 +54,7 @@ public:
 
 	void onEvent(const object::Interface::Object& object) override;
 	std::set<std::string> getObjectIds() const override;
-	void procedureRun(object::ObjectContext& objectContext) override;
+	void procedureRun(object::Context& objectContext) override;
 
 protected:
 	object::Interface::Object* findRawObject(const std::string& id) override;

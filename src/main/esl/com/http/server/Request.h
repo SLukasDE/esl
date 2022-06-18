@@ -24,6 +24,7 @@ SOFTWARE.
 #define ESL_COM_HTTP_SERVER_REQUEST_H_
 
 #include <esl/utility/MIME.h>
+#include <esl/utility/HttpMethod.h>
 
 #include <map>
 #include <string>
@@ -49,7 +50,7 @@ public:
 	virtual uint16_t getRemotePort() const noexcept = 0;
 
 	virtual const std::string& getPath() const noexcept = 0;
-	virtual const std::string& getMethod() const noexcept = 0;
+	virtual const utility::HttpMethod& getMethod() const noexcept = 0;
 	virtual const std::map<std::string, std::string>& getHeaders() const noexcept = 0;
 	virtual const utility::MIME& getContentType() const noexcept = 0;
 

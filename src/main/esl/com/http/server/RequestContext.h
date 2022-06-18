@@ -21,7 +21,7 @@ SOFTWARE.
 */
 
 #include <esl/object/Interface.h>
-#include <esl/object/ObjectContext.h>
+#include <esl/object/Context.h>
 #include <esl/com/http/server/Connection.h>
 #include <esl/com/http/server/Request.h>
 
@@ -40,7 +40,7 @@ public:
 	virtual Connection& getConnection() const = 0;
 	virtual const Request& getRequest() const = 0;
 	virtual const std::string& getPath() const = 0;
-	virtual object::ObjectContext& getObjectContext() = 0;
+	virtual object::Context& getObjectContext() = 0;
 };
 
 } /* namespace server */

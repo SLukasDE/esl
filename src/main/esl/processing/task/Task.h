@@ -23,49 +23,42 @@ SOFTWARE.
 #ifndef ESL_PROCESSING_TASK_TASK_H_
 #define ESL_PROCESSING_TASK_TASK_H_
 
-#include <esl/processing/task/Interface.h>
-#include <esl/module/Implementation.h>
-#include <esl/processing/procedure/Interface.h>
-#include <esl/module/Interface.h>
 #include <esl/object/Interface.h>
-#include <esl/object/ObjectContext.h>
+#include <esl/object/Context.h>
+#include <esl/processing/task/Status.h>
 
 #include <chrono>
+#include <exception>
 #include <memory>
-#include <set>
-#include <string>
-#include <utility>
-#include <vector>
 
 namespace esl {
 namespace processing {
 namespace task {
 
-class Context;
-
-class Task final : public Interface::Task {
+class Task {
 public:
-	static module::Implementation& getDefault();
+	class Binding {
+	public:
+		virtual ~Binding();
 
-	Task(const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
-			const std::string& implementation = getDefault().getImplementation());
+		virtual void sendEvent(const object::Interface::Object& object) = 0;
+		virtual void cancel() = 0;
 
-	Handle runTask(std::unique_ptr<procedure::Interface::Procedure> procedure, std::unique_ptr<object::ObjectContext> objectContext) override;
-	Handle runTask(procedure::Interface::Procedure& procedure, std::unique_ptr<object::ObjectContext> objectContext) override;
-	std::unique_ptr<object::ObjectContext> cancelTask(const Handle& taskId) override;
+		virtual Status getStatus() const = 0;
+		virtual object::Context* getContext() const = 0;
+		virtual std::exception_ptr getException() const = 0;
+	};
 
-	Status getTaskStatus(const Handle& taskId) const override;
-	std::vector<Handle> getTaskHandles() const override;
-	void sendEvent(const Handle& taskId, const object::Interface::Object& object) const override;
+	Task(std::shared_ptr<Binding> binding);
 
-	std::set<Handle> waitForTaskStatus(const std::set<Handle>& taskIds, const std::set<Status>& status) const override;
-	std::set<Handle> waitForTaskStatus(const std::set<Handle>& taskIds, const std::set<Status>& status, std::chrono::milliseconds timeout) const override;
+	void sendEvent(const object::Interface::Object& object);
+	void cancel();
 
-	std::unique_ptr<object::ObjectContext> waitForTaskDone(Handle taskId) override;
-	std::unique_ptr<object::ObjectContext> waitForTaskDone(Handle taskId, std::chrono::milliseconds timeout) override;
+	Status getStatus() const;
+	object::Context* getContext() const;
 
 private:
-	std::unique_ptr<Interface::Task> task;
+	std::shared_ptr<Binding> binding;
 };
 
 } /* namespace task */

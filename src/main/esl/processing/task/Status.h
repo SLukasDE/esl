@@ -20,34 +20,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_BOOT_OBJECTCONTEXT_H_
-#define ESL_BOOT_OBJECTCONTEXT_H_
-
-#include <esl/object/Interface.h>
-#include <esl/object/Context.h>
-
-#include <map>
-#include <memory>
-#include <set>
-#include <string>
+#ifndef ESL_PROCESSING_TASK_STATUS_H_
+#define ESL_PROCESSING_TASK_STATUS_H_
 
 namespace esl {
-namespace boot {
+namespace processing {
+namespace task {
 
-class ObjectContext final : public object::Context {
-public:
-	std::set<std::string> getObjectIds() const override;
-
-protected:
-	object::Interface::Object* findRawObject(const std::string& id) override;
-	const object::Interface::Object* findRawObject(const std::string& id) const override;
-	void addRawObject(const std::string& id, std::unique_ptr<object::Interface::Object> object) override;
-
-private:
-	std::map<std::string, std::unique_ptr<object::Interface::Object>> objects;
+enum class Status {
+	unknown,
+	waiting,
+	canceled,
+	running,
+	exception,
+	done
 };
 
-} /* namespace boot */
+} /* namespace task */
+} /* namespace processing */
 } /* namespace esl */
 
-#endif /* ESL_BOOT_OBJECTCONTEXT_H_ */
+#endif /* ESL_PROCESSING_TASK_STATUS_H_ */

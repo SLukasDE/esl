@@ -24,8 +24,7 @@ SOFTWARE.
 #define ESL_PROCESSING_PROCEDURE_PROCEDURE_H_
 
 #include <esl/processing/procedure/Interface.h>
-//#include <esl/object/Event.h>
-#include <esl/object/ObjectContext.h>
+#include <esl/object/Context.h>
 #include <esl/module/Implementation.h>
 
 #include <memory>
@@ -44,22 +43,11 @@ public:
 	Procedure(const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
 			const std::string& implementation = getDefault().getImplementation());
 
-	//std::unique_ptr<object::ObjectContext> procedureRun(object::ObjectContext& objectContext) override;
-	void procedureRun(object::ObjectContext& objectContext) override;
+	//std::unique_ptr<object::Context> procedureRun(object::Context& context) override;
+	void procedureRun(object::Context& context) override;
 	void procedureCancel() override;
 
 private:
-/*
-	class InternalEventHandler : public object::Event {
-	public:
-		InternalEventHandler(Procedure& procedure);
-		void onEvent(const object::Interface::Object& object) override;
-
-		Procedure& procedure;
-	} internalEventHandler;
-	friend class InternalEvent;
-	object::Event* externalEventHandler = nullptr;
-*/
 	std::unique_ptr<Interface::Procedure> procedure;
 };
 

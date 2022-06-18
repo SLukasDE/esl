@@ -20,34 +20,46 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_BOOT_OBJECTCONTEXT_H_
-#define ESL_BOOT_OBJECTCONTEXT_H_
+#ifndef ESL_PROCESSING_TASK_TASKFACTORY_H_
+#define ESL_PROCESSING_TASK_TASKFACTORY_H_
 
+#include <esl/processing/task/Interface.h>
+#include <esl/module/Implementation.h>
+#include <esl/processing/procedure/Interface.h>
+#include <esl/processing/task/Descriptor.h>
 #include <esl/object/Interface.h>
-#include <esl/object/Context.h>
+//#include <esl/object/Context.h>
 
-#include <map>
+#include <chrono>
+#include <functional>
 #include <memory>
 #include <set>
 #include <string>
+#include <utility>
+#include <vector>
 
 namespace esl {
-namespace boot {
+namespace processing {
+namespace task {
 
-class ObjectContext final : public object::Context {
+class TaskFactory final : public Interface::TaskFactory {
 public:
-	std::set<std::string> getObjectIds() const override;
+	static module::Implementation& getDefault();
 
-protected:
-	object::Interface::Object* findRawObject(const std::string& id) override;
-	const object::Interface::Object* findRawObject(const std::string& id) const override;
-	void addRawObject(const std::string& id, std::unique_ptr<object::Interface::Object> object) override;
+	TaskFactory(const std::vector<std::pair<std::string, std::string>>& settings = getDefault().getSettings(),
+			const std::string& implementation = getDefault().getImplementation());
+
+	Task createTask(Descriptor descriptor) override;
+
+	//Status getTaskStatus(const Handle& taskId) const override;
+	std::vector<Task> getTasks() const override;
 
 private:
-	std::map<std::string, std::unique_ptr<object::Interface::Object>> objects;
+	std::unique_ptr<Interface::TaskFactory> taskFactory;
 };
 
-} /* namespace boot */
+} /* namespace task */
+} /* namespace processing */
 } /* namespace esl */
 
-#endif /* ESL_BOOT_OBJECTCONTEXT_H_ */
+#endif /* ESL_PROCESSING_TASK_TASKFACTORY_H_ */

@@ -23,13 +23,16 @@ SOFTWARE.
 #ifndef ESL_PROCESSING_TASK_INTERFACE_H_
 #define ESL_PROCESSING_TASK_INTERFACE_H_
 
-#include <esl/processing/procedure/Interface.h>
 #include <esl/module/Interface.h>
 #include <esl/object/Interface.h>
-#include <esl/object/ObjectContext.h>
+//#include <esl/object/Context.h>
 #include <esl/object/Event.h>
+#include <esl/processing/procedure/Interface.h>
+#include <esl/processing/task/Descriptor.h>
 
 #include <chrono>
+#include <exception>
+#include <functional>
 #include <memory>
 #include <set>
 #include <string>
@@ -40,60 +43,44 @@ namespace esl {
 namespace processing {
 namespace task {
 
+class Task;
+
 struct Interface : esl::module::Interface {
 	/* ******************************************** *
 	 * type definitions required for this interface *
 	 * ******************************************** */
 
-	class Task : public object::Interface::Object {
+	class TaskFactory : public object::Interface::Object {
 	public:
-		using Handle = int;
-		enum class Status {
-			waiting,
-			running,
-			done
-		};
+		virtual Task createTask(Descriptor descriptor) = 0;
 
-		virtual Handle runTask(std::unique_ptr<procedure::Interface::Procedure> procedure, std::unique_ptr<object::ObjectContext> objectContext) = 0;
-		virtual Handle runTask(procedure::Interface::Procedure& procedure, std::unique_ptr<object::ObjectContext> objectContext) = 0;
-		virtual std::unique_ptr<object::ObjectContext> cancelTask(const Handle& taskId) = 0;
-
-		virtual Status getTaskStatus(const Handle& taskId) const = 0;
-		virtual std::vector<Handle> getTaskHandles() const = 0;
-
-		virtual void sendEvent(const Handle& taskId, const object::Interface::Object& object) const = 0;
-
-		virtual std::set<Handle> waitForTaskStatus(const std::set<Handle>& taskIds, const std::set<Status>& status) const = 0;
-		virtual std::set<Handle> waitForTaskStatus(const std::set<Handle>& taskIds, const std::set<Status>& status, std::chrono::milliseconds timeout) const = 0;
-
-		virtual std::unique_ptr<object::ObjectContext> waitForTaskDone(Handle taskId) = 0;
-		virtual std::unique_ptr<object::ObjectContext> waitForTaskDone(Handle taskId, std::chrono::milliseconds timeout) = 0;
+		virtual std::vector<Task> getTasks() const = 0;
 	};
 
-	using CreateTask = std::unique_ptr<Task> (*)(const std::vector<std::pair<std::string, std::string>>& settings);
+	using CreateTaskFactory = std::unique_ptr<TaskFactory> (*)(const std::vector<std::pair<std::string, std::string>>& settings);
 
 	/* ************************************ *
 	 * standard API definition of interface *
 	 * ************************************ */
 
 	static inline const char* getType() {
-		return "esl-processing-task";
+		return "esl-processing-taskfactory";
 	}
 
 	/* ************************************ *
 	 * extended API definition of interface *
 	 * ************************************ */
 
-	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateTask createTask) {
-		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createTask));
+	static std::unique_ptr<const esl::module::Interface> createInterface(const char* implementation, CreateTaskFactory createTaskFactory) {
+		return std::unique_ptr<const esl::module::Interface>(new Interface(implementation, createTaskFactory));
 	}
 
-	Interface(const char* implementation, CreateTask aCreateTask)
+	Interface(const char* implementation, CreateTaskFactory aCreateTaskFactory)
 	: esl::module::Interface(esl::getModule().getId(), getType(), implementation, esl::getModule().getApiVersion()),
-	  createTask(aCreateTask)
+	  createTaskFactory(aCreateTaskFactory)
 	{ }
 
-	CreateTask createTask;
+	CreateTaskFactory createTaskFactory;
 };
 
 } /* namespace task */

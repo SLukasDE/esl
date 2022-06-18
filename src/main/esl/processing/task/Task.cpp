@@ -21,61 +21,54 @@ SOFTWARE.
 */
 
 #include <esl/processing/task/Task.h>
-#include <esl/Module.h>
 
 namespace esl {
 namespace processing {
 namespace task {
 
-module::Implementation& Task::getDefault() {
-	static module::Implementation implementation;
-	return implementation;
-}
-
-Task::Task(const std::vector<std::pair<std::string, std::string>>& settings, const std::string& implementation)
-: task(getModule().getInterface<Interface>(implementation).createTask(settings))
+Task::Task(std::shared_ptr<Binding> aBinding)
+: binding(aBinding)
 { }
 
-Task::Handle Task::runTask(std::unique_ptr<procedure::Interface::Procedure> procedure, std::unique_ptr<object::ObjectContext> objectContext) {
-	return task->runTask(std::move(procedure), std::move(objectContext));
+void Task::sendEvent(const object::Interface::Object& object) {
+	if(binding) {
+		binding->sendEvent(object);
+	}
+/*
+	if(std::shared_ptr<Interface::Task::HandleBinding> bindingPtr = binding.lock()) {
+		bindingPtr->sendEvent(object);
+	}
+*/
 }
 
-Task::Handle Task::runTask(procedure::Interface::Procedure& procedure, std::unique_ptr<object::ObjectContext> objectContext) {
-	return task->runTask(procedure, std::move(objectContext));
+void Task::cancel() {
+	if(binding) {
+		return binding->cancel();
+	}
+/*
+	if (std::shared_ptr<Interface::Task::HandleBinding> bindingPtr = binding.lock()) {
+		return bindingPtr->cancel();
+	}
+*/
 }
 
-std::unique_ptr<object::ObjectContext> Task::cancelTask(const Task::Handle& taskId) {
-	return task->cancelTask(taskId);
+Status Task::getStatus() const {
+	if(binding) {
+		return binding->getStatus();
+	}
+/*
+	if(std::shared_ptr<Interface::Task::HandleBinding> bindingPtr = binding.lock()) {
+		return bindingPtr->getStatus();
+	}
+*/
+	return Status::unknown;
 }
 
-Task::Status Task::getTaskStatus(const Task::Handle& taskId) const {
-	return task->getTaskStatus(taskId);
-}
-
-std::vector<Task::Handle> Task::getTaskHandles() const {
-	return task->getTaskHandles();
-}
-
-void Task::sendEvent(const Task::Handle& taskId, const object::Interface::Object& object) const {
-	task->sendEvent(taskId, object);
-}
-
-
-std::set<Task::Handle> Task::waitForTaskStatus(const std::set<Task::Handle>& taskIds, const std::set<Task::Status>& status) const {
-	return task->waitForTaskStatus(taskIds, status);
-}
-
-std::set<Task::Handle> Task::waitForTaskStatus(const std::set<Task::Handle>& taskIds, const std::set<Task::Status>& status, std::chrono::milliseconds timeout) const {
-	return task->waitForTaskStatus(taskIds, status, timeout);
-}
-
-
-std::unique_ptr<object::ObjectContext> Task::waitForTaskDone(Task::Handle taskId) {
-	return task->waitForTaskDone(taskId);
-}
-
-std::unique_ptr<object::ObjectContext> Task::waitForTaskDone(Task::Handle taskId, std::chrono::milliseconds timeout) {
-	return task->waitForTaskDone(taskId, timeout);
+object::Context* Task::getContext() const {
+	if(binding) {
+		return binding->getContext();
+	}
+	return nullptr;
 }
 
 } /* namespace task */

@@ -24,11 +24,13 @@ SOFTWARE.
 #define ESL_BOOT_CONTEXT_BASICCONTEXT_H_
 
 #include <esl/boot/context/Context.h>
-#include <esl/processing/procedure/Interface.h>
-#include <esl/object/Interface.h>
-#include <esl/database/Interface.h>
 #include <esl/com/basic/client/Interface.h>
 #include <esl/com/http/client/Interface.h>
+#include <esl/database/Interface.h>
+#include <esl/object/Event.h>
+#include <esl/object/Interface.h>
+#include <esl/object/Context.h>
+#include <esl/processing/procedure/Interface.h>
 
 #include <memory>
 #include <string>
@@ -40,13 +42,8 @@ namespace boot {
 namespace context {
 
 template<typename T>
-class BasicContext {
+class BasicContext : public esl::object::Event, public object::Context, public processing::procedure::Interface::Procedure {
 public:
-	BasicContext(const std::vector<std::pair<std::string, std::string>>& settings = Context::getDefault().getSettings(),
-			const std::string& implementation = Context::getDefault().getImplementation())
-	: context(settings, implementation)
-	{ }
-
     T& addData(const std::string& configuration) {
     	context.addData(configuration);
 		return *static_cast<T*>(this);
@@ -57,58 +54,76 @@ public:
 		return *static_cast<T*>(this);
 	}
 
-	T& addProcedure(std::unique_ptr<processing::procedure::Interface::Procedure> procedure) {
-		context.addProcedure(std::move(procedure));
+	T& addReference(const std::string& destinationId, const std::string& sourceId) {
+		context.addReference(destinationId, sourceId);
 		return *static_cast<T*>(this);
 	}
 
-	T& add(const std::string& id, std::unique_ptr<object::Interface::Object> object) {
-		context.add(id, std::move(object));
-		return *static_cast<T*>(this);
+	int getReturnCode() const {
+		return context.getReturnCode();
+	}
+
+	/* From Event: */
+	void onEvent(const object::Interface::Object& object) override {
+		context.onEvent(object);
+	}
+
+	/* From Context: */
+	std::set<std::string> getObjectIds() const override {
+		return context.getObjectIds();
+	}
+
+	/* From Procedure: */
+	void procedureRun(object::Context& objectContext) override {
+		context.procedureRun(objectContext);
 	}
 
 	/* Helper methods */
-	T& add(const std::string& id, std::unique_ptr<database::Interface::ConnectionFactory> connectionFactory) {
-		context.add(id, std::move(connectionFactory));
+	template<typename U = object::Interface::Object>
+	T& add(const std::string& id, std::unique_ptr<U> u) {
+		context.add(id, std::move(u));
 		return *static_cast<T*>(this);
 	}
 
-	T& add(const std::string& id, std::unique_ptr<com::basic::client::Interface::ConnectionFactory> connectionFactory) {
-		context.add(id, std::move(connectionFactory));
+	template<typename U = object::Interface::Object>
+	T& add(std::unique_ptr<U> u) {
+		context.add(std::move(u));
 		return *static_cast<T*>(this);
 	}
 
-	T& add(const std::string& id, std::unique_ptr<com::http::client::Interface::ConnectionFactory> connectionFactory) {
-		context.add(id, std::move(connectionFactory));
+	T& add(const std::string& id) {
+		context.add(id);
 		return *static_cast<T*>(this);
 	}
 
-	T& run(object::ObjectContext& objectContext) {
+	T& run(object::Context& objectContext) {
 		context.run(objectContext);
 		return *static_cast<T*>(this);
 	}
 
-	T& run(object::ObjectContext& objectContext, int argc, const char *argv[]) {
-		context.Interface::Context::run(objectContext, argc, argv);
+	T& run(object::Context& objectContext, int argc, const char *argv[]) {
+		//context.Interface::Context::run(objectContext, argc, argv);
+		context.run(objectContext, argc, argv);
 		return *static_cast<T*>(this);
 	}
 
 	T& run() {
-		context.Interface::Context::run();
+		//context.Interface::Context::run();
+		context.run();
 		return *static_cast<T*>(this);
 	}
 
 	T& run(int argc, const char *argv[]) {
-		context.Interface::Context::run(argc, argv);
+		//context.Interface::Context::run(argc, argv);
+		context.run(argc, argv);
 		return *static_cast<T*>(this);
 	}
 
-	/* Helper methods */
-	int main(object::ObjectContext& objectContext) {
+	int main(object::Context& objectContext) {
 		return context.main(objectContext);
 	}
 
-	int main(object::ObjectContext& objectContext, int argc, const char *argv[]) {
+	int main(object::Context& objectContext, int argc, const char *argv[]) {
 		return context.main(objectContext, argc, argv);
 	}
 
@@ -120,20 +135,27 @@ public:
 		return context.main(argc, argv);
 	}
 
-	int getReturnCode() const {
-		return context.getReturnCode();
+protected:
+	BasicContext(const std::vector<std::pair<std::string, std::string>>& settings = context::Context::getDefault().getSettings(),
+			const std::string& implementation = context::Context::getDefault().getImplementation())
+	: context(settings, implementation)
+	{ }
+
+	/* From Context: */
+	object::Interface::Object* findRawObject(const std::string& id) override {
+		return context.findObject<object::Interface::Object>(id);
 	}
 
-	void addObject(const std::string& id, std::unique_ptr<object::Interface::Object> object) {
-		context.addObject(id, std::move(object));
+	const object::Interface::Object* findRawObject(const std::string& id) const override {
+		return context.findObject<object::Interface::Object>(id);
 	}
 
-	std::set<std::string> getObjectIds() const {
-		return context.getObjectIds();
+	void addRawObject(const std::string& id, std::unique_ptr<object::Interface::Object> object) override {
+		context.addObject<object::Interface::Object>(id, std::move(object));
 	}
 
 private:
-	Context context;
+	context::Context context;
 };
 
 } /* namespace context */

@@ -26,7 +26,7 @@ SOFTWARE.
 #include <esl/module/Interface.h>
 //#include <esl/object/Event.h>
 #include <esl/object/Interface.h>
-#include <esl/object/ObjectContext.h>
+#include <esl/object/Context.h>
 #include <esl/Module.h>
 
 #include <cstdint>
@@ -48,8 +48,8 @@ struct Interface : module::Interface {
 	class Procedure : public virtual object::Interface::Object {
 	public:
 		/* this method is blocking. */
-		//virtual std::unique_ptr<object::ObjectContext> procedureRun(object::ObjectContext& objectContext) = 0;
-		virtual void procedureRun(object::ObjectContext& objectContext) = 0;
+		//virtual std::unique_ptr<object::Context> procedureRun(object::Context& context) = 0;
+		virtual void procedureRun(object::Context& context) = 0;
 
 		/* this method is non-blocking. */
 		virtual void procedureCancel() { };

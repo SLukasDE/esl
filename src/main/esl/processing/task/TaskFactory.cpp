@@ -20,43 +20,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_OBJECT_OBJECTCONTEXT_H_
-#define ESL_OBJECT_OBJECTCONTEXT_H_
-
-#include <esl/object/Interface.h>
-
-#include <set>
-#include <string>
-#include <memory>
+#include <esl/processing/task/Task.h>
+#include <esl/processing/task/TaskFactory.h>
+//#include <esl/processing/task/Status.h>
+#include <esl/Module.h>
 
 namespace esl {
-namespace object {
+namespace processing {
+namespace task {
 
-class ObjectContext : public virtual Interface::Object {
-public:
-	template<typename T = object::Interface::Object>
-	T* findObject(const std::string& id) {
-		return dynamic_cast<T*>(findRawObject(id));
-	}
+module::Implementation& TaskFactory::getDefault() {
+	static module::Implementation implementation;
+	return implementation;
+}
 
-	template<typename T>
-	const T* findObject(const std::string& id) const {
-		return dynamic_cast<const T*>(findRawObject(id));
-	}
+TaskFactory::TaskFactory(const std::vector<std::pair<std::string, std::string>>& settings, const std::string& implementation)
+: taskFactory(getModule().getInterface<Interface>(implementation).createTaskFactory(settings))
+{ }
 
-	template<typename T = object::Interface::Object>
-	void addObject(const std::string& id, std::unique_ptr<T> t) {
-		addRawObject(id, std::unique_ptr<object::Interface::Object>(t.release()));
-	}
-	virtual std::set<std::string> getObjectIds() const = 0;
+Task TaskFactory::createTask(Descriptor descriptor) {
+	return taskFactory->createTask(std::move(descriptor));
+}
 
-protected:
-	virtual Interface::Object* findRawObject(const std::string& id) = 0;
-	virtual const Interface::Object* findRawObject(const std::string& id) const = 0;
-	virtual void addRawObject(const std::string& id, std::unique_ptr<Interface::Object> object) = 0;
-};
+std::vector<Task> TaskFactory::getTasks() const {
+	return taskFactory->getTasks();
+}
 
-} /* namespace object */
+} /* namespace task */
+} /* namespace processing */
 } /* namespace esl */
-
-#endif /* ESL_OBJECT_OBJECTCONTEXT_H_ */

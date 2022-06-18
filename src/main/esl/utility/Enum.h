@@ -51,8 +51,14 @@ public:
 		return hasEnum || !stringType.empty();
 	}
 
+
+
 	bool operator==(EnumType type) const noexcept {
 		return (*this == Enum(type));
+	}
+
+	bool operator==(const std::string& stringType) const noexcept {
+		return (toString() == stringType);
 	}
 
 	bool operator==(const Enum& aEnum) const noexcept {
@@ -62,8 +68,14 @@ public:
 		return toString() == aEnum.toString();
 	}
 
+
+
 	bool operator!=(EnumType type) const noexcept {
 		return (*this != Enum(type));
+	}
+
+	bool operator!=(const std::string& stringType) const noexcept {
+		return (toString() != stringType);
 	}
 
 	bool operator!=(const Enum& aEnum) const noexcept {
@@ -72,6 +84,76 @@ public:
 		}
 		return toString() != aEnum.toString();
 	}
+
+
+
+	bool operator<(EnumType type) const noexcept {
+		return (*this < Enum(type));
+	}
+
+	bool operator<(const std::string& stringType) const noexcept {
+		return (toString() < stringType);
+	}
+
+	bool operator<(const Enum& aEnum) const noexcept {
+		if(hasEnum && aEnum.hasEnum && enumType == aEnum.enumType) {
+			return false;
+		}
+		return toString() < aEnum.toString();
+	}
+
+
+
+	bool operator<=(EnumType type) const noexcept {
+		return (*this <= Enum(type));
+	}
+
+	bool operator<=(const std::string& stringType) const noexcept {
+		return (toString() <= stringType);
+	}
+
+	bool operator<=(const Enum& aEnum) const noexcept {
+		if(hasEnum && aEnum.hasEnum && enumType == aEnum.enumType) {
+			return true;
+		}
+		return toString() <= aEnum.toString();
+	}
+
+
+
+	bool operator>(EnumType type) const noexcept {
+		return (*this > Enum(type));
+	}
+
+	bool operator>(const std::string& stringType) const noexcept {
+		return (toString() > stringType);
+	}
+
+	bool operator>(const Enum& aEnum) const noexcept {
+		if(hasEnum && aEnum.hasEnum && enumType == aEnum.enumType) {
+			return false;
+		}
+		return toString() > aEnum.toString();
+	}
+
+
+
+	bool operator>=(EnumType type) const noexcept {
+		return (*this >= Enum(type));
+	}
+
+	bool operator>=(const std::string& stringType) const noexcept {
+		return (toString() >= stringType);
+	}
+
+	bool operator>=(const Enum& aEnum) const noexcept {
+		if(hasEnum && aEnum.hasEnum && enumType == aEnum.enumType) {
+			return true;
+		}
+		return toString() >= aEnum.toString();
+	}
+
+
 
 	bool isEnumType() const noexcept {
 		return hasEnum;
