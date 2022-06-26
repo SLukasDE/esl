@@ -46,8 +46,8 @@ struct Plugin : BasePlugin {
 		return std::unique_ptr<const BasePlugin>(new Plugin<Interface>(implementation, create));
 	}
 
-	Plugin(const char* implementation, Create aCreate)
-	: BasePlugin(std::type_index(typeid(Interface)), implementation),
+	Plugin(std::string implementation, Create aCreate)
+	: BasePlugin(std::move(implementation), std::type_index(typeid(Interface))),
 	  create(aCreate)
 	{ }
 

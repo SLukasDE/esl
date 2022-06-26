@@ -31,12 +31,13 @@ namespace esl {
 namespace plugin {
 
 struct BasePlugin {
-	BasePlugin(std::type_index aTypeIndex, std::string aImplementation)
-	: typeIndex(aTypeIndex),
-	  implementation(std::move(aImplementation))
+	BasePlugin(std::string aImplementation, std::type_index aTypeIndex)
+	: implementation(std::move(aImplementation)),
+	  typeIndex(aTypeIndex)
 	{ }
-	std::type_index typeIndex;
-	std::string implementation;
+
+	const std::string implementation;
+	const std::type_index typeIndex;
 };
 
 } /* namespace plugin */
