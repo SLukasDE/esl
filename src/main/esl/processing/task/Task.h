@@ -23,8 +23,8 @@ SOFTWARE.
 #ifndef ESL_PROCESSING_TASK_TASK_H_
 #define ESL_PROCESSING_TASK_TASK_H_
 
-#include <esl/object/Interface.h>
-#include <esl/object/Context.h>
+#include <esl/object/IObject.h>
+#include <esl/object/IContext.h>
 #include <esl/processing/task/Status.h>
 
 #include <chrono>
@@ -39,23 +39,24 @@ class Task {
 public:
 	class Binding {
 	public:
-		virtual ~Binding();
+		virtual ~Binding() = default;
 
-		virtual void sendEvent(const object::Interface::Object& object) = 0;
+		virtual void sendEvent(const object::IObject& object) = 0;
 		virtual void cancel() = 0;
 
 		virtual Status getStatus() const = 0;
-		virtual object::Context* getContext() const = 0;
+		virtual object::IContext* getContext() const = 0;
 		virtual std::exception_ptr getException() const = 0;
 	};
 
 	Task(std::shared_ptr<Binding> binding);
 
-	void sendEvent(const object::Interface::Object& object);
+	void sendEvent(const object::IObject& object);
 	void cancel();
 
 	Status getStatus() const;
-	object::Context* getContext() const;
+	object::IContext* getContext() const;
+	std::exception_ptr getException() const;
 
 private:
 	std::shared_ptr<Binding> binding;

@@ -23,8 +23,8 @@ SOFTWARE.
 #ifndef ESL_PROCESSING_TASK_DESCRIPTOR_H_
 #define ESL_PROCESSING_TASK_DESCRIPTOR_H_
 
-#include <esl/object/Context.h>
-#include <esl/processing/procedure/Interface.h>
+#include <esl/object/IContext.h>
+#include <esl/processing/procedure/IProcedure.h>
 #include <esl/processing/task/Status.h>
 
 #include <functional>
@@ -36,9 +36,9 @@ namespace task {
 
 struct Descriptor {
 public:
-	std::unique_ptr<procedure::Interface::Procedure> procedure;
-	std::unique_ptr<object::Context> context;
-	unsigned int priority;
+	std::unique_ptr<procedure::IProcedure> procedure;
+	std::unique_ptr<object::IContext> context;
+	unsigned int priority = 0;
 	std::function<void(Status)> onStateChanged;
 };
 

@@ -23,103 +23,46 @@ SOFTWARE.
 #ifndef ESL_LOGGING_CONFIG_H_
 #define ESL_LOGGING_CONFIG_H_
 
-#ifndef ESL_LOGGING_LEVEL
+#include <esl/logging/IAppender.h>
+#include <esl/logging/Level.h>
+#include <esl/logging/Location.h>
+#include <esl/logging/OStream.h>
 
-#if defined(ESL_LOGGING_LEVEL_SILENT)
-#undef ESL_LOGGING_LEVEL_SILENT
-#undef ESL_LOGGING_LEVEL
-#define ESL_LOGGING_LEVEL 0
-#endif
+#include <thread>
+#include <memory>
+#include <string>
 
-#if defined(ESL_LOGGING_LEVEL_ERROR)
-#undef ESL_LOGGING_LEVEL_ERROR
-#undef ESL_LOGGING_LEVEL
-#define ESL_LOGGING_LEVEL 1
-#endif
+namespace esl {
+namespace logging {
 
-#if defined(ESL_LOGGING_LEVEL_WARN)
-#undef ESL_LOGGING_LEVEL_WARN
-#undef ESL_LOGGING_LEVEL
-#define ESL_LOGGING_LEVEL 2
-#endif
+class Config final {
+public:
+	Config() = delete;
 
-#if defined(ESL_LOGGING_LEVEL_INFO)
-#undef ESL_LOGGING_LEVEL_INFO
-#undef ESL_LOGGING_LEVEL
-#define ESL_LOGGING_LEVEL 3
-#endif
+	//class Appender;
 
-#if defined(ESL_LOGGING_LEVEL_DEBUG)
-#undef ESL_LOGGING_LEVEL_DEBUG
-#undef ESL_LOGGING_LEVEL
-#define ESL_LOGGING_LEVEL 4
-#endif
+	// NOT thread save - call it at the beginning if needed. Default is already "true"
+	// unblocked behavior makes other threads not waiting on logging, while current thread is writing to logger already.
+	// If logger is used already by current thread, other threads will write to a temporary buffer.
+	// - Temporary buffer is flushed to real logger, if other thread is done using the logger.
+	// - If logger is still used by current thread, buffer is queued.
+	// - If current thread is done using the logger, it flushes queued buffers.
+	static void setUnblocked(bool isUnblocked);
 
-#if defined(ESL_LOGGING_LEVEL_TRACE)
-#undef ESL_LOGGING_LEVEL_TRACE
-#undef ESL_LOGGING_LEVEL
-#define ESL_LOGGING_LEVEL 5
-#endif
+	// thread safe, quaranteed by configMutex
+	static void setLevel(Level logLevel, const std::string& typeName);
 
-#endif /* ESL_LOGGING_LEVEL */
+	// thread safe, quaranteed by loggerMutex
+	static void addAppender(IAppender& appender);
 
+	static bool isEnabled(const char* typeName, Level level);
 
-#define ESL_LOGGING_LEVEL_SILENT 0
-#define ESL_LOGGING_LEVEL_ERROR  1
-#define ESL_LOGGING_LEVEL_WARN   2
-#define ESL_LOGGING_LEVEL_INFO   3
-#define ESL_LOGGING_LEVEL_DEBUG  4
-#define ESL_LOGGING_LEVEL_TRACE  5
+	static std::unique_ptr<OStream> createOStream(const Location& location);
 
-#ifndef ESL_LOGGING_LEVEL
-#define ESL_LOGGING_LEVEL ESL_LOGGING_LEVEL_TRACE
-#endif /* ESL_LOGGING_LEVEL */
+	static unsigned int getThreadNo(std::thread::id threadId);
+};
 
-
-#ifndef ESL_LOGGING_LEVEL_BUILD
-
-#if defined(ESL_LOGGING_LEVEL_BUILD_SILENT)
-#undef ESL_LOGGING_LEVEL_BUILD_SILENT
-#undef ESL_LOGGING_LEVEL_BUILD
-#define ESL_LOGGING_LEVEL_BUILD ESL_LOGGING_LEVEL_SILENT
-#endif
-
-#if defined(ESL_LOGGING_LEVEL_BUILD_ERROR)
-#undef ESL_LOGGING_LEVEL_BUILD_ERROR
-#undef ESL_LOGGING_LEVEL_BUILD
-#define ESL_LOGGING_LEVEL_BUILD ESL_LOGGING_LEVEL_ERROR
-#endif
-
-#if defined(ESL_LOGGING_LEVEL_BUILD_WARN)
-#undef ESL_LOGGING_LEVEL_BUILD_WARN
-#undef ESL_LOGGING_LEVEL_BUILD
-#define ESL_LOGGING_LEVEL_BUILD ESL_LOGGING_LEVEL_WARN
-#endif
-
-#if defined(ESL_LOGGING_LEVEL_BUILD_INFO)
-#undef ESL_LOGGING_LEVEL_BUILD_INFO
-#undef ESL_LOGGING_LEVEL_BUILD
-#define ESL_LOGGING_LEVEL_BUILD ESL_LOGGING_LEVEL_INFO
-#endif
-
-#if defined(ESL_LOGGING_LEVEL_BUILD_DEBUG)
-#undef ESL_LOGGING_LEVEL_BUILD_DEBUG
-#undef ESL_LOGGING_LEVEL_BUILD
-#define ESL_LOGGING_LEVEL_BUILD ESL_LOGGING_LEVEL_DEBUG
-#endif
-
-#if defined(ESL_LOGGING_LEVEL_BUILD_TRACE)
-#undef ESL_LOGGING_LEVEL_BUILD_TRACE
-#undef ESL_LOGGING_LEVEL_BUILD
-#define ESL_LOGGING_LEVEL_BUILD ESL_LOGGING_LEVEL_TRACE
-#endif
-
-#endif /* ESL_LOGGING_LEVEL_BUILD */
-
-
-
-#ifndef ESL_LOGGING_LEVEL_BUILD
-#define ESL_LOGGING_LEVEL_BUILD ESL_LOGGING_LEVEL_TRACE
-#endif /* ESL_LOGGING_LEVEL_BUILD */
+} /* namespace logging */
+} /* namespace esl */
 
 #endif /* ESL_LOGGING_CONFIG_H_ */

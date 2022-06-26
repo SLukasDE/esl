@@ -23,10 +23,10 @@ SOFTWARE.
 #ifndef SRC_MAIN_C___ESL_UTILITY_STRING_H_
 #define SRC_MAIN_C___ESL_UTILITY_STRING_H_
 
-#include <string>
-#include <set>
-#include <vector>
 #include <functional>
+#include <set>
+#include <string>
+#include <vector>
 
 namespace esl {
 namespace utility {
@@ -42,6 +42,9 @@ public:
 
 	static std::string toUpper(std::string str);
 	static std::string toLower(std::string str);
+
+	static int toInt(const std::string& str);
+	static long toLong(const std::string& str);
 
 	/* converts a string and replaces characters that need to be replaced by an escape sequence according to the second parameter */
 	static std::string toEscape(const std::string& str,

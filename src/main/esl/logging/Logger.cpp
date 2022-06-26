@@ -21,37 +21,10 @@ SOFTWARE.
 */
 
 #include <esl/logging/Logger.h>
-#include <esl/logging/Interface.h>
-#include <esl/Module.h>
 
 namespace esl {
 namespace logging {
 
-void setUnblocked(bool isUnblocked) {
-	const Interface* interface = getModule().findInterface<Interface>();
-	if(interface) {
-		interface->setUnblocked(isUnblocked);
-	}
-}
-
-void setLevel(Level logLevel, const std::string& typeName) {
-	const Interface* interface = getModule().findInterface<Interface>();
-	if(interface) {
-		interface->setLevel(logLevel, typeName);
-	}
-}
-
-void addAppender(appender::Interface::Appender& appender) {
-	/* we are done if appender has been already added */
-	if(appender.handle != nullptr) {
-		return;
-	}
-
-	const Interface* interface = getModule().findInterface<Interface>();
-	if(interface) {
-		appender.handle = interface->addAppender(appender);
-	}
-}
 
 #if 0
 unsigned int getLoggerThreadNo(std::thread::id threadId) {

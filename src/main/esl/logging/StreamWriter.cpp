@@ -21,8 +21,6 @@ SOFTWARE.
 */
 
 #include <esl/logging/StreamWriter.h>
-#include <esl/logging/Interface.h>
-#include <esl/Module.h>
 
 namespace esl {
 namespace logging {

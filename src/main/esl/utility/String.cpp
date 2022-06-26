@@ -21,12 +21,13 @@ SOFTWARE.
 */
 
 #include <esl/utility/String.h>
+#include <esl/system/stacktrace/IStacktrace.h>
 
+#include <algorithm>
+#include <cctype>
+#include <iterator>
 #include <map>
 #include <utility>
-#include <algorithm>
-#include <iterator>
-#include <cctype>
 
 namespace esl {
 namespace utility {
@@ -160,6 +161,42 @@ std::string String::toLower(std::string str) {
 		return std::tolower(c);
 	});
 	return str;
+}
+
+int String::toInt(const std::string& aStr) {
+	try {
+		return std::stoi(aStr);
+	}
+	catch(const std::invalid_argument& e) {
+		if(system::stacktrace::IStacktrace::get(e)) {
+			throw;
+		}
+		throw system::stacktrace::IStacktrace::add(e);
+    }
+	catch(const std::out_of_range& e) {
+		if(system::stacktrace::IStacktrace::get(e)) {
+			throw;
+		}
+		throw system::stacktrace::IStacktrace::add(e);
+    }
+}
+
+long String::toLong(const std::string& aStr) {
+	try {
+		return std::stol(aStr);
+	}
+	catch(const std::invalid_argument& e) {
+		if(system::stacktrace::IStacktrace::get(e)) {
+			throw;
+		}
+		throw system::stacktrace::IStacktrace::add(e);
+    }
+	catch(const std::out_of_range& e) {
+		if(system::stacktrace::IStacktrace::get(e)) {
+			throw;
+		}
+		throw system::stacktrace::IStacktrace::add(e);
+    }
 }
 
 std::string String::toEscape(const std::string& str, std::function<std::string(char)> toEscapeSequenceFunction) {

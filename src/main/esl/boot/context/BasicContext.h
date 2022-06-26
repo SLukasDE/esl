@@ -23,14 +23,16 @@ SOFTWARE.
 #ifndef ESL_BOOT_CONTEXT_BASICCONTEXT_H_
 #define ESL_BOOT_CONTEXT_BASICCONTEXT_H_
 
-#include <esl/boot/context/Context.h>
-#include <esl/com/basic/client/Interface.h>
-#include <esl/com/http/client/Interface.h>
-#include <esl/database/Interface.h>
-#include <esl/object/Event.h>
-#include <esl/object/Interface.h>
-#include <esl/object/Context.h>
-#include <esl/processing/procedure/Interface.h>
+#include <esl/boot/context/IContext.h>
+#include <esl/com/basic/client/IConnectionFactory.h>
+#include <esl/com/http/client/IConnectionFactory.h>
+#include <esl/database/IConnectionFactory.h>
+#include <esl/object/IEvent.h>
+#include <esl/object/IObject.h>
+#include <esl/object/IContext.h>
+#include <esl/processing/procedure/IProcedure.h>
+#include <esl/plugin/Registry.h>
+#include <esl/plugin/Plugin.h>
 
 #include <memory>
 #include <string>
@@ -42,120 +44,119 @@ namespace boot {
 namespace context {
 
 template<typename T>
-class BasicContext : public esl::object::Event, public object::Context, public processing::procedure::Interface::Procedure {
+class BasicContext : public object::IEvent, public object::IContext, public processing::procedure::IProcedure {
 public:
     T& addData(const std::string& configuration) {
-    	context.addData(configuration);
+    	contextPtr->addData(configuration);
 		return *static_cast<T*>(this);
 	}
 
 	T& addFile(const boost::filesystem::path& filename) {
-		context.addFile(filename);
+		contextPtr->addFile(filename);
 		return *static_cast<T*>(this);
 	}
 
 	T& addReference(const std::string& destinationId, const std::string& sourceId) {
-		context.addReference(destinationId, sourceId);
+		contextPtr->addReference(destinationId, sourceId);
 		return *static_cast<T*>(this);
 	}
 
 	int getReturnCode() const {
-		return context.getReturnCode();
+		return contextPtr->getReturnCode();
 	}
 
 	/* From Event: */
-	void onEvent(const object::Interface::Object& object) override {
-		context.onEvent(object);
+	void onEvent(const object::IObject& object) override {
+		contextPtr->onEvent(object);
 	}
 
 	/* From Context: */
 	std::set<std::string> getObjectIds() const override {
-		return context.getObjectIds();
+		return contextPtr->getObjectIds();
 	}
 
 	/* From Procedure: */
-	void procedureRun(object::Context& objectContext) override {
-		context.procedureRun(objectContext);
+	void procedureRun(object::IContext& objectContext) override {
+		contextPtr->procedureRun(objectContext);
 	}
 
 	/* Helper methods */
-	template<typename U = object::Interface::Object>
+	template<typename U = object::IObject>
 	T& add(const std::string& id, std::unique_ptr<U> u) {
-		context.add(id, std::move(u));
+		contextPtr->add(id, std::move(u));
 		return *static_cast<T*>(this);
 	}
 
-	template<typename U = object::Interface::Object>
+	template<typename U = object::IObject>
 	T& add(std::unique_ptr<U> u) {
-		context.add(std::move(u));
+		contextPtr->add(std::move(u));
 		return *static_cast<T*>(this);
 	}
 
 	T& add(const std::string& id) {
-		context.add(id);
+		contextPtr->add(id);
 		return *static_cast<T*>(this);
 	}
 
-	T& run(object::Context& objectContext) {
-		context.run(objectContext);
+	T& run(object::IContext& objectContext) {
+		contextPtr->run(objectContext);
 		return *static_cast<T*>(this);
 	}
 
-	T& run(object::Context& objectContext, int argc, const char *argv[]) {
-		//context.Interface::Context::run(objectContext, argc, argv);
-		context.run(objectContext, argc, argv);
+	T& run(object::IContext& objectContext, int argc, const char *argv[]) {
+		//contextPtr->Interface::Context::run(objectContext, argc, argv);
+		contextPtr->run(objectContext, argc, argv);
 		return *static_cast<T*>(this);
 	}
 
 	T& run() {
-		//context.Interface::Context::run();
-		context.run();
+		//contextPtr->Interface::Context::run();
+		contextPtr->run();
 		return *static_cast<T*>(this);
 	}
 
 	T& run(int argc, const char *argv[]) {
-		//context.Interface::Context::run(argc, argv);
-		context.run(argc, argv);
+		//contextPtr->Interface::Context::run(argc, argv);
+		contextPtr->run(argc, argv);
 		return *static_cast<T*>(this);
 	}
 
-	int main(object::Context& objectContext) {
-		return context.main(objectContext);
+	int main(object::IContext& objectContext) {
+		return contextPtr->main(objectContext);
 	}
 
-	int main(object::Context& objectContext, int argc, const char *argv[]) {
-		return context.main(objectContext, argc, argv);
+	int main(object::IContext& objectContext, int argc, const char *argv[]) {
+		return contextPtr->main(objectContext, argc, argv);
 	}
 
 	int main() {
-		return context.main();
+		return contextPtr->main();
 	}
 
 	int main(int argc, const char *argv[]) {
-		return context.main(argc, argv);
+		return contextPtr->main(argc, argv);
 	}
 
 protected:
-	BasicContext(const std::vector<std::pair<std::string, std::string>>& settings = context::Context::getDefault().getSettings(),
-			const std::string& implementation = context::Context::getDefault().getImplementation())
-	: context(settings, implementation)
+	BasicContext(const std::vector<std::pair<std::string, std::string>>& settings, const std::string& implementation)
+	: contextPtr(plugin::Registry::get().getPlugin<IContext::Plugin>(implementation).create(settings))
 	{ }
 
 	/* From Context: */
-	object::Interface::Object* findRawObject(const std::string& id) override {
-		return context.findObject<object::Interface::Object>(id);
+	object::IObject* findRawObject(const std::string& id) override {
+		return contextPtr->findObject<object::IObject>(id);
 	}
 
-	const object::Interface::Object* findRawObject(const std::string& id) const override {
-		return context.findObject<object::Interface::Object>(id);
+	const object::IObject* findRawObject(const std::string& id) const override {
+		return contextPtr->findObject<object::IObject>(id);
 	}
 
-	void addRawObject(const std::string& id, std::unique_ptr<object::Interface::Object> object) override {
-		context.addObject<object::Interface::Object>(id, std::move(object));
+	void addRawObject(const std::string& id, std::unique_ptr<object::IObject> object) override {
+		contextPtr->addObject<object::IObject>(id, std::move(object));
 	}
 
 private:
-	context::Context context;
+	std::unique_ptr<IContext> contextPtr;
 };
 
 } /* namespace context */

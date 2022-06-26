@@ -1,3 +1,4 @@
+#if 0
 /*
 MIT License
 Copyright (c) 2019-2022 Sven Lukas
@@ -114,3 +115,4 @@ const std::string& InterfaceType::toString(InterfaceType::Type type) noexcept {
 
 } /* namespace module */
 } /* namespace esl */
+#endif

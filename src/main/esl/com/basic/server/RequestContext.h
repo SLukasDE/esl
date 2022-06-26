@@ -20,8 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/object/Interface.h>
-#include <esl/object/Context.h>
+#include <esl/object/IObject.h>
+#include <esl/object/IContext.h>
 #include <esl/com/basic/server/Connection.h>
 #include <esl/com/basic/server/Request.h>
 
@@ -33,11 +33,11 @@ namespace com {
 namespace basic {
 namespace server {
 
-class RequestContext : public virtual object::Interface::Object {
+class RequestContext : public virtual object::IObject {
 public:
 	virtual Connection& getConnection() const = 0;
 	virtual const Request& getRequest() const = 0;
-	virtual object::Context& getObjectContext() = 0;
+	virtual object::IContext& getObjectContext() = 0;
 };
 
 } /* namespace server */

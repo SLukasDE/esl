@@ -20,11 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <esl/logging/Config.h>
 #include <esl/logging/StreamReal.h>
 #include <esl/logging/Location.h>
-
-#include <esl/logging/Interface.h>
-#include <esl/Module.h>
 
 namespace esl {
 namespace logging {
@@ -57,22 +55,12 @@ StreamReal::operator bool() const {
 }
 
 bool StreamReal::isEnabled() const {
-	const Interface* interface = getModule().findInterface<Interface>();
-
-	if(interface == nullptr) {
-		return false;
-	}
-	return interface->isEnabled(typeName, level);
+	return Config::isEnabled(typeName, level);
 }
 
 StreamWriter StreamReal::getStreamWriter(const void* object, const char* function, const char* file, unsigned int lineNo) {
 	Location location(level, object, typeName, function, file, lineNo, std::this_thread::get_id());
-	const Interface* interface = getModule().findInterface<Interface>();
-
-	if(interface) {
-		return StreamWriter(interface->createOStream(location));
-	}
-	return StreamWriter(nullptr);
+	return StreamWriter(Config::createOStream(location));
 }
 
 } /* namespace logging */

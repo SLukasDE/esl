@@ -30,43 +30,35 @@ Task::Task(std::shared_ptr<Binding> aBinding)
 : binding(aBinding)
 { }
 
-void Task::sendEvent(const object::Interface::Object& object) {
+void Task::sendEvent(const object::IObject& object) {
 	if(binding) {
 		binding->sendEvent(object);
 	}
-/*
-	if(std::shared_ptr<Interface::Task::HandleBinding> bindingPtr = binding.lock()) {
-		bindingPtr->sendEvent(object);
-	}
-*/
 }
 
 void Task::cancel() {
 	if(binding) {
 		return binding->cancel();
 	}
-/*
-	if (std::shared_ptr<Interface::Task::HandleBinding> bindingPtr = binding.lock()) {
-		return bindingPtr->cancel();
-	}
-*/
 }
 
 Status Task::getStatus() const {
 	if(binding) {
 		return binding->getStatus();
 	}
-/*
-	if(std::shared_ptr<Interface::Task::HandleBinding> bindingPtr = binding.lock()) {
-		return bindingPtr->getStatus();
-	}
-*/
 	return Status::unknown;
 }
 
-object::Context* Task::getContext() const {
+object::IContext* Task::getContext() const {
 	if(binding) {
 		return binding->getContext();
+	}
+	return nullptr;
+}
+
+std::exception_ptr Task::getException() const {
+	if(binding) {
+		return binding->getException();
 	}
 	return nullptr;
 }

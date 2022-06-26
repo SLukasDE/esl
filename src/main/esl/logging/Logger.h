@@ -24,32 +24,14 @@ SOFTWARE.
 #define ESL_LOGGING_LOGGER_H_
 
 #include <esl/logging/Config.h>
-#include <esl/logging/Level.h>
 #include <esl/logging/Streams.h>
-#include <esl/logging/appender/Interface.h>
 
-#include <vector>
-#include <string>
 #include <functional> // std::reference_wrapper<>
+#include <string>
+#include <vector>
 
 namespace esl {
 namespace logging {
-
-//class Appender;
-
-// NOT thread save - call it at the beginning if needed. Default is already "true"
-// unblocked behavior makes other threads not waiting on logging, while current thread is writing to logger already.
-// If logger is used already by current thread, other threads will write to a temporary buffer.
-// - Temporary buffer is flushed to real logger, if other thread is done using the logger.
-// - If logger is still used by current thread, buffer is queued.
-// - If current thread is done using the logger, it flushes queued buffers.
-void setUnblocked(bool isUnblocked);
-
-// thread safe, quaranteed by configMutex
-void setLevel(Level logLevel, const std::string& typeName);
-
-// thread safe, quaranteed by loggerMutex
-void addAppender(appender::Interface::Appender& appender);
 
 template<Level level = defaultLevel>
 class Logger {
@@ -73,7 +55,7 @@ public:
 
 	// thread safe, quaranteed by configMutex
 //	static void setLevel(Level logLevel, const std::string& typeName);
-	void setLevel(Level logLevel);
+//	void setLevel(Level logLevel);
 
 	// thread safe, quaranteed by loggerMutex
 //	static void addAppender(Appender& appender);

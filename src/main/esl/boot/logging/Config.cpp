@@ -21,26 +21,40 @@ SOFTWARE.
 */
 
 #include <esl/boot/logging/Config.h>
-#include <esl/boot/logging/Interface.h>
-
-#include <esl/Module.h>
+#include <esl/boot/logging/IConfig.h>
+#include <esl/plugin/Plugin.h>
+#include <esl/plugin/Registry.h>
 
 namespace esl {
 namespace boot {
 namespace logging {
 
 void Config::loadData(const std::string& configuration) {
-	const Interface* interface = esl::getModule().findInterface<Interface>();
-	if(interface) {
-		interface->loadData(configuration);
+	const IConfig::Plugin* plugin = plugin::Registry::get().findPlugin<IConfig::Plugin>();
+	if(!plugin) {
+		throw std::runtime_error("Cannot find plugin for esl::boot::IConfig");
 	}
+
+	std::unique_ptr<IConfig> config = plugin->create({});
+	if(!config) {
+		throw std::runtime_error("Plugin for esl::boot::IConfig does not create an oboject");
+	}
+
+	config->loadData(configuration);
 }
 
 void Config::loadFile(const boost::filesystem::path& filename) {
-	const Interface* interface = esl::getModule().findInterface<Interface>();
-	if(interface) {
-		interface->loadFile(filename);
+	const IConfig::Plugin* plugin = plugin::Registry::get().findPlugin<IConfig::Plugin>();
+	if(!plugin) {
+		throw std::runtime_error("Cannot find plugin for esl::boot::IConfig");
 	}
+
+	std::unique_ptr<IConfig> config = plugin->create({});
+	if(!config) {
+		throw std::runtime_error("Plugin for esl::boot::IConfig does not create an oboject");
+	}
+
+	config->loadFile(filename);
 }
 
 } /* namespace logging */

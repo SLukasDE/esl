@@ -23,8 +23,8 @@ SOFTWARE.
 #ifndef ESL_BOOT_OBJECTCONTEXT_H_
 #define ESL_BOOT_OBJECTCONTEXT_H_
 
-#include <esl/object/Interface.h>
-#include <esl/object/Context.h>
+#include <esl/object/IObject.h>
+#include <esl/object/IContext.h>
 
 #include <map>
 #include <memory>
@@ -34,17 +34,17 @@ SOFTWARE.
 namespace esl {
 namespace boot {
 
-class ObjectContext final : public object::Context {
+class ObjectContext final : public object::IContext {
 public:
 	std::set<std::string> getObjectIds() const override;
 
 protected:
-	object::Interface::Object* findRawObject(const std::string& id) override;
-	const object::Interface::Object* findRawObject(const std::string& id) const override;
-	void addRawObject(const std::string& id, std::unique_ptr<object::Interface::Object> object) override;
+	object::IObject* findRawObject(const std::string& id) override;
+	const object::IObject* findRawObject(const std::string& id) const override;
+	void addRawObject(const std::string& id, std::unique_ptr<object::IObject> object) override;
 
 private:
-	std::map<std::string, std::unique_ptr<object::Interface::Object>> objects;
+	std::map<std::string, std::unique_ptr<object::IObject>> objects;
 };
 
 } /* namespace boot */
