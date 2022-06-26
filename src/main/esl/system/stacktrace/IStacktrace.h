@@ -101,8 +101,10 @@ private:
 
 template <class E>
 StacktraceInjector<E> IStacktrace::add(const E& e) {
-	const IStacktrace::Plugin* stacktracePlugin = plugin::Registry::get().findPlugin<IStacktrace::Plugin>("");
-    return StacktraceInjector<E>(e, stacktracePlugin ? stacktracePlugin->create({}) : nullptr);
+    return StacktraceInjector<E>(e, plugin::Registry::get().create<IStacktrace>("", {}));
+
+//	const IStacktrace::Plugin* stacktracePlugin = plugin::Registry::get().findPlugin<IStacktrace>("");
+//	return StacktraceInjector<E>(e, stacktracePlugin ? stacktracePlugin->create({}) : nullptr);
 }
 
 template <class E>

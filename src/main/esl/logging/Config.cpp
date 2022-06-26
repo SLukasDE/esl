@@ -64,7 +64,7 @@ ILogger& getLogger() {
 	static DummyLogger dummyLogger;
 
 	if(iLogger == nullptr) {
-		const ILogger::Plugin* loggerPlugin = plugin::Registry::get().findPlugin<ILogger::Plugin>();
+		const ILogger::Plugin* loggerPlugin = plugin::Registry::get().findPlugin<ILogger>("");
 		if(loggerPlugin) {
 			iLogger = loggerPlugin->create({}).release();
 		}

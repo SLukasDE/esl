@@ -30,28 +30,28 @@ namespace boot {
 namespace logging {
 
 void Config::loadData(const std::string& configuration) {
-	const IConfig::Plugin* plugin = plugin::Registry::get().findPlugin<IConfig::Plugin>();
+	const IConfig::Plugin* plugin = plugin::Registry::get().findPlugin<IConfig>("");
 	if(!plugin) {
 		throw std::runtime_error("Cannot find plugin for esl::boot::IConfig");
 	}
 
 	std::unique_ptr<IConfig> config = plugin->create({});
 	if(!config) {
-		throw std::runtime_error("Plugin for esl::boot::IConfig does not create an oboject");
+		throw std::runtime_error("Plugin for esl::boot::IConfig does not create an object");
 	}
 
 	config->loadData(configuration);
 }
 
 void Config::loadFile(const boost::filesystem::path& filename) {
-	const IConfig::Plugin* plugin = plugin::Registry::get().findPlugin<IConfig::Plugin>();
+	const IConfig::Plugin* plugin = plugin::Registry::get().findPlugin<IConfig>("");
 	if(!plugin) {
 		throw std::runtime_error("Cannot find plugin for esl::boot::IConfig");
 	}
 
 	std::unique_ptr<IConfig> config = plugin->create({});
 	if(!config) {
-		throw std::runtime_error("Plugin for esl::boot::IConfig does not create an oboject");
+		throw std::runtime_error("Plugin for esl::boot::IConfig does not create an object");
 	}
 
 	config->loadFile(filename);
