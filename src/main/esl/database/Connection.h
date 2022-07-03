@@ -25,7 +25,7 @@ SOFTWARE.
 
 #include <esl/database/PreparedStatement.h>
 #include <esl/database/PreparedBulkStatement.h>
-#include <esl/object/IImplementations.h>
+#include <esl/object/Implementations.h>
 
 #include <memory>
 #include <string>
@@ -33,7 +33,7 @@ SOFTWARE.
 namespace esl {
 namespace database {
 
-class Connection : public object::IImplementations {
+class Connection : public object::Implementations {
 public:
 	virtual PreparedStatement prepare(const std::string& sql) const = 0;
 	virtual PreparedBulkStatement prepareBulk(const std::string& sql) const = 0;

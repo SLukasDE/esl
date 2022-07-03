@@ -25,7 +25,7 @@ SOFTWARE.
 
 #include <esl/io/Consumer.h>
 #include <esl/io/Writer.h>
-#include <esl/object/IObject.h>
+#include <esl/object/Object.h>
 
 #include <memory>
 
@@ -36,7 +36,7 @@ class Input final {
 public:
 	Input() = default;
 
-	Input(std::unique_ptr<object::IObject> object, Consumer& consumer, Writer& writer);
+	Input(std::unique_ptr<object::Object> object, Consumer& consumer, Writer& writer);
 
 	Input(Consumer& consumer);
 	Input(Writer& writer);
@@ -56,7 +56,7 @@ public:
 	Writer& getWriter() const;
 
 private:
-	std::unique_ptr<object::IObject> object;
+	std::unique_ptr<object::Object> object;
 	std::unique_ptr<Consumer> consumerGenerated;
 	std::unique_ptr<Writer> writerGenerated;
 

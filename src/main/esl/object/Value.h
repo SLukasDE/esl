@@ -23,8 +23,8 @@ SOFTWARE.
 #ifndef ESL_OBJECT_VALUE_H_
 #define ESL_OBJECT_VALUE_H_
 
-#include <esl/object/IObject.h>
-#include <esl/object/ICloneable.h>
+#include <esl/object/Object.h>
+#include <esl/object/Cloneable.h>
 
 #include <memory>
 
@@ -32,7 +32,7 @@ namespace esl {
 namespace object {
 
 template <typename T>
-class Value : public ICloneable {
+class Value : public Cloneable {
 public:
 	Value(const T& aValue)
 	: value(aValue)
@@ -42,8 +42,8 @@ public:
 	: value(std::move(aValue))
 	{ }
 
-	std::unique_ptr<IObject> clone() const override {
-		return std::unique_ptr<IObject>(new Value<T>(value));
+	std::unique_ptr<Object> clone() const override {
+		return std::unique_ptr<Object>(new Value<T>(value));
 	}
 
 	T& operator=(const T& aValue) {

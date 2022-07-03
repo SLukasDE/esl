@@ -23,8 +23,8 @@ SOFTWARE.
 #include <esl/io/output/Buffered.h>
 #include <esl/logging/Logger.h>
 
-#include <cstring>
 #include <algorithm>
+#include <cstring>
 
 namespace esl {
 namespace io {

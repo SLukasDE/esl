@@ -23,14 +23,14 @@ SOFTWARE.
 #ifndef ESL_BOOT_CONTEXT_BASICCONTEXT_H_
 #define ESL_BOOT_CONTEXT_BASICCONTEXT_H_
 
-#include <esl/boot/context/IContext.h>
-#include <esl/com/basic/client/IConnectionFactory.h>
-#include <esl/com/http/client/IConnectionFactory.h>
-#include <esl/database/IConnectionFactory.h>
-#include <esl/object/IEvent.h>
-#include <esl/object/IObject.h>
-#include <esl/object/IContext.h>
-#include <esl/processing/procedure/IProcedure.h>
+#include <esl/boot/context/Context.h>
+#include <esl/com/basic/client/ConnectionFactory.h>
+#include <esl/com/http/client/ConnectionFactory.h>
+#include <esl/database/ConnectionFactory.h>
+#include <esl/object/Event.h>
+#include <esl/object/Object.h>
+#include <esl/object/Context.h>
+#include <esl/processing/Procedure.h>
 #include <esl/plugin/Registry.h>
 #include <esl/plugin/Plugin.h>
 
@@ -44,7 +44,7 @@ namespace boot {
 namespace context {
 
 template<typename T>
-class BasicContext : public object::IEvent, public object::IContext, public processing::procedure::IProcedure {
+class BasicContext : public object::Event, public object::Context, public processing::Procedure {
 public:
     T& addData(const std::string& configuration) {
     	contextPtr->addData(configuration);
@@ -66,7 +66,7 @@ public:
 	}
 
 	/* From Event: */
-	void onEvent(const object::IObject& object) override {
+	void onEvent(const object::Object& object) override {
 		contextPtr->onEvent(object);
 	}
 
@@ -76,18 +76,18 @@ public:
 	}
 
 	/* From Procedure: */
-	void procedureRun(object::IContext& objectContext) override {
+	void procedureRun(object::Context& objectContext) override {
 		contextPtr->procedureRun(objectContext);
 	}
 
 	/* Helper methods */
-	template<typename U = object::IObject>
+	template<typename U = object::Object>
 	T& add(const std::string& id, std::unique_ptr<U> u) {
 		contextPtr->add(id, std::move(u));
 		return *static_cast<T*>(this);
 	}
 
-	template<typename U = object::IObject>
+	template<typename U = object::Object>
 	T& add(std::unique_ptr<U> u) {
 		contextPtr->add(std::move(u));
 		return *static_cast<T*>(this);
@@ -98,12 +98,12 @@ public:
 		return *static_cast<T*>(this);
 	}
 
-	T& run(object::IContext& objectContext) {
+	T& run(object::Context& objectContext) {
 		contextPtr->run(objectContext);
 		return *static_cast<T*>(this);
 	}
 
-	T& run(object::IContext& objectContext, int argc, const char *argv[]) {
+	T& run(object::Context& objectContext, int argc, const char *argv[]) {
 		//contextPtr->Interface::Context::run(objectContext, argc, argv);
 		contextPtr->run(objectContext, argc, argv);
 		return *static_cast<T*>(this);
@@ -121,11 +121,11 @@ public:
 		return *static_cast<T*>(this);
 	}
 
-	int main(object::IContext& objectContext) {
+	int main(object::Context& objectContext) {
 		return contextPtr->main(objectContext);
 	}
 
-	int main(object::IContext& objectContext, int argc, const char *argv[]) {
+	int main(object::Context& objectContext, int argc, const char *argv[]) {
 		return contextPtr->main(objectContext, argc, argv);
 	}
 
@@ -139,24 +139,24 @@ public:
 
 protected:
 	BasicContext(const std::vector<std::pair<std::string, std::string>>& settings, const std::string& implementation)
-	: contextPtr(plugin::Registry::get().getPlugin<IContext::Plugin>(implementation).create(settings))
+	: contextPtr(plugin::Registry::get().create<Context>(implementation, settings))
 	{ }
 
 	/* From Context: */
-	object::IObject* findRawObject(const std::string& id) override {
-		return contextPtr->findObject<object::IObject>(id);
+	object::Object* findRawObject(const std::string& id) override {
+		return contextPtr->findObject<object::Object>(id);
 	}
 
-	const object::IObject* findRawObject(const std::string& id) const override {
-		return contextPtr->findObject<object::IObject>(id);
+	const object::Object* findRawObject(const std::string& id) const override {
+		return contextPtr->findObject<object::Object>(id);
 	}
 
-	void addRawObject(const std::string& id, std::unique_ptr<object::IObject> object) override {
-		contextPtr->addObject<object::IObject>(id, std::move(object));
+	void addRawObject(const std::string& id, std::unique_ptr<object::Object> object) override {
+		contextPtr->addObject<object::Object>(id, std::move(object));
 	}
 
 private:
-	std::unique_ptr<IContext> contextPtr;
+	std::unique_ptr<Context> contextPtr;
 };
 
 } /* namespace context */

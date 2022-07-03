@@ -23,7 +23,7 @@ SOFTWARE.
 #ifndef ESL_UTILITY_UNIQUEREF_H_
 #define ESL_UTILITY_UNIQUEREF_H_
 
-#include <esl/system/stacktrace/IStacktrace.h>
+#include <esl/system/Stacktrace.h>
 
 #include <memory>
 #include <stdexcept>
@@ -41,7 +41,7 @@ public:
     : value(aValue)
     {
         if(!value) {
-            throw system::stacktrace::IStacktrace::add(std::runtime_error("Initialization of esl::utility::UniqueRef with nullptr"));
+            throw system::Stacktrace::add(std::runtime_error("Initialization of esl::utility::UniqueRef with nullptr"));
         }
     }
 
@@ -49,7 +49,7 @@ public:
     : value(std::move(aValue))
     {
         if(!value) {
-            throw system::stacktrace::IStacktrace::add(std::runtime_error("Initialization of esl::utility::UniqueRef with nullptr"));
+            throw system::Stacktrace::add(std::runtime_error("Initialization of esl::utility::UniqueRef with nullptr"));
         }
     }
 

@@ -21,7 +21,7 @@ SOFTWARE.
 */
 
 #include <esl/logging/Config.h>
-#include <esl/logging/ILogger.h>
+#include <esl/logging/Logging.h>
 #include <esl/plugin/Plugin.h>
 #include <esl/plugin/Registry.h>
 
@@ -31,7 +31,7 @@ namespace esl {
 namespace logging {
 
 namespace {
-class DummyLogger : public ILogger {
+class DummyLogger : public Logging {
 public:
 	void setUnblocked(bool isUnblocked) override {
 	}
@@ -39,7 +39,7 @@ public:
 	void setLevel(Level logLevel, const std::string& typeName) override {
 	}
 
-	void* addAppender(IAppender& appender) override {
+	void* addAppender(Appender& appender) override {
 		return nullptr;
 	}
 
@@ -59,12 +59,12 @@ public:
 	}
 };
 
-ILogger& getLogger() {
-	static ILogger* iLogger = nullptr;
+Logging& getLogger() {
+	static Logging* iLogger = nullptr;
 	static DummyLogger dummyLogger;
 
 	if(iLogger == nullptr) {
-		const ILogger::Plugin* loggerPlugin = plugin::Registry::get().findPlugin<ILogger>("");
+		const plugin::Plugin<Logging>* loggerPlugin = plugin::Registry::get().findPlugin<Logging>("");
 		if(loggerPlugin) {
 			iLogger = loggerPlugin->create({}).release();
 		}
@@ -74,7 +74,7 @@ ILogger& getLogger() {
 }
 } /* anonymous namespace */
 
-IAppender::~IAppender() {
+Appender::~Appender() {
 	getLogger().removeAppender(handle);
 }
 
@@ -86,7 +86,7 @@ void Config::setLevel(Level logLevel, const std::string& typeName) {
 	getLogger().setLevel(logLevel, typeName);
 }
 
-void Config::addAppender(IAppender& appender) {
+void Config::addAppender(Appender& appender) {
 	/* we are done if appender has been already added */
 	if(appender.handle != nullptr) {
 		return;

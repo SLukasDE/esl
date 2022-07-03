@@ -21,7 +21,6 @@ SOFTWARE.
 */
 
 #include <esl/boot/logging/Config.h>
-#include <esl/boot/logging/IConfig.h>
 #include <esl/plugin/Plugin.h>
 #include <esl/plugin/Registry.h>
 
@@ -30,31 +29,31 @@ namespace boot {
 namespace logging {
 
 void Config::loadData(const std::string& configuration) {
-	const IConfig::Plugin* plugin = plugin::Registry::get().findPlugin<IConfig>("");
+	const plugin::Plugin<Config>* plugin = plugin::Registry::get().findPlugin<Config>("");
 	if(!plugin) {
-		throw std::runtime_error("Cannot find plugin for esl::boot::IConfig");
+		throw std::runtime_error("Cannot find plugin for esl::boot::Config");
 	}
 
-	std::unique_ptr<IConfig> config = plugin->create({});
+	std::unique_ptr<Config> config = plugin->create({});
 	if(!config) {
-		throw std::runtime_error("Plugin for esl::boot::IConfig does not create an object");
+		throw std::runtime_error("Plugin for esl::boot::Config does not create an object");
 	}
 
-	config->loadData(configuration);
+	config->addData(configuration);
 }
 
 void Config::loadFile(const boost::filesystem::path& filename) {
-	const IConfig::Plugin* plugin = plugin::Registry::get().findPlugin<IConfig>("");
+	const plugin::Plugin<Config>* plugin = plugin::Registry::get().findPlugin<Config>("");
 	if(!plugin) {
-		throw std::runtime_error("Cannot find plugin for esl::boot::IConfig");
+		throw std::runtime_error("Cannot find plugin for esl::boot::Config");
 	}
 
-	std::unique_ptr<IConfig> config = plugin->create({});
+	std::unique_ptr<Config> config = plugin->create({});
 	if(!config) {
-		throw std::runtime_error("Plugin for esl::boot::IConfig does not create an object");
+		throw std::runtime_error("Plugin for esl::boot::Config does not create an object");
 	}
 
-	config->loadFile(filename);
+	config->addFile(filename);
 }
 
 } /* namespace logging */

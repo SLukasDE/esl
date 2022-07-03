@@ -23,7 +23,7 @@ SOFTWARE.
 #ifndef ESL_UTILITY_EVENT_H_
 #define ESL_UTILITY_EVENT_H_
 
-#include <esl/object/IObject.h>
+#include <esl/object/Object.h>
 #include <esl/utility/Enum.h>
 
 #include <string>
@@ -31,7 +31,7 @@ SOFTWARE.
 namespace esl {
 namespace utility {
 
-class Event : public object::IObject {
+class Event : public object::Object {
 public:
 	enum EnumType {
 		unknown,
@@ -42,14 +42,14 @@ public:
 
 	using Type = Enum<EnumType, EnumType::unknown>;
 
-	Event(const Type& aType, const object::IObject& aSender);
+	Event(const Type& aType, const object::Object& aSender);
 
 	const Type& getType() const noexcept;
-	const object::IObject& getSender() const noexcept;
+	const object::Object& getSender() const noexcept;
 
 private:
 	const Type type;
-	const object::IObject& sender;
+	const object::Object& sender;
 };
 
 template<>

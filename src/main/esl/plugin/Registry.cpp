@@ -26,6 +26,7 @@ SOFTWARE.
 #include <type_traits> // aligned_storage
 #include <utility>
 
+#include <iostream>
 namespace esl {
 namespace plugin {
 
@@ -63,6 +64,20 @@ Registry& Registry::get() {
 
 void Registry::set(Registry& registry) {
 	registryPtr = &registry;
+}
+
+void Registry::dump() const {
+	std::cout << "TypePlugins: " << typePlugins.size() << " entries\n";
+	std::cout << "-------------------------\n";
+	for(const auto& typePlugin : typePlugins) {
+		std::cout << "    Type " << typePlugin.first.name() << ": " << typePlugin.second.size() << " entries\n";
+		std::cout << "    -------------------------\n";
+
+		const BasePlugins& basePlugins = typePlugin.second;
+		for(const auto& basePlugin : basePlugins) {
+			std::cout << "        Implementation " << basePlugin.first << ": " << (void*) basePlugin.second.get() << "\n";
+		}
+	}
 }
 
 const BasePlugin* Registry::findBasePlugin(const std::string& implementation, std::type_index typeIndex) const noexcept {

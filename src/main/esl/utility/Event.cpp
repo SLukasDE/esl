@@ -25,7 +25,7 @@ SOFTWARE.
 namespace esl {
 namespace utility {
 
-Event::Event(const Type& aType, const object::IObject& aSender)
+Event::Event(const Type& aType, const object::Object& aSender)
 : type(aType),
   sender(aSender)
 { }
@@ -34,7 +34,7 @@ const Event::Type& Event::getType() const noexcept {
 	return type;
 }
 
-const object::IObject& Event::getSender() const noexcept {
+const object::Object& Event::getSender() const noexcept {
 	return sender;
 }
 

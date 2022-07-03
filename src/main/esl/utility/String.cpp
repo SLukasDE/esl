@@ -21,7 +21,7 @@ SOFTWARE.
 */
 
 #include <esl/utility/String.h>
-#include <esl/system/stacktrace/IStacktrace.h>
+#include <esl/system/Stacktrace.h>
 
 #include <algorithm>
 #include <cctype>
@@ -168,16 +168,16 @@ int String::toInt(const std::string& aStr) {
 		return std::stoi(aStr);
 	}
 	catch(const std::invalid_argument& e) {
-		if(system::stacktrace::IStacktrace::get(e)) {
+		if(system::Stacktrace::get(e)) {
 			throw;
 		}
-		throw system::stacktrace::IStacktrace::add(e);
+		throw system::Stacktrace::add(e);
     }
 	catch(const std::out_of_range& e) {
-		if(system::stacktrace::IStacktrace::get(e)) {
+		if(system::Stacktrace::get(e)) {
 			throw;
 		}
-		throw system::stacktrace::IStacktrace::add(e);
+		throw system::Stacktrace::add(e);
     }
 }
 
@@ -186,16 +186,16 @@ long String::toLong(const std::string& aStr) {
 		return std::stol(aStr);
 	}
 	catch(const std::invalid_argument& e) {
-		if(system::stacktrace::IStacktrace::get(e)) {
+		if(system::Stacktrace::get(e)) {
 			throw;
 		}
-		throw system::stacktrace::IStacktrace::add(e);
+		throw system::Stacktrace::add(e);
     }
 	catch(const std::out_of_range& e) {
-		if(system::stacktrace::IStacktrace::get(e)) {
+		if(system::Stacktrace::get(e)) {
 			throw;
 		}
-		throw system::stacktrace::IStacktrace::add(e);
+		throw system::Stacktrace::add(e);
     }
 }
 

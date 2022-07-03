@@ -23,6 +23,8 @@ SOFTWARE.
 #ifndef ESL_BOOT_LOGGING_CONFIG_H_
 #define ESL_BOOT_LOGGING_CONFIG_H_
 
+#include <esl/object/Object.h>
+
 #include <boost/filesystem/path.hpp>
 
 #include <string>
@@ -31,9 +33,10 @@ namespace esl {
 namespace boot {
 namespace logging {
 
-class Config final {
+class Config : public object::Object {
 public:
-	Config() = delete;
+	virtual void addData(const std::string& configuration) = 0;
+	virtual void addFile(const boost::filesystem::path& filename) = 0;
 
 	static void loadData(const std::string& configuration);
 	static void loadFile(const boost::filesystem::path& filename);

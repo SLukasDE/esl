@@ -23,7 +23,7 @@ SOFTWARE.
 #ifndef ESL_LOGGING_CONFIG_H_
 #define ESL_LOGGING_CONFIG_H_
 
-#include <esl/logging/IAppender.h>
+#include <esl/logging/Appender.h>
 #include <esl/logging/Level.h>
 #include <esl/logging/Location.h>
 #include <esl/logging/OStream.h>
@@ -53,7 +53,7 @@ public:
 	static void setLevel(Level logLevel, const std::string& typeName);
 
 	// thread safe, quaranteed by loggerMutex
-	static void addAppender(IAppender& appender);
+	static void addAppender(Appender& appender);
 
 	static bool isEnabled(const char* typeName, Level level);
 

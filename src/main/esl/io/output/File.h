@@ -26,9 +26,9 @@ SOFTWARE.
 #include <esl/io/Output.h>
 #include <esl/io/Reader.h>
 
-#include <string>
 #include <fstream>
 #include <memory>
+#include <string>
 
 namespace esl {
 namespace io {

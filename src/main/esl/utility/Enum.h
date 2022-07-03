@@ -23,7 +23,7 @@ SOFTWARE.
 #ifndef ESL_UTILITY_ENUM_H_
 #define ESL_UTILITY_ENUM_H_
 
-#include <esl/system/stacktrace/IStacktrace.h>
+#include <esl/system/Stacktrace.h>
 
 #include <memory>
 #include <stdexcept>
@@ -163,7 +163,7 @@ public:
 
 	EnumType getEnumType() const {
 		if(!hasEnum) {
-			throw system::stacktrace::IStacktrace::add(std::runtime_error("cannot get enum type because it's a string"));
+			throw system::Stacktrace::add(std::runtime_error("cannot get enum type because it's a string"));
 		}
 		return enumType;
 	}

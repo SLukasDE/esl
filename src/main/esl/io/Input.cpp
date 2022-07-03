@@ -248,7 +248,7 @@ std::size_t WriterConsumer::getSizeWritable() const {
 
 }
 
-Input::Input(std::unique_ptr<object::IObject> aObject, Consumer& aConsumer, Writer& aWriter)
+Input::Input(std::unique_ptr<object::Object> aObject, Consumer& aConsumer, Writer& aWriter)
 : object(std::move(aObject)),
   consumer(&aConsumer),
   writer(&aWriter)

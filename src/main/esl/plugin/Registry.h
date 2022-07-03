@@ -78,6 +78,8 @@ public:
 	static Registry& get();
 	static void set(Registry& registry);
 
+	void dump() const;
+
 	template<typename Interface>
 	std::unique_ptr<Interface> create(const std::string& implementation, const std::vector<std::pair<std::string, std::string>>& settings);
 
@@ -89,6 +91,9 @@ public:
 
 	template <class Interface>
 	void addPlugin(const std::string& implementation, std::unique_ptr<Interface> (*create)(const std::vector<std::pair<std::string, std::string>>&));
+
+	template <class Interface>
+	void copyPlugin(const std::string& implementationSource, const std::string& implementationDestination);
 
 private:
 	using BasePlugins = std::map<std::string, std::unique_ptr<const BasePlugin>>;
@@ -125,6 +130,11 @@ template <class Interface>
 void Registry::addPlugin(const std::string& implementation, std::unique_ptr<Interface> (*create)(const std::vector<std::pair<std::string, std::string>>&)) {
 	std::unique_ptr<const BasePlugin> basePlugin(new Plugin<Interface>(implementation, create));
 	typePlugins[typeid(Interface)][implementation] = std::move(basePlugin);
+}
+
+template <class Interface>
+void Registry::copyPlugin(const std::string& implementationSource, const std::string& implementationDestination) {
+	addPlugin<Interface>(implementationDestination, getPlugin<Interface>(implementationSource).create);
 }
 
 template <typename Interface>
