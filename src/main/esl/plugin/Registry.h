@@ -24,16 +24,21 @@ SOFTWARE.
 #define ESL_PLUGIN_REGISTRY_H_
 
 #include <esl/plugin/BasePlugin.h>
+#include <esl/plugin/exception/PluginNotFound.h>
 #include <esl/plugin/Plugin.h>
+#include <esl/logging/Logging.h>
 
 #include <map>
 #include <memory>
+#include <ostream>
+#include <stdexcept>
 #include <set>
 #include <string>
 #include <typeindex>
 #include <utility>
 #include <vector>
 
+#include <iostream>
 #define DO_QUOTE(X)                  #X
 #define QUOTE(X)                     DO_QUOTE(X)
 
@@ -70,21 +75,61 @@ SOFTWARE.
 #endif
 
 namespace esl {
+namespace system {
+class Stacktrace;
+} /* namespace system */
+} /* namespace esl */
+
+namespace esl {
 namespace plugin {
 
 class Registry final {
+	friend class logging::Logging;
+	friend class system::Stacktrace;
 	friend class Library;
 public:
+	template <typename Interface>
+	using Factory = std::unique_ptr<Interface> (*)(const std::vector<std::pair<std::string, std::string>>& settings);
+
+	using StacktraceFactory = Factory<system::Stacktrace>;
+
+	using BasePlugins = std::map<std::string, std::unique_ptr<const BasePlugin>>;
+
 	static Registry& get();
 	static void set(Registry& registry);
 
-	void dump() const;
+	void dump(std::ostream& ostream) const;
 
-	template<typename Interface>
-	std::unique_ptr<Interface> create(const std::string& implementation, const std::vector<std::pair<std::string, std::string>>& settings);
+	template <typename Interface>
+	std::unique_ptr<Interface> create() const;
+
+	template <typename Interface>
+	std::unique_ptr<Interface> create(const std::string& implementation, const std::vector<std::pair<std::string, std::string>>& settings) const;
+
+	template <class Interface>
+	const BasePlugins& getPlugins() const;
+	const BasePlugins& getPlugins(std::type_index typeIndex) const;
+
+	template <typename Interface>
+	const Factory<Interface> findFactory() const noexcept;
+
+	template <typename Interface>
+	const Factory<Interface> findFactory(const std::string& implementation) const noexcept;
+
+	template <typename Interface>
+	const Factory<Interface> getFactory() const;
+
+	template <typename Interface>
+	const Factory<Interface> getFactory(const std::string& implementation) const;
+
+	template <class Interface>
+	const Plugin<Interface>* findPlugin() const noexcept;
 
 	template <class Interface>
 	const Plugin<Interface>* findPlugin(const std::string& implementation) const noexcept;
+
+	template <class Interface>
+	const Plugin<Interface>& getPlugin() const;
 
 	template <class Interface>
 	const Plugin<Interface>& getPlugin(const std::string& implementation) const;
@@ -96,14 +141,86 @@ public:
 	void copyPlugin(const std::string& implementationSource, const std::string& implementationDestination);
 
 private:
-	using BasePlugins = std::map<std::string, std::unique_ptr<const BasePlugin>>;
 	using TypePlugins = std::map<std::type_index, BasePlugins>;
+
+	const BasePlugin* findBasePlugin(const std::string& implementation, std::type_index typeIndex) const noexcept;
+	const BasePlugin* findBasePlugin(std::type_index typeIndex) const noexcept;
+
+	static StacktraceFactory getStacktraceFactory();
+	static const std::vector<std::pair<std::string, std::string>>& getStacktraceSettings();
+	static void setStacktraceFactory(StacktraceFactory create, std::vector<std::pair<std::string, std::string>> settings);
+
+	static logging::Logging* getLogging();
+	static void setLogging(std::unique_ptr<logging::Logging> logging);
 
 	TypePlugins typePlugins;
 
-	const BasePlugin* findBasePlugin(const std::string& implementation, std::type_index typeIndex) const noexcept;
+	StacktraceFactory stacktraceFactory = nullptr;
+	std::vector<std::pair<std::string, std::string>> stacktraceSettings;
+
+	std::unique_ptr<logging::Logging> logging;
 };
 
+
+template <typename Interface>
+std::unique_ptr<Interface> Registry::create() const {
+	return getFactory<Interface>()(std::vector<std::pair<std::string, std::string>>());
+}
+
+template <typename Interface>
+std::unique_ptr<Interface> Registry::create(const std::string& implementation, const std::vector<std::pair<std::string, std::string>>& settings) const {
+	return getFactory<Interface>(implementation)(settings);
+}
+
+template <class Interface>
+const Registry::BasePlugins& Registry::getPlugins() const {
+	return getPlugins(typeid(Interface));
+}
+
+template <typename Interface>
+const Registry::Factory<Interface> Registry::findFactory() const noexcept {
+	const Plugin<Interface>* plugin = findPlugin<Interface>();
+	return plugin ? plugin->create : nullptr;
+}
+
+template <typename Interface>
+const Registry::Factory<Interface> Registry::findFactory(const std::string& implementation) const noexcept {
+	const Plugin<Interface>* plugin = findPlugin<Interface>(implementation);
+	return plugin ? plugin->create : nullptr;
+}
+
+template <typename Interface>
+const Registry::Factory<Interface> Registry::getFactory() const {
+	const Plugin<Interface>* plugin = findPlugin<Interface>();
+	if(!plugin) {
+std::cerr << "Throw PluginNotFound (1)\n";
+		throw plugin::exception::PluginNotFound(typeid(Interface));
+	}
+
+	if(!plugin->create) {
+		throw std::runtime_error("Cannot get factory for type \"" + std::string(typeid(Interface).name()) + "\"");
+	}
+	return plugin->create;
+}
+
+template <typename Interface>
+const Registry::Factory<Interface> Registry::getFactory(const std::string& implementation) const {
+	const Plugin<Interface>* plugin = findPlugin<Interface>(implementation);
+	if(!plugin) {
+std::cerr << "Throw PluginNotFound (2)\n";
+		throw plugin::exception::PluginNotFound(typeid(Interface), implementation);
+	}
+
+	if(!plugin->create) {
+		throw std::runtime_error("Cannot get factory for implementation \"" + implementation + "\" and type \"" + std::string(typeid(Interface).name()) + "\"");
+	}
+	return plugin->create;
+}
+
+template <class Interface>
+const Plugin<Interface>* Registry::findPlugin() const noexcept {
+	return static_cast<const Plugin<Interface>*>(findBasePlugin(typeid(Interface)));
+}
 
 template <class Interface>
 const Plugin<Interface>* Registry::findPlugin(const std::string& implementation) const noexcept {
@@ -111,16 +228,22 @@ const Plugin<Interface>* Registry::findPlugin(const std::string& implementation)
 }
 
 template <class Interface>
+const Plugin<Interface>& Registry::getPlugin() const {
+	const Plugin<Interface>* plugin = findPlugin<Interface>();
+
+	if(plugin == nullptr) {
+		throw plugin::exception::PluginNotFound(typeid(Interface));
+	}
+
+	return *plugin;
+}
+
+template <class Interface>
 const Plugin<Interface>& Registry::getPlugin(const std::string& implementation) const {
 	const Plugin<Interface>* plugin = findPlugin<Interface>(implementation);
 
 	if(plugin == nullptr) {
-		if(implementation.empty()) {
-			throw std::runtime_error("no implementation available for type \"" + std::string(typeid(Interface).name()) + "\"");
-		}
-		else {
-			throw std::runtime_error("no implementation available for type \"" + std::string(typeid(Interface).name()) + "\" and implementation \"" + implementation + "\"");
-		}
+		throw plugin::exception::PluginNotFound(typeid(Interface), implementation);
 	}
 
 	return *plugin;
@@ -135,12 +258,6 @@ void Registry::addPlugin(const std::string& implementation, std::unique_ptr<Inte
 template <class Interface>
 void Registry::copyPlugin(const std::string& implementationSource, const std::string& implementationDestination) {
 	addPlugin<Interface>(implementationDestination, getPlugin<Interface>(implementationSource).create);
-}
-
-template <typename Interface>
-std::unique_ptr<Interface> Registry::create(const std::string& implementation, const std::vector<std::pair<std::string, std::string>>& settings) {
-	const Plugin<Interface>* plugin = findPlugin<Interface>(implementation);
-	return plugin ? plugin->create(settings) : nullptr;
 }
 
 } /* namespace plugin */

@@ -20,23 +20,43 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/plugin/Implementation.h>
+#include <esl/plugin/exception/PluginNotFound.h>
 
 namespace esl {
 namespace plugin {
+namespace exception {
 
-void Implementation::setImplementation(std::string aImplementation, Settings aSettings) {
-	implementation = std::move(aImplementation);
-	settings = std::move(aSettings);
-}
+PluginNotFound::PluginNotFound(std::type_index aTypeIndex)
+: std::runtime_error("No implementation found for plugin " + std::string(aTypeIndex.name())),
+  typeIndex(aTypeIndex)
+{ }
 
-const std::string& Implementation::getImplementation() const noexcept {
+PluginNotFound::PluginNotFound(std::type_index aTypeIndex, const std::string& aImplementation)
+: std::runtime_error("Implementation \"" + aImplementation + "\" not found for plugin " + std::string(aTypeIndex.name())),
+  typeIndex(aTypeIndex),
+  implementation(aImplementation)
+{ }
+
+PluginNotFound::PluginNotFound(std::type_index aTypeIndex, const std::string& aImplementation, const char* message)
+: std::runtime_error(message),
+  typeIndex(aTypeIndex),
+  implementation(aImplementation)
+{ }
+
+PluginNotFound::PluginNotFound(std::type_index aTypeIndex, const std::string& aImplementation, const std::string& message)
+: std::runtime_error(message),
+  typeIndex(aTypeIndex),
+  implementation(aImplementation)
+{ }
+
+const std::string& PluginNotFound::getImplementation() const noexcept {
 	return implementation;
 }
 
-const Implementation::Settings& Implementation::getSettings() const noexcept {
-	return settings;
+std::type_index PluginNotFound::getTypeIndex() const noexcept {
+	return typeIndex;
 }
 
+} /* namespace exception */
 } /* namespace plugin */
 } /* namespace esl */

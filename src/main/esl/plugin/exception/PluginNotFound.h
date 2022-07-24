@@ -20,42 +20,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/boot/logging/Config.h>
-#include <esl/plugin/Plugin.h>
-#include <esl/plugin/Registry.h>
+#ifndef ESL_PLUGIN_EXCEPTION_PLUGINNOTFOUND_H_
+#define ESL_PLUGIN_EXCEPTION_PLUGINNOTFOUND_H_
+
+#include <stdexcept>
+#include <string>
+#include <typeindex>
 
 namespace esl {
-namespace boot {
-namespace logging {
+namespace plugin {
+namespace exception {
 
-void Config::loadData(const std::string& configuration) {
-	const plugin::Plugin<Config>* plugin = plugin::Registry::get().findPlugin<Config>("");
-	if(!plugin) {
-		throw std::runtime_error("Cannot find plugin for esl::boot::Config");
-	}
+class PluginNotFound : public std::runtime_error {
+public:
+	PluginNotFound(std::type_index typeIndex);
+	PluginNotFound(std::type_index typeIndex, const std::string& implementation);
+	PluginNotFound(std::type_index typeIndex, const std::string& implementation, const char* message);
+	PluginNotFound(std::type_index typeIndex, const std::string& implementation, const std::string& message);
 
-	std::unique_ptr<Config> config = plugin->create({});
-	if(!config) {
-		throw std::runtime_error("Plugin for esl::boot::Config does not create an object");
-	}
+	const std::string& getImplementation() const noexcept;
+	std::type_index getTypeIndex() const noexcept;
 
-	config->addData(configuration);
-}
+private:
+	const std::type_index typeIndex;
+	const std::string implementation;
+};
 
-void Config::loadFile(const boost::filesystem::path& filename) {
-	const plugin::Plugin<Config>* plugin = plugin::Registry::get().findPlugin<Config>("");
-	if(!plugin) {
-		throw std::runtime_error("Cannot find plugin for esl::boot::Config");
-	}
-
-	std::unique_ptr<Config> config = plugin->create({});
-	if(!config) {
-		throw std::runtime_error("Plugin for esl::boot::Config does not create an object");
-	}
-
-	config->addFile(filename);
-}
-
-} /* namespace logging */
-} /* namespace boot */
+} /* namespace exception */
+} /* namespace plugin */
 } /* namespace esl */
+
+#endif /* ESL_PLUGIN_EXCEPTION_PLUGINNOTFOUND_H_ */

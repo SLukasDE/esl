@@ -26,6 +26,7 @@ SOFTWARE.
 #include <esl/utility/MIME.h>
 
 #include <stdexcept>
+#include <string>
 
 namespace esl {
 namespace com {

@@ -20,10 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_BOOT_CONTEXT_CONTEXT_H_
-#define ESL_BOOT_CONTEXT_CONTEXT_H_
+#ifndef ESL_PROCESSING_CONTEXT_H_
+#define ESL_PROCESSING_CONTEXT_H_
 
-#include <esl/boot/ObjectContext.h>
 #include <esl/object/Event.h>
 #include <esl/object/Object.h>
 #include <esl/object/Value.h>
@@ -37,10 +36,9 @@ SOFTWARE.
 #include <vector>
 
 namespace esl {
-namespace boot {
-namespace context {
+namespace processing {
 
-class Context : public object::Event, public object::Context, public processing::Procedure {
+class Context : public object::Event, public object::Context, public Procedure {
 public:
 	using ArgumentsByVector = object::Value<std::vector<std::string>>;
 	using ReturnCodeObject = object::Value<int>;
@@ -78,59 +76,17 @@ public:
 		return *this;
 	}
 
-	Context& add(const std::string& id) {
-		return addReference("", id);
-	}
+	Context& add(const std::string& id);
 
-	Context& run(object::Context& objectContext) {
-		procedureRun(objectContext);
-		return *this;
-	}
+	Context& run(object::Context& objectContext);
+	Context& run(object::Context& objectContext, int argc, const char *argv[]);
+	Context& run();
+	Context& run(int argc, const char *argv[]);
 
-	Context& run(object::Context& objectContext, int argc, const char *argv[]) {
-		std::unique_ptr<ArgumentsByVector> argumentsObject(new ArgumentsByVector({}));
-		for(int i=0; i<argc; ++i) {
-			argumentsObject->get().push_back(argv[i]);
-		}
-
-		object::Object* objectPtr = objectContext.findObject<object::Object>("arguments");
-		ArgumentsByVector* argumentsObjectPtr = dynamic_cast<ArgumentsByVector*>(objectPtr);
-
-		if(argumentsObjectPtr) {
-			*argumentsObjectPtr = std::move(argumentsObject->get());
-		}
-		else if(objectPtr == nullptr) {
-			objectContext.addObject("arguments", std::unique_ptr<object::Object>(argumentsObject.release()));
-		}
-
-		return run(objectContext);
-	}
-
-	Context& run() {
-		boot::ObjectContext objectContext;
-		return run(objectContext);
-	}
-
-	Context& run(int argc, const char *argv[]) {
-		boot::ObjectContext objectContext;
-		return run(objectContext, argc, argv);
-	}
-
-	int main(object::Context& objectContext) {
-		return run(objectContext).getReturnCode();
-	}
-
-	int main(object::Context& objectContext, int argc, const char *argv[]) {
-		return run(objectContext, argc, argv).getReturnCode();
-	}
-
-	int main() {
-		return run().getReturnCode();
-	}
-
-	int main(int argc, const char *argv[]) {
-		return run(argc, argv).getReturnCode();
-	}
+	int main(object::Context& objectContext);
+	int main(object::Context& objectContext, int argc, const char *argv[]);
+	int main();
+	int main(int argc, const char *argv[]);
 
 protected:
 	/* From Context:
@@ -141,8 +97,7 @@ protected:
 	 */
 };
 
-} /* namespace context */
-} /* namespace boot */
+} /* namespace processing */
 } /* namespace esl */
 
-#endif /* ESL_BOOT_CONTEXT_CONTEXT_H_ */
+#endif /* ESL_PROCESSING_CONTEXT_H_ */

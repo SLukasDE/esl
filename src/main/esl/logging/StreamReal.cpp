@@ -20,16 +20,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/logging/Config.h>
-#include <esl/logging/StreamReal.h>
 #include <esl/logging/Location.h>
+#include <esl/logging/Logging.h>
+#include <esl/logging/StreamReal.h>
 
 namespace esl {
 namespace logging {
 
-StreamReal::StreamReal(const char* typeName, Level ll)
-: typeName(typeName),
-  level(ll)
+StreamReal::StreamReal(const char* aTypeName, Level aLevel, Logging* aLogging)
+: typeName(aTypeName),
+  level(aLevel),
+  logging(aLogging)
 { }
 
 StreamWriter StreamReal::operator()(const void* object) {
@@ -51,16 +52,13 @@ StreamWriter StreamReal::operator<<(std::ostream& (*pf)(std::ostream&)) {
 }
 
 StreamReal::operator bool() const {
-	return isEnabled();
-}
-
-bool StreamReal::isEnabled() const {
-	return Config::isEnabled(typeName, level);
+	return logging ? logging->isEnabled(typeName, level) : Logging::get() ? Logging::get()->isEnabled(typeName, level) : false;
+	//return isEnabled();
 }
 
 StreamWriter StreamReal::getStreamWriter(const void* object, const char* function, const char* file, unsigned int lineNo) {
 	Location location(level, object, typeName, function, file, lineNo, std::this_thread::get_id());
-	return StreamWriter(Config::createOStream(location));
+	return StreamWriter(logging ? logging->createOStream(location) : Logging::get() ? Logging::get()->createOStream(location) : nullptr);
 }
 
 } /* namespace logging */

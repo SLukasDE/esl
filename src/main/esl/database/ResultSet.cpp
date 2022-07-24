@@ -124,11 +124,11 @@ const Field& ResultSet::operator[](std::size_t index) const {
 	}
 
 	if(index >= fields.size()) {
-		if(fields.size() == 0) {
+		if(fields.empty()) {
 	        throw esl::system::Stacktrace::add(std::out_of_range("field index " + std::to_string(index) + " is out of range. ResultSet has no fields."));
 		}
 		else {
-	        throw esl::system::Stacktrace::add(std::out_of_range("field index " + std::to_string(index) + " is out of range. Valid index is between 0 and " + std::to_string(fields.size()) + "."));
+	        throw esl::system::Stacktrace::add(std::out_of_range("field index " + std::to_string(index) + " is out of range. Valid index is between 0 and " + std::to_string(fields.size() - 1) + "."));
 		}
 	}
 	return fields[index];
@@ -140,11 +140,11 @@ Field& ResultSet::operator[](std::size_t index) {
 	}
 
 	if(index >= fields.size()) {
-		if(fields.size() == 0) {
+		if(fields.empty()) {
 	        throw esl::system::Stacktrace::add(std::out_of_range("field index " + std::to_string(index) + " is out of range. ResultSet has no fields."));
 		}
 		else {
-	        throw esl::system::Stacktrace::add(std::out_of_range("field index " + std::to_string(index) + " is out of range. Valid index is between 0 and " + std::to_string(fields.size()) + "."));
+	        throw esl::system::Stacktrace::add(std::out_of_range("field index " + std::to_string(index) + " is out of range. Valid index is between 0 and " + std::to_string(fields.size() - 1) + "."));
 		}
 	}
 	return fields[index];

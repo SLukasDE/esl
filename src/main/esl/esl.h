@@ -23,10 +23,6 @@ SOFTWARE.
 #ifndef ESL_ESL_H_
 #define ESL_ESL_H_
 
-//#include <esl/boot/context/BasicContext.h>
-#include <esl/boot/context/Context.h>
-#include <esl/boot/logging/Config.h>
-
 #include <esl/com/basic/client/Connection.h>
 #include <esl/com/basic/client/ConnectionFactory.h>
 #include <esl/com/basic/client/Request.h>
@@ -74,7 +70,6 @@ SOFTWARE.
 #include <esl/io/Standard.h>
 #include <esl/io/Writer.h>
 
-#include <esl/logging/Config.h>
 #include <esl/logging/Appender.h>
 #include <esl/logging/Layout.h>
 #include <esl/logging/Logging.h>
@@ -102,12 +97,14 @@ SOFTWARE.
 #include <esl/plugin/Plugin.h>
 #include <esl/plugin/Registry.h>
 
+#include <esl/processing/BasicContext.h>
+#include <esl/processing/Context.h>
 #include <esl/processing/Procedure.h>
 #include <esl/processing/RefProcedure.h>
-#include <esl/processing/TaskDescriptor.h>
-#include <esl/processing/TaskFactory.h>
 #include <esl/processing/Status.h>
 #include <esl/processing/Task.h>
+#include <esl/processing/TaskDescriptor.h>
+#include <esl/processing/TaskFactory.h>
 
 #include <esl/system/exception/ProcessError.h>
 #include <esl/system/Arguments.h>
@@ -131,7 +128,7 @@ SOFTWARE.
 namespace esl {
 
 template <class E>
-inline system::StacktraceInjector<E> addStacktrace(const E& e) {
+inline system::Stacktrace::Injector<E> addStacktrace(const E& e) {
 	return system::Stacktrace::add(e);
 }
 

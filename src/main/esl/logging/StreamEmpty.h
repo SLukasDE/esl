@@ -23,8 +23,10 @@ SOFTWARE.
 #ifndef ESL_LOGGING_STREAMEMPTY_H_
 #define ESL_LOGGING_STREAMEMPTY_H_
 
-#include <ostream>
 #include <esl/logging/Level.h>
+#include <esl/logging/Logging.h>
+
+#include <ostream>
 
 namespace esl {
 namespace logging {
@@ -32,7 +34,7 @@ namespace logging {
 class StreamEmpty {
 public:
 	StreamEmpty() = default;
-	inline StreamEmpty(const char*, Level) { };
+	inline StreamEmpty(const char*, Level, Logging*) { };
 
     inline StreamEmpty& operator()(const void*) {
 		return *this;

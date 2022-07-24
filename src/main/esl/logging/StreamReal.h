@@ -26,13 +26,15 @@ SOFTWARE.
 #include <esl/logging/Level.h>
 #include <esl/logging/StreamWriter.h>
 
+#include <ostream>
+
 namespace esl {
 namespace logging {
+class Logging;
 
 class StreamReal {
 public:
-	StreamReal(const char* typeName, Level ll);
-	~StreamReal() = default;
+	StreamReal(const char* typeName, Level level, Logging* logging);
 
     StreamWriter operator()(const void* object);
     StreamWriter operator()(const char* function, const char* file, unsigned int lineNo);
@@ -57,14 +59,12 @@ public:
 
 	explicit operator bool() const;
 
-    /* deprecated: use "operator bool()" instead */
-	bool isEnabled() const;
-
 private:
     StreamWriter getStreamWriter(const void* object, const char* function, const char* file, unsigned int lineNo);
 
     const char* typeName;
 	Level level;
+	Logging* logging = nullptr;
 };
 
 } /* namespace logging */

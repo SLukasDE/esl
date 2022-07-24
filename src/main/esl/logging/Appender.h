@@ -39,8 +39,6 @@ public:
 		ALL, SELECTED, OFF
 	};
 
-	~Appender(); // Implementation is in file esl/logging/Config.cpp
-
 	virtual void setLayout(const Layout* aLayout) = 0;
 	virtual const Layout* getLayout() const = 0;
 
@@ -48,12 +46,9 @@ public:
 	virtual void setRecordLevel(RecordLevel aRecordLevel = RecordLevel::SELECTED) = 0;
 	virtual RecordLevel getRecordLevel() const = 0;
 
-	virtual void flush() = 0;
-	virtual void flush(std::ostream& oStream) = 0;
-	virtual void write(const Location& location, const char* ptr, std::size_t size) = 0;
+	virtual void flush(std::ostream* oStream) = 0;
 
-//private:
-	void* handle = nullptr;
+	virtual void write(const Location& location, const char* ptr, std::size_t size) = 0;
 };
 
 } /* namespace logging */

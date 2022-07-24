@@ -36,6 +36,8 @@ struct BasePlugin {
 	  typeIndex(aTypeIndex)
 	{ }
 
+	virtual ~BasePlugin() = default;
+
 	const std::string implementation;
 	const std::type_index typeIndex;
 };

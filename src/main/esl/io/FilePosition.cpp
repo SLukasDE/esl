@@ -20,31 +20,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_PLUGIN_IMPLEMENTATION_H_
-#define ESL_PLUGIN_IMPLEMENTATION_H_
-
-#include <string>
-#include <utility>
-#include <vector>
+#include <esl/io/FilePosition.h>
 
 namespace esl {
-namespace plugin {
+namespace io {
 
-class Implementation final {
-public:
-	using Settings = std::vector<std::pair<std::string, std::string>>;
+FilePosition::FilePosition(const std::string& aFileName, int aLineNo)
+: fileName(aFileName),
+  lineNo(aLineNo)
+{ }
 
-	void setImplementation(std::string implementation, Settings settings = {});
+const std::string& FilePosition::getFileName() const noexcept {
+	return fileName;
+}
 
-	const std::string& getImplementation() const noexcept;
-	const Settings& getSettings() const noexcept;
+const int FilePosition::getLineNo() const noexcept {
+	return lineNo;
+}
 
-private:
-	std::string implementation;
-	Settings settings;
-};
-
-} /* namespace plugin */
+} /* namespace io */
 } /* namespace esl */
-
-#endif /* ESL_PLUGIN_IMPLEMENTATION_H_ */

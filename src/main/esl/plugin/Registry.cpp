@@ -26,25 +26,14 @@ SOFTWARE.
 #include <type_traits> // aligned_storage
 #include <utility>
 
-#include <iostream>
 namespace esl {
 namespace plugin {
 
 namespace {
-#if 0
-class InternalRegistry : public Registry {
-public:
-	InternalRegistry();
-};
-
-InternalRegistry::InternalRegistry()
-{
-	Registry::initialize(*this);
-}
-#endif
-
 typename std::aligned_storage<sizeof(Registry), alignof(Registry)>::type registryBuffer; // memory for the object;
 Registry* registryPtr = nullptr;
+
+const Registry::BasePlugins emptyBasePlugings;
 
 }  /* anonymous namespace */
 
@@ -66,18 +55,23 @@ void Registry::set(Registry& registry) {
 	registryPtr = &registry;
 }
 
-void Registry::dump() const {
-	std::cout << "TypePlugins: " << typePlugins.size() << " entries\n";
-	std::cout << "-------------------------\n";
+void Registry::dump(std::ostream& ostream) const {
+	ostream << "TypePlugins: " << typePlugins.size() << " entries\n";
+	ostream << "-------------------------\n";
 	for(const auto& typePlugin : typePlugins) {
-		std::cout << "    Type " << typePlugin.first.name() << ": " << typePlugin.second.size() << " entries\n";
-		std::cout << "    -------------------------\n";
+		ostream << "    Type " << typePlugin.first.name() << ": " << typePlugin.second.size() << " entries\n";
+		ostream << "    -------------------------\n";
 
 		const BasePlugins& basePlugins = typePlugin.second;
 		for(const auto& basePlugin : basePlugins) {
-			std::cout << "        Implementation " << basePlugin.first << ": " << (void*) basePlugin.second.get() << "\n";
+			ostream << "        Implementation " << basePlugin.first << ": " << (void*) basePlugin.second.get() << "\n";
 		}
 	}
+}
+
+const Registry::BasePlugins& Registry::getPlugins(std::type_index typeIndex) const {
+	auto iter = typePlugins.find(typeIndex);
+	return iter ==  typePlugins.end() ? emptyBasePlugings : iter->second;
 }
 
 const BasePlugin* Registry::findBasePlugin(const std::string& implementation, std::type_index typeIndex) const noexcept {
@@ -87,9 +81,46 @@ const BasePlugin* Registry::findBasePlugin(const std::string& implementation, st
 	}
 
 	const BasePlugins& basePlugins = typePluginsIter->second;
-	auto basePluginsIter = implementation.empty() ? basePlugins.begin() : basePlugins.find(implementation);
+	auto basePluginsIter = basePlugins.find(implementation);
 	return basePluginsIter == basePlugins.end() ? nullptr : basePluginsIter->second.get();
+}
+
+const BasePlugin* Registry::findBasePlugin(std::type_index typeIndex) const noexcept {
+	auto typePluginsIter = typePlugins.find(typeIndex);
+	if(typePluginsIter == typePlugins.end()) {
+		return nullptr;
+	}
+
+	const BasePlugins& basePlugins = typePluginsIter->second;
+	auto basePluginsIter = basePlugins.begin();
+	if(basePluginsIter == basePlugins.end()) {
+		return nullptr;
+	}
+
+	return basePluginsIter->second.get();
+}
+
+Registry::StacktraceFactory Registry::getStacktraceFactory() {
+	return get().stacktraceFactory;
+}
+
+void Registry::setStacktraceFactory(StacktraceFactory aStacktraceFactory, std::vector<std::pair<std::string, std::string>> settings) {
+	get().stacktraceFactory = aStacktraceFactory;
+	get().stacktraceSettings = std::move(settings);
+}
+
+const std::vector<std::pair<std::string, std::string>>& Registry::getStacktraceSettings() {
+	return get().stacktraceSettings;
+}
+
+logging::Logging* Registry::getLogging() {
+	return get().logging.get();
+}
+
+void Registry::setLogging(std::unique_ptr<logging::Logging> aLogging) {
+	get().logging = std::move(aLogging);
 }
 
 } /* namespace plugin */
 } /* namespace esl */
+

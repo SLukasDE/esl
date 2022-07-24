@@ -26,6 +26,7 @@ SOFTWARE.
 #include <esl/logging/StreamReal.h>
 #include <esl/logging/StreamEmpty.h>
 #include <esl/logging/Location.h>
+#include <esl/plugin/Plugin.h>
 #include <esl/plugin/Registry.h>
 
 #include <memory>
@@ -35,11 +36,24 @@ SOFTWARE.
 namespace esl {
 namespace system {
 
-template <class T>
-class StacktraceInjector;
-
 class Stacktrace {
 public:
+	template <class E>
+	class Injector : public E {
+	friend class Stacktrace;
+	private:
+	    Injector(E const & e, std::unique_ptr<Stacktrace> aStacktrace)
+	    : E(e),
+		  stacktrace(std::move(aStacktrace))
+	    { }
+
+		std::unique_ptr<Stacktrace> stacktrace;
+	};
+
+	static void init();
+	static void init(plugin::Registry::StacktraceFactory create, std::vector<std::pair<std::string, std::string>> settings);
+	static void init(const std::string& implementation, std::vector<std::pair<std::string, std::string>> settings);
+
 	Stacktrace() = default;
 	virtual ~Stacktrace() = default;
 
@@ -54,7 +68,7 @@ public:
 	virtual std::unique_ptr<Stacktrace> clone() const = 0;
 
 	template <class E>
-	static StacktraceInjector<E> add(const E& e);
+	static Injector<E> add(const E& e);
 
 	template <class E>
 	static const Stacktrace* get(const E& e);
@@ -73,39 +87,16 @@ public:
 	}
 };
 
-template <class T>
-class StacktraceInjector : public T {
-public:
-    StacktraceInjector(T const & x, std::unique_ptr<Stacktrace> aStacktrace)
-    : T(x),
-	  stacktrace(std::move(aStacktrace))
-    { }
-
-    static inline const Stacktrace* getStacktrace(const T& t) {
-    	const StacktraceInjector* stacktraceInjector = dynamic_cast<const StacktraceInjector *>(&t);
-        if(stacktraceInjector) {
-            return stacktraceInjector->stacktrace.get();
-        }
-        else {
-            return nullptr;
-        }
-    }
-
-private:
-	std::unique_ptr<Stacktrace> stacktrace;
-};
-
 template <class E>
-StacktraceInjector<E> Stacktrace::add(const E& e) {
-    return StacktraceInjector<E>(e, plugin::Registry::get().create<Stacktrace>("", {}));
-
-//	const Stacktrace::Plugin* stacktracePlugin = plugin::Registry::get().findPlugin<Stacktrace>("");
-//	return StacktraceInjector<E>(e, stacktracePlugin ? stacktracePlugin->create({}) : nullptr);
+Stacktrace::Injector<E> Stacktrace::add(const E& e) {
+	auto create = plugin::Registry::get().getStacktraceFactory();
+	return Stacktrace::Injector<E>(e, create ? (*create)(plugin::Registry::get().getStacktraceSettings()) : nullptr);
 }
 
 template <class E>
 const Stacktrace* Stacktrace::get(const E& e) {
-	return StacktraceInjector<E>::getStacktrace(e);
+   	const Stacktrace::Injector<E>* injector = dynamic_cast<const Stacktrace::Injector<E> *>(&e);
+   	return injector ? injector->stacktrace.get() : nullptr;
 }
 
 } /* namespace system */

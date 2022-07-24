@@ -23,7 +23,6 @@ SOFTWARE.
 #ifndef ESL_COM_HTTP_SERVER_SOCKET_H_
 #define ESL_COM_HTTP_SERVER_SOCKET_H_
 
-#include <esl/com/http/server/RequestContext.h>
 #include <esl/com/http/server/RequestHandler.h>
 #include <esl/object/Object.h>
 

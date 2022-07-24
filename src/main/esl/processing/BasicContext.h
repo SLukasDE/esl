@@ -20,10 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_BOOT_CONTEXT_BASICCONTEXT_H_
-#define ESL_BOOT_CONTEXT_BASICCONTEXT_H_
+#ifndef ESL_PROCESSING_BASICCONTEXT_H_
+#define ESL_PROCESSING_BASICCONTEXT_H_
 
-#include <esl/boot/context/Context.h>
+#include <esl/processing/Context.h>
 #include <esl/com/basic/client/ConnectionFactory.h>
 #include <esl/com/http/client/ConnectionFactory.h>
 #include <esl/database/ConnectionFactory.h>
@@ -40,11 +40,10 @@ SOFTWARE.
 #include <vector>
 
 namespace esl {
-namespace boot {
-namespace context {
+namespace processing {
 
 template<typename T>
-class BasicContext : public object::Event, public object::Context, public processing::Procedure {
+class BasicContext : public object::Event, public object::Context, public Procedure {
 public:
     T& addData(const std::string& configuration) {
     	contextPtr->addData(configuration);
@@ -156,11 +155,10 @@ protected:
 	}
 
 private:
-	std::unique_ptr<Context> contextPtr;
+	std::unique_ptr<processing::Context> contextPtr;
 };
 
-} /* namespace context */
-} /* namespace boot */
+} /* namespace processing */
 } /* namespace esl */
 
-#endif /* ESL_BOOT_CONTEXT_BASICCONTEXT_H_ */
+#endif /* ESL_PROCESSING_BASICCONTEXT_H_ */

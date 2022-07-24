@@ -20,34 +20,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <esl/boot/ObjectContext.h>
+#include <esl/system/Stacktrace.h>
 
 namespace esl {
-namespace boot {
+namespace system {
 
-std::set<std::string> ObjectContext::getObjectIds() const {
-	std::set<std::string> rv;
-
-	for(const auto& object : objects) {
-		rv.insert(object.first);
-	}
-
-	return rv;
+void Stacktrace::init() {
+	plugin::Registry::setStacktraceFactory(plugin::Registry::get().getFactory<Stacktrace>(), std::vector<std::pair<std::string, std::string>>());
 }
 
-object::Object* ObjectContext::findRawObject(const std::string& id) {
-	auto iter = objects.find(id);
-	return iter == std::end(objects) ? nullptr : iter->second.get();
+void Stacktrace::init(plugin::Registry::StacktraceFactory create, std::vector<std::pair<std::string, std::string>> settings) {
+	plugin::Registry::setStacktraceFactory(create, std::move(settings));
 }
 
-const object::Object* ObjectContext::findRawObject(const std::string& id) const {
-	auto iter = objects.find(id);
-	return iter == std::end(objects) ? nullptr : iter->second.get();
+void Stacktrace::init(const std::string& implementation, std::vector<std::pair<std::string, std::string>> settings) {
+	plugin::Registry::setStacktraceFactory(plugin::Registry::get().getFactory<Stacktrace>(implementation), std::move(settings));
 }
 
-void ObjectContext::addRawObject(const std::string& id, std::unique_ptr<object::Object> object) {
-	objects[id] = std::move(object);
-}
-
-} /* namespace boot */
+} /* namespace system */
 } /* namespace esl */
