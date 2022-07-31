@@ -22,21 +22,28 @@ SOFTWARE.
 
 #include <esl/plugin/Registry.h>
 
-#include <new>         // placement new
-#include <type_traits> // aligned_storage
+//#include <new>         // placement new
+//#include <type_traits> // aligned_storage
 #include <utility>
 
 namespace esl {
 namespace plugin {
 
 namespace {
-typename std::aligned_storage<sizeof(Registry), alignof(Registry)>::type registryBuffer; // memory for the object;
+//typename std::aligned_storage<sizeof(Registry), alignof(Registry)>::type registryBuffer; // memory for the object;
+
+std::unique_ptr<Registry> registryUnique;
 Registry* registryPtr = nullptr;
 
 const Registry::BasePlugins emptyBasePlugings;
 
 }  /* anonymous namespace */
 
+Registry::~Registry() {
+	if(logging) {
+		logging->flush(nullptr);
+	}
+}
 
 Registry& Registry::get() {
 	if(registryPtr == nullptr) {
@@ -44,8 +51,10 @@ Registry& Registry::get() {
 		 * initialize module *
 		 * ***************** */
 
-		registryPtr = reinterpret_cast<Registry*> (&registryBuffer);
-		new (registryPtr) Registry; // placement new
+		//registryPtr = reinterpret_cast<Registry*> (&registryBuffer);
+		//new (registryPtr) Registry; // placement new
+		registryUnique.reset(new Registry);
+		registryPtr = registryUnique.get();
 	}
 
 	return *registryPtr;
@@ -72,6 +81,15 @@ void Registry::dump(std::ostream& ostream) const {
 const Registry::BasePlugins& Registry::getPlugins(std::type_index typeIndex) const {
 	auto iter = typePlugins.find(typeIndex);
 	return iter ==  typePlugins.end() ? emptyBasePlugings : iter->second;
+}
+
+void Registry::loadPlugin(const std::string& path, const char* data) {
+	loadPlugin(std::unique_ptr<Library>(new Library(path)), data);
+}
+
+void Registry::loadPlugin(std::unique_ptr<Library> library, const char* data) {
+	library->install(*this, data);
+	libraries.push_back(std::move(library));
 }
 
 const BasePlugin* Registry::findBasePlugin(const std::string& implementation, std::type_index typeIndex) const noexcept {

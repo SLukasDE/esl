@@ -21,6 +21,7 @@ SOFTWARE.
 */
 
 #include <esl/plugin/Library.h>
+#include <esl/plugin/Registry.h>
 
 #include <memory>
 #include <stdexcept>
@@ -32,14 +33,13 @@ SOFTWARE.
 namespace esl {
 namespace plugin {
 
-std::set<Library*> Library::libraries;
 
-Library& Library::load(std::string path) {
-	void* nativeHandle = nullptr;
-
+Library::Library(std::string aPath)
+: path(std::move(aPath))
+{
 #ifdef linux
-	nativeHandle = dlopen(path.c_str(), RTLD_NOLOAD | RTLD_NOW | RTLD_LOCAL );
-    if(nativeHandle != nullptr) {
+	void* testNativeHandle = dlopen(path.c_str(), RTLD_NOLOAD | RTLD_NOW | RTLD_LOCAL );
+    if(testNativeHandle != nullptr) {
        	throw std::runtime_error("Library loaded already");
     }
 
@@ -52,10 +52,22 @@ Library& Library::load(std::string path) {
        	throw std::runtime_error("Library loader not implemented so far");
     }
 #endif
+}
 
-    Library* library = new Library(nativeHandle, std::move(path));
-    libraries.insert(library);
-    return *library;
+Library::~Library() {
+#ifdef linux
+    if(dlclose(nativeHandle) != 0) {
+    	// cannot close library
+    }
+#endif
+}
+
+void* Library::getNativeHandle() const noexcept {
+	return nativeHandle;
+}
+
+const std::string& Library::getPath() const noexcept {
+	return path;
 }
 
 void Library::install(Registry& registry, const char* data) {
@@ -72,31 +84,6 @@ void Library::install(Registry& registry, const char* data) {
     	throw std::runtime_error("Symbol \"esl__plugin__library__install\" in library \"" + path + "\" is null");
     }
 	libInstall(&registry, data);
-}
-
-const std::string& Library::getPath() const {
-	return path;
-}
-
-void* Library::getNativeHandle() const {
-	return nativeHandle;
-}
-
-Library::Library(void* aNativeHandle, std::string aPath)
-: nativeHandle(aNativeHandle),
-  path(std::move(aPath))
-{
-    if(nativeHandle == nullptr) {
-    	throw std::runtime_error("Cannot initialize library with empty nativeHandle");
-    }
-}
-
-Library::~Library() {
-#ifdef linux
-    if(dlclose(nativeHandle) != 0) {
-    	// cannot close library
-    }
-#endif
 }
 
 } /* namespace plugin */

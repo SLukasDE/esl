@@ -25,6 +25,7 @@ SOFTWARE.
 
 #include <esl/plugin/BasePlugin.h>
 #include <esl/plugin/exception/PluginNotFound.h>
+#include <esl/plugin/Library.h>
 #include <esl/plugin/Plugin.h>
 #include <esl/logging/Logging.h>
 
@@ -38,7 +39,6 @@ SOFTWARE.
 #include <utility>
 #include <vector>
 
-#include <iostream>
 #define DO_QUOTE(X)                  #X
 #define QUOTE(X)                     DO_QUOTE(X)
 
@@ -95,6 +95,8 @@ public:
 
 	using BasePlugins = std::map<std::string, std::unique_ptr<const BasePlugin>>;
 
+	~Registry();
+
 	static Registry& get();
 	static void set(Registry& registry);
 
@@ -140,8 +142,11 @@ public:
 	template <class Interface>
 	void copyPlugin(const std::string& implementationSource, const std::string& implementationDestination);
 
+	void loadPlugin(const std::string& path, const char* data = 0);
+	void loadPlugin(std::unique_ptr<Library> library, const char* data = 0);
+
 private:
-	using TypePlugins = std::map<std::type_index, BasePlugins>;
+	Registry() = default;
 
 	const BasePlugin* findBasePlugin(const std::string& implementation, std::type_index typeIndex) const noexcept;
 	const BasePlugin* findBasePlugin(std::type_index typeIndex) const noexcept;
@@ -153,6 +158,9 @@ private:
 	static logging::Logging* getLogging();
 	static void setLogging(std::unique_ptr<logging::Logging> logging);
 
+	std::vector<std::unique_ptr<Library>> libraries;
+
+	using TypePlugins = std::map<std::type_index, BasePlugins>;
 	TypePlugins typePlugins;
 
 	StacktraceFactory stacktraceFactory = nullptr;
@@ -193,7 +201,6 @@ template <typename Interface>
 const Registry::Factory<Interface> Registry::getFactory() const {
 	const Plugin<Interface>* plugin = findPlugin<Interface>();
 	if(!plugin) {
-std::cerr << "Throw PluginNotFound (1)\n";
 		throw plugin::exception::PluginNotFound(typeid(Interface));
 	}
 
@@ -207,7 +214,6 @@ template <typename Interface>
 const Registry::Factory<Interface> Registry::getFactory(const std::string& implementation) const {
 	const Plugin<Interface>* plugin = findPlugin<Interface>(implementation);
 	if(!plugin) {
-std::cerr << "Throw PluginNotFound (2)\n";
 		throw plugin::exception::PluginNotFound(typeid(Interface), implementation);
 	}
 

@@ -23,32 +23,28 @@ SOFTWARE.
 #ifndef ESL_PLUGIN_LIBRARY_H_
 #define ESL_PLUGIN_LIBRARY_H_
 
-#include <esl/plugin/Registry.h>
-
 #include <string>
-#include <set>
 
 #define linux
 
 namespace esl {
 namespace plugin {
+class Registry;
 
 class Library {
+friend class Registry;
 public:
-	static Library& load(std::string path);
-
-	void install(Registry& registry, const char* data = 0);
-
-	const std::string& getPath() const;
-	void* getNativeHandle() const;
-
-private:
-	Library(void* nativeHandle, std::string path);
+	Library(std::string path);
 	~Library();
 
-	void* nativeHandle = nullptr;
+	void* getNativeHandle() const noexcept;
+	const std::string& getPath() const noexcept;
+
+private:
 	const std::string path;
-	static std::set<Library*> libraries;
+	void* nativeHandle = nullptr;
+
+	void install(Registry& registry, const char* data = 0);
 };
 
 } /* namespace plugin */
