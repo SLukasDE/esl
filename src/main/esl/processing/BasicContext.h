@@ -138,7 +138,7 @@ public:
 
 protected:
 	BasicContext(const std::vector<std::pair<std::string, std::string>>& settings, const std::string& implementation)
-	: contextPtr(plugin::Registry::get().create<Context>(implementation, settings))
+	: contextPtr(plugin::Registry::get().create<processing::Context>(implementation, settings))
 	{ }
 
 	/* From Context: */
