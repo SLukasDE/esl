@@ -32,6 +32,7 @@ class OStream {
 public:
     virtual ~OStream() { }
     virtual std::ostream* getOStream() = 0;
+    virtual void flush() = 0;
 };
 
 } /* namespace logging */

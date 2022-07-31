@@ -34,10 +34,18 @@ StreamWriter::StreamWriter(StreamWriter&& streamWriter)
 { }
 
 StreamWriter& StreamWriter::operator<<(std::ostream& (*pf)(std::ostream&)) {
-    if(oStream && oStream->getOStream()) {
-    	*oStream->getOStream() << pf;
-    }
-    return *this;
+	if(oStream) {
+		if(oStream->getOStream()) {
+			*oStream->getOStream() << pf;
+		}
+
+		std::ostream&(*pfFlush)(std::ostream&) = std::flush;
+		if(pf == pfFlush) {
+			oStream->flush();
+		}
+	}
+
+	return *this;
 }
 
 } /* namespace logging */
