@@ -99,6 +99,7 @@ public:
 
 	static Registry& get();
 	static void set(Registry& registry);
+	static void cleanup();
 
 	void dump(std::ostream& ostream) const;
 

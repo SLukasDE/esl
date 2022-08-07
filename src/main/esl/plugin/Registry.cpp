@@ -40,9 +40,7 @@ const Registry::BasePlugins emptyBasePlugings;
 }  /* anonymous namespace */
 
 Registry::~Registry() {
-	if(logging) {
-		logging->flush(nullptr);
-	}
+	logging.reset();
 }
 
 Registry& Registry::get() {
@@ -62,6 +60,13 @@ Registry& Registry::get() {
 
 void Registry::set(Registry& registry) {
 	registryPtr = &registry;
+}
+
+void Registry::cleanup() {
+	if(registryPtr == registryUnique.get()) {
+		registryPtr = nullptr;
+	}
+	registryUnique.reset();
 }
 
 void Registry::dump(std::ostream& ostream) const {
