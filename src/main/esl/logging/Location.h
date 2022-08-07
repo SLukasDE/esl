@@ -24,9 +24,10 @@ SOFTWARE.
 #define ESL_LOGGING_LOCATION_H_
 
 #include <esl/logging/Level.h>
-#include <thread>
+
+#include <chrono>
 #include <cstring>
-#include <ctime>
+#include <thread>
 
 namespace esl {
 namespace logging {
@@ -72,7 +73,7 @@ struct Location {
 		return !(*this == location);
 	}
 
-	std::time_t timestamp = std::time(nullptr);
+	std::chrono::time_point<std::chrono::system_clock> timestamp = std::chrono::system_clock::now();
 	Level level = Level::SILENT;
 	const void* object = nullptr;
 	const char* typeName = nullptr;
