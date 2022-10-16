@@ -1,4 +1,5 @@
 # esl
+![](https://img.shields.io/github/license/SLukasDE/esl.svg)
 C++ Enterprise Support Library
 
 Somebody said C++ is the oldes newest language. It's amazing to see how fast and powerful this language is and since C++11 it goes forward fortunately. Now there is a standard to work with threads and so on. And maybe there is a standard to make low level network communication in short time. This is useful and these standards will be well thought-out.

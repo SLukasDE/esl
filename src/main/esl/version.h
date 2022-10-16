@@ -20,19 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_LOGGER_H_
-#define ESL_LOGGER_H_
+#ifndef ESL_VERSION_H_
+#define ESL_VERSION_H_
 
-#include <esl/logging/Logger.h>
+//#define ESL_1_6
 
 namespace esl {
-
-#ifdef ESL_LOGGING_LEVEL_DEBUG
-using Logger = logging::Logger<esl::logging::Level::TRACE>;
-#else
-using Logger = logging::Logger<esl::logging::Level::WARN>;
-#endif
-
 } /* namespace esl */
 
-#endif /* ESL_LOGGER_H_ */
+#endif /* ESL_VERSION_H_ */

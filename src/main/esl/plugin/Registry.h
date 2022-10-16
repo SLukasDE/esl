@@ -28,6 +28,7 @@ SOFTWARE.
 #include <esl/plugin/Library.h>
 #include <esl/plugin/Plugin.h>
 #include <esl/logging/Logging.h>
+#include <esl/version.h>
 
 #include <map>
 #include <memory>
@@ -140,6 +141,11 @@ public:
 	template <class Interface>
 	void addPlugin(const std::string& implementation, std::unique_ptr<Interface> (*create)(const std::vector<std::pair<std::string, std::string>>&));
 
+#ifdef ESL_1_6
+	template <class Interface, class Implementation>
+	void addPlugin(const std::string& implementation);
+#endif
+
 	template <class Interface>
 	void copyPlugin(const std::string& implementationSource, const std::string& implementationDestination);
 
@@ -158,6 +164,11 @@ private:
 
 	static logging::Logging* getLogging();
 	static void setLogging(std::unique_ptr<logging::Logging> logging);
+
+#ifdef ESL_1_6
+	template <class Interface, class Implementation>
+	static std::unique_ptr<Interface> createImplementationFunction(const std::vector<std::pair<std::string, std::string>>& settings);
+#endif
 
 	std::vector<std::unique_ptr<Library>> libraries;
 
@@ -262,10 +273,25 @@ void Registry::addPlugin(const std::string& implementation, std::unique_ptr<Inte
 	typePlugins[typeid(Interface)][implementation] = std::move(basePlugin);
 }
 
+#ifdef ESL_1_6
+template <class Interface, class Implementation>
+void Registry::addPlugin(const std::string& implementation) {
+	std::unique_ptr<const BasePlugin> basePlugin(new Plugin<Interface>(implementation, createImplementationFunction<Interface, Implementation>));
+	typePlugins[typeid(Interface)][implementation] = std::move(basePlugin);
+}
+#endif
+
 template <class Interface>
 void Registry::copyPlugin(const std::string& implementationSource, const std::string& implementationDestination) {
 	addPlugin<Interface>(implementationDestination, getPlugin<Interface>(implementationSource).create);
 }
+
+#ifdef ESL_1_6
+template <class Interface, class Implementation>
+std::unique_ptr<Interface> Registry::createImplementationFunction(const std::vector<std::pair<std::string, std::string>>& settings) {
+	return std::unique_ptr<Interface>(new Implementation(settings));
+}
+#endif
 
 } /* namespace plugin */
 } /* namespace esl */
