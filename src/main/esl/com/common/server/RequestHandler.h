@@ -20,29 +20,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_PROCESSING_TASKFACTORY_H_
-#define ESL_PROCESSING_TASKFACTORY_H_
+#ifndef ESL_COM_COMMON_SERVER_REQUESTHANDLER_H_
+#define ESL_COM_COMMON_SERVER_REQUESTHANDLER_H_
 
+#include <esl/com/common/server/RequestContext.h>
+#include <esl/io/Input.h>
 #include <esl/object/Object.h>
-#include <esl/processing/TaskDescriptor.h>
-#include <esl/processing/Task.h>
 
-#include <vector>
+#include <set>
+#include <string>
 
 namespace esl {
-namespace processing {
+namespace com {
+namespace common {
+namespace server {
 
-class TaskFactory : public object::Object {
+class RequestHandler : public virtual object::Object {
 public:
-#ifdef ESL_1_6
-	virtual std::unique_ptr<Task> createTask(Procedure& procedure, std::function<void(Status)> onStateChanged, unsigned int priority = 0, std::unique_ptr<object::Context> context = nullptr) = 0;
-#else
-	virtual Task createTask(TaskDescriptor descriptor) = 0;
-#endif
-	virtual std::vector<Task> getTasks() const = 0;
+	virtual esl::io::Input accept(RequestContext& requestContext) = 0;
+	virtual std::set<std::string> getNotifiers() const = 0;
 };
 
-} /* namespace processing */
+} /* namespace server */
+} /* namespace common */
+} /* namespace com */
 } /* namespace esl */
 
-#endif /* ESL_PROCESSING_TASKFACTORY_H_ */
+#endif /* ESL_COM_COMMON_SERVER_REQUESTHANDLER_H_ */

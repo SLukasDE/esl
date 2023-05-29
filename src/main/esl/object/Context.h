@@ -36,10 +36,21 @@ namespace object {
 
 class Context : public virtual Object {
 public:
+#ifdef ESL_1_6
+	/* TODO:
+	 * § Check if it is possible to remove the template implementation.
+	 *   Instead try to just implement 'void addObject(const std::string& id, std::unique_ptr<Object> object)'.
+	 *   There should be already an template based constructor available for std::unique_ptr that makes this implementation unnecessary.
+	 *
+	 * § If it works, then rename 'addRawObject' to 'addObject' and make it public
+	 */
+	virtual void addObject(const std::string& id, std::unique_ptr<Object> object) = 0;
+#else
 	template<typename T = Object>
 	void addObject(const std::string& id, std::unique_ptr<T> t) {
 		addRawObject(id, std::unique_ptr<Object>(t.release()));
 	}
+#endif
 
 	template<typename T = Object>
 	T* findObject(const std::string& id) {
@@ -84,6 +95,7 @@ protected:
 		return *object;
 	}
 
+#ifndef ESL_1_6
 	const Object& getRawObject(const std::string& id) const {
 		const Object* object = findRawObject(id);
 		if(!object) {
@@ -91,6 +103,7 @@ protected:
 		}
 		return *object;
 	}
+#endif
 };
 
 } /* namespace object */

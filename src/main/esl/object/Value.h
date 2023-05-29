@@ -64,6 +64,15 @@ public:
 		return value;
 	}
 
+#ifdef ESL_1_6
+	const T* operator->() const noexcept {
+		return value;
+	}
+
+	T* operator->() noexcept {
+		return value;
+	}
+#else
 	const T& operator->() const noexcept {
 		return value;
 	}
@@ -71,6 +80,7 @@ public:
 	T& operator->() noexcept {
 		return value;
 	}
+#endif
 
 	const T& get() const noexcept {
 		return value;

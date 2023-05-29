@@ -1,3 +1,4 @@
+#ifndef ESL_1_6
 /*
 MIT License
 Copyright (c) 2019-2022 Sven Lukas
@@ -51,3 +52,4 @@ private:
 } /* namespace esl */
 
 #endif /* ESL_PROCESSING_REFPROCEDURE_H_ */
+#endif

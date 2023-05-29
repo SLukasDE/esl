@@ -20,29 +20,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_PROCESSING_TASKFACTORY_H_
-#define ESL_PROCESSING_TASKFACTORY_H_
+#ifndef ESL_OBJECT_PROCEDURE_H_
+#define ESL_OBJECT_PROCEDURE_H_
 
+#ifdef ESL_1_6
 #include <esl/object/Object.h>
-#include <esl/processing/TaskDescriptor.h>
-#include <esl/processing/Task.h>
-
-#include <vector>
+#include <esl/object/Context.h>
 
 namespace esl {
-namespace processing {
+namespace object {
 
-class TaskFactory : public object::Object {
+class Procedure : public virtual Object {
 public:
-#ifdef ESL_1_6
-	virtual std::unique_ptr<Task> createTask(Procedure& procedure, std::function<void(Status)> onStateChanged, unsigned int priority = 0, std::unique_ptr<object::Context> context = nullptr) = 0;
-#else
-	virtual Task createTask(TaskDescriptor descriptor) = 0;
-#endif
-	virtual std::vector<Task> getTasks() const = 0;
-};
+	/* this method is blocking. */
+	//virtual std::unique_ptr<object::Context> procedureRun(object::Context& context) = 0;
+	virtual void procedureRun(Context& context) = 0;
 
-} /* namespace processing */
+	/* this method is non-blocking. */
+	virtual void procedureCancel() { };
+};
+#else
+#include <esl/processing/Procedure.h>
+
+namespace esl {
+namespace object {
+
+using Procedure = processing::Procedure;
+#endif
+
+} /* namespace object */
 } /* namespace esl */
 
-#endif /* ESL_PROCESSING_TASKFACTORY_H_ */
+#endif /* ESL_OBJECT_PROCEDURE_H_ */

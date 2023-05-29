@@ -28,7 +28,7 @@ SOFTWARE.
 #include <esl/plugin/Library.h>
 #include <esl/plugin/Plugin.h>
 #include <esl/logging/Logging.h>
-#include <esl/version.h>
+#include <esl/Version.h>
 
 #include <map>
 #include <memory>

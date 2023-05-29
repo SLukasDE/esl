@@ -20,29 +20,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef ESL_PROCESSING_TASKFACTORY_H_
-#define ESL_PROCESSING_TASKFACTORY_H_
+#ifndef ESL_OBJECT_PROCESSINGHANDLER_H_
+#define ESL_OBJECT_PROCESSINGHANDLER_H_
 
-#include <esl/object/Object.h>
-#include <esl/processing/TaskDescriptor.h>
-#include <esl/processing/Task.h>
-
-#include <vector>
+#include <esl/com/common/server/RequestHandler.h>
+#include <esl/object/Event.h>
+#include <esl/object/Procedure.h>
 
 namespace esl {
-namespace processing {
+namespace object {
 
-class TaskFactory : public object::Object {
-public:
-#ifdef ESL_1_6
-	virtual std::unique_ptr<Task> createTask(Procedure& procedure, std::function<void(Status)> onStateChanged, unsigned int priority = 0, std::unique_ptr<object::Context> context = nullptr) = 0;
-#else
-	virtual Task createTask(TaskDescriptor descriptor) = 0;
-#endif
-	virtual std::vector<Task> getTasks() const = 0;
-};
+struct ProcessingHandler : public com::common::server::RequestHandler, public Event, public Procedure { };
 
-} /* namespace processing */
+} /* namespace object */
 } /* namespace esl */
 
-#endif /* ESL_PROCESSING_TASKFACTORY_H_ */
+#endif /* ESL_OBJECT_PROCESSINGHANDLER_H_ */

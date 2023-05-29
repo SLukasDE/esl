@@ -1,3 +1,4 @@
+#ifndef ESL_1_6
 /*
 MIT License
 Copyright (c) 2019-2022 Sven Lukas
@@ -39,3 +40,4 @@ enum class Status {
 } /* namespace esl */
 
 #endif /* ESL_PROCESSING_STATUS_H_ */
+#endif

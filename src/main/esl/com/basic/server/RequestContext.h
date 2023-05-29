@@ -33,11 +33,15 @@ namespace com {
 namespace basic {
 namespace server {
 
+/* TODO: muss RequestContext unbedingt VIRTUAL von esl::object::Object ableiten ? */
 class RequestContext : public virtual object::Object {
 public:
 	virtual Connection& getConnection() const = 0;
 	virtual const Request& getRequest() const = 0;
 	virtual object::Context& getObjectContext() = 0;
+#ifdef ESL_1_6
+        virtual const object::Context& getObjectContext() const = 0;
+#endif
 };
 
 } /* namespace server */

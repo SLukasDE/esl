@@ -34,6 +34,25 @@ SOFTWARE.
 namespace esl {
 namespace processing {
 
+#ifdef ESL_1_6
+class Task : public object::Object {
+public:
+	enum class Status {
+		waiting,
+		canceled,
+		running,
+		exception,
+		done
+	};
+
+	//virtual void onEvent(const object::Object& object) = 0;
+	virtual void cancel() = 0;
+
+	virtual Status getStatus() const = 0;
+	virtual object::Context* getContext() const = 0;
+	virtual std::exception_ptr getException() const = 0;
+};
+#else
 class Task {
 public:
 	class Binding {
@@ -60,7 +79,7 @@ public:
 private:
 	std::shared_ptr<Binding> binding;
 };
-
+#endif
 } /* namespace processing */
 } /* namespace esl */
 

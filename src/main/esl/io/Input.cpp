@@ -23,6 +23,7 @@ SOFTWARE.
 #include <esl/io/Input.h>
 #include <esl/io/Reader.h>
 #include <esl/logging/Logger.h>
+#include <esl/Version.h>
 
 #include <string>
 #include <stdexcept>
@@ -41,13 +42,23 @@ public:
 
 	bool consume(Reader& reader) override;
 
+#ifdef ESL_1_6
+private:
+	/* return true on progress - maybe call method again */
+	bool flushBuffer();
+
+#else
 	Writer& getWriter() const noexcept;
 	std::size_t getCurrentBufferSize() const noexcept;
 	void flushBuffer();
 
 private:
+#endif
 	static constexpr std::size_t maxBufferSize = 4096;
 	std::size_t currentBufferSize = 0;
+#ifdef ESL_1_6
+	std::size_t flushedBufferSize = 0;
+#endif
 	char buffer[maxBufferSize];
 	Writer& writer;
 	bool isReaderEOF = false;
@@ -60,6 +71,69 @@ ConsumerWriter::ConsumerWriter(Writer& aWriter)
 : writer(aWriter)
 { }
 
+#ifdef ESL_1_6
+bool ConsumerWriter::consume(Reader& reader) {
+	while(flushBuffer()) {
+	}
+
+	if(isWriterEOF) {
+		return false;
+	}
+
+	if(currentBufferSize == 0 && isReaderEOF == false) {
+		std::size_t consumedSize = reader.read(buffer, maxBufferSize);
+
+		if(consumedSize == Reader::npos) {
+			isReaderEOF = true;
+			return false;
+		}
+
+		if(consumedSize > maxBufferSize) {
+			logger.warn << "esl::io::Input-ConsumerWriter::consume says " << consumedSize << " bytes read but read at most " << maxBufferSize << " bytes.\n";
+			consumedSize = maxBufferSize;
+		}
+
+		currentBufferSize = consumedSize;
+	}
+
+	while(flushBuffer()) {
+	}
+
+	return isWriterEOF == false && (isReaderEOF == false || currentBufferSize > 0);
+}
+
+bool ConsumerWriter::flushBuffer() {
+	if(currentBufferSize == 0 || isWriterEOF) {
+		return false;
+	}
+
+	std::size_t producedSize = writer.write(&buffer[flushedBufferSize], currentBufferSize-flushedBufferSize);
+
+	if(producedSize == Writer::npos) {
+		isWriterEOF = true;
+		return false;
+	}
+
+	if(producedSize > currentBufferSize) {
+		logger.warn << "esl::io::Input-ConsumerWriter::flushBuffer has " << producedSize << " bytes written but only " << currentBufferSize-flushedBufferSize << " bytes have been allowed to write.\n";
+		producedSize = currentBufferSize;
+	}
+
+	flushedBufferSize += producedSize;
+
+	if(flushedBufferSize < currentBufferSize) {
+		return (producedSize > 0);
+	}
+	if(flushedBufferSize > currentBufferSize) {
+		logger.warn << "esl::io::Input-ConsumerWriter::flushBuffer has " << flushedBufferSize << " bytes totaly written but only " << currentBufferSize << " bytes totaly have been allowed to write.\n";
+	}
+
+	currentBufferSize = 0;
+	flushedBufferSize = 0;
+
+	return true;
+}
+#else
 bool ConsumerWriter::consume(Reader& reader) {
 	if(isWriterEOF) {
 		return false;
@@ -111,6 +185,7 @@ void ConsumerWriter::flushBuffer() {
 		currentBufferSize -= producedSize;
 	}
 }
+#endif
 
 
 
