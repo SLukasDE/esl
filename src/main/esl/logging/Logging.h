@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -41,9 +41,10 @@ SOFTWARE.
 #include <vector>
 
 namespace esl {
+inline namespace v1_6 {
 namespace logging {
 
-class Logging : public esl::object::Object {
+class Logging : public object::Object {
 public:
 	// NOT thread save - call it at the beginning if needed. Default is already "true"
 	// unblocked behavior makes other threads not waiting on logging, while current thread is writing to logger already.
@@ -86,6 +87,7 @@ public:
 };
 
 } /* namespace logging */
+} /* inline namespace v1_6 */
 } /* namespace esl */
 
 #endif /* ESL_LOGGING_LOGGING_H_ */

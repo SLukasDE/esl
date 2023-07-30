@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ SOFTWARE.
 #include <stdexcept>
 
 namespace esl {
+inline namespace v1_6 {
 namespace logging {
 
 void Logging::init() {
@@ -40,7 +41,7 @@ void Logging::init(std::unique_ptr<Logging> aLogging) {
 void Logging::init(const std::string& implementation, const std::vector<std::pair<std::string, std::string>>& settings) {
 	std::unique_ptr<Logging> logging = plugin::Registry::get().create<Logging>(implementation, settings);
 	if(!logging) {
-		throw esl::system::Stacktrace::add(std::runtime_error("Cannot create an logging plugin for implementation \"" + implementation + "\"."));
+		throw system::Stacktrace::add(std::runtime_error("Cannot create an logging plugin for implementation \"" + implementation + "\"."));
 	}
 	init(std::move(logging));
 }
@@ -50,7 +51,7 @@ void Logging::initWithData(const std::string& configuration) {
 
 	Logging* logging = get();
 	if(!logging) {
-		throw esl::system::Stacktrace::add(std::runtime_error("Cannot create an logging plugin with data."));
+		throw system::Stacktrace::add(std::runtime_error("Cannot create an logging plugin with data."));
 	}
 	logging->addData(configuration);
 }
@@ -60,7 +61,7 @@ void Logging::initWithData(const std::string& configuration, std::unique_ptr<Log
 
 	Logging* logging = get();
 	if(!logging) {
-		throw esl::system::Stacktrace::add(std::runtime_error("Cannot create an logging plugin with data."));
+		throw system::Stacktrace::add(std::runtime_error("Cannot create an logging plugin with data."));
 	}
 	logging->addData(configuration);
 }
@@ -70,7 +71,7 @@ void Logging::initWithData(const std::string& configuration, const std::string& 
 
 	Logging* logging = get();
 	if(!logging) {
-		throw esl::system::Stacktrace::add(std::runtime_error("Cannot create an logging plugin with data for implementation \"" + implementation + "\"."));
+		throw system::Stacktrace::add(std::runtime_error("Cannot create an logging plugin with data for implementation \"" + implementation + "\"."));
 	}
 	logging->addData(configuration);
 }
@@ -80,7 +81,7 @@ void Logging::initWithFile(const boost::filesystem::path& filename) {
 
 	Logging* logging = get();
 	if(!logging) {
-		throw esl::system::Stacktrace::add(std::runtime_error("Cannot create an logging plugin with file \"" + filename.string() + "\"."));
+		throw system::Stacktrace::add(std::runtime_error("Cannot create an logging plugin with file \"" + filename.string() + "\"."));
 	}
 	logging->addFile(filename);
 }
@@ -90,7 +91,7 @@ void Logging::initWithFile(const boost::filesystem::path& filename, std::unique_
 
 	Logging* logging = get();
 	if(!logging) {
-		throw esl::system::Stacktrace::add(std::runtime_error("Cannot create an logging plugin with file \"" + filename.string() + "\"."));
+		throw system::Stacktrace::add(std::runtime_error("Cannot create an logging plugin with file \"" + filename.string() + "\"."));
 	}
 	logging->addFile(filename);
 }
@@ -100,7 +101,7 @@ void Logging::initWithFile(const boost::filesystem::path& filename, const std::s
 
 	Logging* logging = get();
 	if(!logging) {
-		throw esl::system::Stacktrace::add(std::runtime_error("Cannot create an logging plugin with file \"" + filename.string() + "\" for implementation \"" + implementation + "\"."));
+		throw system::Stacktrace::add(std::runtime_error("Cannot create an logging plugin with file \"" + filename.string() + "\" for implementation \"" + implementation + "\"."));
 	}
 	logging->addFile(filename);
 }
@@ -110,4 +111,5 @@ Logging* Logging::get() {
 }
 
 } /* namespace logging */
+} /* inline namespace v1_6 */
 } /* namespace esl */

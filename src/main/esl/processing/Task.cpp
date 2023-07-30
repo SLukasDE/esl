@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,13 +26,14 @@ SOFTWARE.
 #include <stdexcept>
 
 namespace esl {
+inline namespace v1_6 {
 namespace processing {
 
 Task::Task(std::shared_ptr<Binding> aBinding)
 : binding(aBinding)
 {
 	if(!binding) {
-		throw esl::system::Stacktrace::add(std::runtime_error("Invalid binding"));
+		throw system::Stacktrace::add(std::runtime_error("Invalid binding"));
 	}
 }
 
@@ -70,4 +71,5 @@ std::exception_ptr Task::getException() const {
 }
 
 } /* namespace processing */
+} /* inline namespace v1_6 */
 } /* namespace esl */

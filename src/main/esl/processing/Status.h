@@ -1,7 +1,7 @@
 #ifndef ESL_1_6
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ SOFTWARE.
 #define ESL_PROCESSING_STATUS_H_
 
 namespace esl {
+inline namespace v1_6 {
 namespace processing {
 
 enum class Status {
@@ -37,6 +38,7 @@ enum class Status {
 };
 
 } /* namespace processing */
+} /* inline namespace v1_6 */
 } /* namespace esl */
 
 #endif /* ESL_PROCESSING_STATUS_H_ */

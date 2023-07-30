@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,11 +28,13 @@ SOFTWARE.
 #include <esl/object/Procedure.h>
 
 namespace esl {
+inline namespace v1_6 {
 namespace object {
 
 struct ProcessingHandler : public com::common::server::RequestHandler, public Event, public Procedure { };
 
 } /* namespace object */
+} /* inline namespace v1_6 */
 } /* namespace esl */
 
 #endif /* ESL_OBJECT_PROCESSINGHANDLER_H_ */

@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,7 @@ SOFTWARE.
 #include <memory>
 
 namespace esl {
+inline namespace v1_6 {
 namespace object {
 
 class Context : public virtual Object {
@@ -66,7 +67,7 @@ public:
 	T& getObject(const std::string& id) {
 		T* t = dynamic_cast<T*>(&getRawObject(id));
 		if(!t) {
-			throw esl::system::Stacktrace::add(std::runtime_error("Failed to get object with id \"" + id + "\" because requested type is wrong"));
+			throw system::Stacktrace::add(std::runtime_error("Failed to get object with id \"" + id + "\" because requested type is wrong"));
 		}
 		return *t;
 	}
@@ -75,7 +76,7 @@ public:
 	const T& getObject(const std::string& id) const {
 		const T* t = dynamic_cast<const T*>(&getRawObject(id));
 		if(!t) {
-			throw esl::system::Stacktrace::add(std::runtime_error("Failed to get object with id \"" + id + "\" because requested type is wrong"));
+			throw system::Stacktrace::add(std::runtime_error("Failed to get object with id \"" + id + "\" because requested type is wrong"));
 		}
 		return *t;
 	}
@@ -90,7 +91,7 @@ protected:
 	Object& getRawObject(const std::string& id) {
 		Object* object = findRawObject(id);
 		if(!object) {
-			throw esl::system::Stacktrace::add(std::runtime_error("Cannot get object with unknown id \"" + id + "\""));
+			throw system::Stacktrace::add(std::runtime_error("Cannot get object with unknown id \"" + id + "\""));
 		}
 		return *object;
 	}
@@ -99,7 +100,7 @@ protected:
 	const Object& getRawObject(const std::string& id) const {
 		const Object* object = findRawObject(id);
 		if(!object) {
-			throw esl::system::Stacktrace::add(std::runtime_error("Cannot get object with unknown id \"" + id + "\""));
+			throw system::Stacktrace::add(std::runtime_error("Cannot get object with unknown id \"" + id + "\""));
 		}
 		return *object;
 	}
@@ -107,6 +108,7 @@ protected:
 };
 
 } /* namespace object */
+} /* inline namespace v1_6 */
 } /* namespace esl */
 
 #endif /* ESL_OBJECT_CONTEXT_H_ */

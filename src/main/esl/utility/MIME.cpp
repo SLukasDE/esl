@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,35 +23,46 @@ SOFTWARE.
 #include <esl/utility/MIME.h>
 
 namespace esl {
+inline namespace v1_6 {
 namespace utility {
 
 template<>
 const std::string& MIME::toString(MimeType mimeType) noexcept {
 	static const std::string strEmpty;
-	static const std::string strTextPlain = "text/plain";
-	static const std::string strTextHtml = "text/html";
-	static const std::string strTextXml = "text/xml";
+	static const std::string strAll = "*/*";
+	static const std::string strText = "text/*";
 	static const std::string strTextCsv = "text/comma-separated-values";
-	static const std::string strApplicationXml = "application/xml";
+	static const std::string strTextHtml = "text/html";
+	static const std::string strTextPlain = "text/plain";
+	static const std::string strTextXml = "text/xml";
+	static const std::string strApplication = "application/*";
 	static const std::string strApplicationJson = "application/json";
+	static const std::string strApplicationXml = "application/xml";
 
 	switch(mimeType) {
-	case textPlain:
-		return strTextPlain;
-	case textHtml:
-		return strTextHtml;
-	case textXml:
-		return strTextXml;
+	case all:
+		return strAll;
+	case text:
+		return strText;
 	case textCsv:
 		return strTextCsv;
-	case applicationXml:
-		return strApplicationXml;
+	case textHtml:
+		return strTextHtml;
+	case textPlain:
+		return strTextPlain;
+	case textXml:
+		return strTextXml;
+	case application:
+		return strApplication;
 	case applicationJson:
 		return strApplicationJson;
+	case applicationXml:
+		return strApplicationXml;
 	}
 	return strEmpty;
 }
 
 } /* namespace utility */
+} /* inline namespace v1_6 */
 } /* namespace esl */
 

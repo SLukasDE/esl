@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ SOFTWARE.
 #include <stdexcept>
 
 namespace esl {
+inline namespace v1_6 {
 namespace database {
 
 namespace {
@@ -96,39 +97,39 @@ ResultSet& ResultSet::operator=(ResultSet&& other) {
 
 const Field& ResultSet::operator[](const std::string& name) const {
 	if(!binding) {
-        throw esl::system::Stacktrace::add(std::runtime_error("cannot access field \"" + name + "\" because record set it empty."));
+        throw system::Stacktrace::add(std::runtime_error("cannot access field \"" + name + "\" because record set it empty."));
 	}
 
 	auto iter = nameToIndex.find(name);
 	if(iter == nameToIndex.end()) {
-        throw esl::system::Stacktrace::add(std::runtime_error("unknown field \"" + name + "\" requested."));
+        throw system::Stacktrace::add(std::runtime_error("unknown field \"" + name + "\" requested."));
 	}
 	return fields[iter->second];
 }
 
 Field& ResultSet::operator[](const std::string& name) {
 	if(!binding) {
-        throw esl::system::Stacktrace::add(std::runtime_error("cannot access field \"" + name + "\" because record set it empty."));
+        throw system::Stacktrace::add(std::runtime_error("cannot access field \"" + name + "\" because record set it empty."));
 	}
 
 	auto iter = nameToIndex.find(name);
 	if(iter == nameToIndex.end()) {
-        throw esl::system::Stacktrace::add(std::runtime_error("unknown field \"" + name + "\" requested."));
+        throw system::Stacktrace::add(std::runtime_error("unknown field \"" + name + "\" requested."));
 	}
 	return fields[iter->second];
 }
 
 const Field& ResultSet::operator[](std::size_t index) const {
 	if(!binding) {
-        throw esl::system::Stacktrace::add(std::runtime_error("cannot access field at index \"" + std::to_string(index) + "\" because record set it empty."));
+        throw system::Stacktrace::add(std::runtime_error("cannot access field at index \"" + std::to_string(index) + "\" because record set it empty."));
 	}
 
 	if(index >= fields.size()) {
 		if(fields.empty()) {
-	        throw esl::system::Stacktrace::add(std::out_of_range("field index " + std::to_string(index) + " is out of range. ResultSet has no fields."));
+	        throw system::Stacktrace::add(std::out_of_range("field index " + std::to_string(index) + " is out of range. ResultSet has no fields."));
 		}
 		else {
-	        throw esl::system::Stacktrace::add(std::out_of_range("field index " + std::to_string(index) + " is out of range. Valid index is between 0 and " + std::to_string(fields.size() - 1) + "."));
+	        throw system::Stacktrace::add(std::out_of_range("field index " + std::to_string(index) + " is out of range. Valid index is between 0 and " + std::to_string(fields.size() - 1) + "."));
 		}
 	}
 	return fields[index];
@@ -136,15 +137,15 @@ const Field& ResultSet::operator[](std::size_t index) const {
 
 Field& ResultSet::operator[](std::size_t index) {
 	if(!binding) {
-        throw esl::system::Stacktrace::add(std::runtime_error("cannot access field at index \"" + std::to_string(index) + "\" because record set it empty."));
+        throw system::Stacktrace::add(std::runtime_error("cannot access field at index \"" + std::to_string(index) + "\" because record set it empty."));
 	}
 
 	if(index >= fields.size()) {
 		if(fields.empty()) {
-	        throw esl::system::Stacktrace::add(std::out_of_range("field index " + std::to_string(index) + " is out of range. ResultSet has no fields."));
+	        throw system::Stacktrace::add(std::out_of_range("field index " + std::to_string(index) + " is out of range. ResultSet has no fields."));
 		}
 		else {
-	        throw esl::system::Stacktrace::add(std::out_of_range("field index " + std::to_string(index) + " is out of range. Valid index is between 0 and " + std::to_string(fields.size() - 1) + "."));
+	        throw system::Stacktrace::add(std::out_of_range("field index " + std::to_string(index) + " is out of range. Valid index is between 0 and " + std::to_string(fields.size() - 1) + "."));
 		}
 	}
 	return fields[index];
@@ -159,7 +160,7 @@ const std::vector<Column>* ResultSet::getColumns() const {
 
 void ResultSet::next() {
 	if(!binding) {
-        throw esl::system::Stacktrace::add(std::runtime_error("cannot go to next result set because result set is already at the end."));
+        throw system::Stacktrace::add(std::runtime_error("cannot go to next result set because result set is already at the end."));
 	}
 
 	save();
@@ -181,7 +182,7 @@ void ResultSet::next() {
 
 void ResultSet::add() {
 	if(!binding) {
-        throw esl::system::Stacktrace::add(std::runtime_error("cannot add a new row because result set is already at the end."));
+        throw system::Stacktrace::add(std::runtime_error("cannot add a new row because result set is already at the end."));
 	}
 
 	save();
@@ -194,7 +195,7 @@ void ResultSet::save() {
 	}
 
 	if(!binding) {
-        throw esl::system::Stacktrace::add(std::runtime_error("cannot save current result set because it is already at the end."));
+        throw system::Stacktrace::add(std::runtime_error("cannot save current result set because it is already at the end."));
 	}
 
 	binding->save(fields);
@@ -203,7 +204,7 @@ void ResultSet::save() {
 
 void ResultSet::setChanged(std::size_t index) {
 	if(binding && fetching == false && binding->isEditable(index) == false) {
-        throw esl::system::Stacktrace::add(std::runtime_error("cannot edit field."));
+        throw system::Stacktrace::add(std::runtime_error("cannot edit field."));
 	}
 	if(fetching == false) {
 		valuesChanged = true;
@@ -211,4 +212,5 @@ void ResultSet::setChanged(std::size_t index) {
 }
 
 } /* namespace database */
+} /* inline namespace v1_6 */
 } /* namespace esl */

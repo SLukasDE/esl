@@ -9,6 +9,7 @@
 #include <string>
 
 namespace esl {
+inline namespace v1_6 {
 namespace examples {
 
 namespace {
@@ -53,4 +54,5 @@ void loggerReplay() {
 
 
 } /* namespace examples */
+} /* inline namespace v1_6 */
 } /* namespace esl */

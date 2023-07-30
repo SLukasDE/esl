@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ SOFTWARE.
 #include <esl/object/Context.h>
 
 namespace esl {
+inline namespace v1_6 {
 namespace object {
 
 class Procedure : public virtual Object {
@@ -43,12 +44,14 @@ public:
 #include <esl/processing/Procedure.h>
 
 namespace esl {
+inline namespace v1_6 {
 namespace object {
 
 using Procedure = processing::Procedure;
 #endif
 
 } /* namespace object */
+} /* inline namespace v1_6 */
 } /* namespace esl */
 
 #endif /* ESL_OBJECT_PROCEDURE_H_ */

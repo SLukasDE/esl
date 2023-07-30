@@ -6,6 +6,7 @@
 
 
 namespace esl {
+inline namespace v1_6 {
 namespace examples {
 namespace logging {
 
@@ -53,4 +54,5 @@ void example02() {
 
 } /* namespace logging */
 } /* namespace examples */
+} /* inline namespace v1_6 */
 } /* namespace esl */

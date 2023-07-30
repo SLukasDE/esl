@@ -1,6 +1,7 @@
+#ifndef ESL_1_6
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +27,7 @@ SOFTWARE.
 #include <set>
 
 namespace esl {
+inline namespace v1_6 {
 namespace processing {
 
 namespace {
@@ -118,4 +120,6 @@ int Context::main(int argc, const char *argv[]) {
 }
 
 } /* namespace processing */
+} /* inline namespace v1_6 */
 } /* namespace esl */
+#endif

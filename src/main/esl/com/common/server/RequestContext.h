@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ SOFTWARE.
 #include <esl/object/Object.h>
 
 namespace esl {
+inline namespace v1_6 {
 namespace com {
 namespace common {
 namespace server {
@@ -47,6 +48,7 @@ public:
 } /* namespace server */
 } /* namespace common */
 } /* namespace com */
+} /* inline namespace v1_6 */
 } /* namespace esl */
 
 #endif /* ESL_COM_COMMON_SERVER_REQUESTCONTEXT_H_ */

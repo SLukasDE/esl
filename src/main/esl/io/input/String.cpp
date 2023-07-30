@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@ SOFTWARE.
 #include <esl/io/input/String.h>
 
 namespace esl {
+inline namespace v1_6 {
 namespace io {
 namespace input {
 
@@ -54,4 +55,5 @@ const std::string& String::getString() const noexcept {
 
 } /* namespace input */
 } /* namespace io */
+} /* inline namespace v1_6 */
 } /* namespace esl */

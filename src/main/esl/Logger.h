@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,16 +23,19 @@ SOFTWARE.
 #ifndef ESL_LOGGER_H_
 #define ESL_LOGGER_H_
 
+#include <esl/logging/Level.h>
 #include <esl/logging/Logger.h>
 
 namespace esl {
+inline namespace v1_6 {
 
 #ifdef ESL_LOGGING_LEVEL_DEBUG
-using Logger = logging::Logger<esl::logging::Level::TRACE>;
+using Logger = logging::Logger<logging::Level::TRACE>;
 #else
-using Logger = logging::Logger<esl::logging::Level::WARN>;
+using Logger = logging::Logger<logging::Level::WARN>;
 #endif
 
+} /* inline namespace v1_6 */
 } /* namespace esl */
 
 #endif /* ESL_LOGGER_H_ */

@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,7 @@ SOFTWARE.
 #include <stdexcept>
 
 namespace esl {
+inline namespace v1_6 {
 namespace database {
 
 namespace {
@@ -309,7 +310,7 @@ bool Field::isNull() const {
 
 bool Field::asBoolean() const {
 	if(isNull()) {
-        throw esl::system::Stacktrace::add(std::runtime_error("null value"));
+        throw system::Stacktrace::add(std::runtime_error("null value"));
 	}
 
 	switch(columnType) {
@@ -343,7 +344,7 @@ bool Field::asBoolean() const {
 
 std::int64_t Field::asInteger() const {
 	if(isNull()) {
-        throw esl::system::Stacktrace::add(std::runtime_error("null value"));
+        throw system::Stacktrace::add(std::runtime_error("null value"));
 	}
 
 	switch(columnType) {
@@ -373,7 +374,7 @@ std::int64_t Field::asInteger() const {
 
 double Field::asDouble() const {
 	if(isNull()) {
-        throw esl::system::Stacktrace::add(std::runtime_error("null value"));
+        throw system::Stacktrace::add(std::runtime_error("null value"));
 	}
 
 	switch(columnType) {
@@ -403,7 +404,7 @@ double Field::asDouble() const {
 
 std::string Field::asString() const {
 	if(isNull()) {
-        throw esl::system::Stacktrace::add(std::runtime_error("null value"));
+        throw system::Stacktrace::add(std::runtime_error("null value"));
 	}
 
 	switch(columnType) {
@@ -529,7 +530,7 @@ Field& Field::operator=(const std::string& value) {
 const Column* Field::getColumn() const {
 	if(resultSet && resultSet->getColumns()) {
 		if(columnIndex >= resultSet->getColumns()->size()) {
-	        throw esl::system::Stacktrace::add(std::out_of_range("internal error: column index = " + std::to_string(columnIndex) + " but result set has only " + std::to_string(resultSet->getColumns()->size()) + " columns"));
+	        throw system::Stacktrace::add(std::out_of_range("internal error: column index = " + std::to_string(columnIndex) + " but result set has only " + std::to_string(resultSet->getColumns()->size()) + " columns"));
 		}
 		return &(*resultSet->getColumns())[columnIndex];
 	}
@@ -592,7 +593,7 @@ void Field::setValue(bool value) {
 		case Column::Type::sqlBoolean:
 			break;
 		default:
-	        throw esl::system::Stacktrace::add(std::runtime_error("column is not boolean"));
+	        throw system::Stacktrace::add(std::runtime_error("column is not boolean"));
 		}
 
 		if(valueIsNull == false && valueBoolean == value) {
@@ -617,7 +618,7 @@ void Field::setValue(std::int64_t value) {
 		case Column::Type::sqlSmallInt:
 			break;
 		default:
-	        throw esl::system::Stacktrace::add(std::runtime_error("column is not integer"));
+	        throw system::Stacktrace::add(std::runtime_error("column is not integer"));
 		}
 
 		if(valueIsNull == false && valueInteger == value) {
@@ -645,7 +646,7 @@ void Field::setValue(double value) {
 		case Column::Type::sqlReal:
 			break;
 		default:
-	        throw esl::system::Stacktrace::add(std::runtime_error("column is not double"));
+	        throw system::Stacktrace::add(std::runtime_error("column is not double"));
 		}
 
 		if(valueIsNull == false && valueDouble == value) {
@@ -670,7 +671,7 @@ void Field::setValue(const std::string& value) {
 		case Column::Type::sqlChar:
 			break;
 		default:
-	        throw esl::system::Stacktrace::add(std::runtime_error("column is not string"));
+	        throw system::Stacktrace::add(std::runtime_error("column is not string"));
 		}
 
 		if(valueIsNull == false && valueString == value) {
@@ -686,4 +687,5 @@ void Field::setValue(const std::string& value) {
 }
 
 } /* namespace database */
+} /* inline namespace v1_6 */
 } /* namespace esl */

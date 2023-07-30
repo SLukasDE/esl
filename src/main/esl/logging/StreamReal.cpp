@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ SOFTWARE.
 #include <esl/logging/StreamReal.h>
 
 namespace esl {
+inline namespace v1_6 {
 namespace logging {
 
 StreamReal::StreamReal(const char* aTypeName, Level aLevel, Logging* aLogging)
@@ -62,6 +63,7 @@ StreamWriter StreamReal::getStreamWriter(const void* object, const char* functio
 }
 
 } /* namespace logging */
+} /* inline namespace v1_6 */
 } /* namespace esl */
 
 

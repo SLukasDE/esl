@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@ SOFTWARE.
 #include <esl/utility/Event.h>
 
 namespace esl {
+inline namespace v1_6 {
 namespace utility {
 
 Event::Event(const Type& aType, const object::Object& aSender)
@@ -61,4 +62,5 @@ const std::string& Event::Type::toString(Event::EnumType eventType) noexcept {
 }
 
 } /* namespace utility */
+} /* inline namespace v1_6 */
 } /* namespace esl */

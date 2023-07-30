@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ SOFTWARE.
 #define ESL_OBJECT_OBJECT_H_
 
 namespace esl {
+inline namespace v1_6 {
 namespace object {
 
 class Object {
@@ -33,6 +34,7 @@ public:
 };
 
 } /* namespace object */
+} /* inline namespace v1_6 */
 } /* namespace esl */
 
 #endif /* ESL_OBJECT_OBJECT_H_ */

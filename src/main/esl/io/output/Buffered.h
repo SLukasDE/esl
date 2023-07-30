@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,7 @@ SOFTWARE.
 #include <memory>
 
 namespace esl {
+inline namespace v1_6 {
 namespace io {
 namespace output {
 
@@ -67,6 +68,7 @@ private:
 
 } /* namespace output */
 } /* namespace io */
+} /* inline namespace v1_6 */
 } /* namespace esl */
 
 #endif /* ESL_IO_OUTPUT_BUFFERED_H_ */

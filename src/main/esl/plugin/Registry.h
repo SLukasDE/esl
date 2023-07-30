@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -76,12 +76,15 @@ SOFTWARE.
 #endif
 
 namespace esl {
+inline namespace v1_6 {
 namespace system {
 class Stacktrace;
 } /* namespace system */
+} /* inline namespace v1_6 */
 } /* namespace esl */
 
 namespace esl {
+inline namespace v1_6 {
 namespace plugin {
 
 class Registry final {
@@ -294,6 +297,7 @@ std::unique_ptr<Interface> Registry::createImplementationFunction(const std::vec
 #endif
 
 } /* namespace plugin */
+} /* inline namespace v1_6 */
 } /* namespace esl */
 
 #endif /* ESL_PLUGIN_REGISTRY_H_ */

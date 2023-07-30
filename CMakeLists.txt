@@ -24,8 +24,8 @@ add_library(esl STATIC
         ./src/main/esl/plugin/Plugin.h
         ./src/main/esl/plugin/Library.h
         ./src/main/esl/plugin/Library.cpp
-        ./src/main/esl/esl.h
-        ./src/main/esl/version.h
+        ./src/main/esl/ESL.h
+        ./src/main/esl/Version.h
         ./src/main/esl/crypto/PublicKey.h
         ./src/main/esl/crypto/KeyStore.h
         ./src/main/esl/crypto/PrivateKey.h

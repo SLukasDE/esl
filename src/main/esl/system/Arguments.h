@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ SOFTWARE.
 #include <string>
 
 namespace esl {
+inline namespace v1_6 {
 namespace system {
 
 class Arguments {
@@ -54,6 +55,7 @@ private:
 };
 
 } /* namespace system */
+} /* inline namespace v1_6 */
 } /* namespace esl */
 
 #endif /* ESL_SYSTEM_ARGUMENTS_H_ */

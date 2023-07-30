@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ SOFTWARE.
 #include <typeindex>
 
 namespace esl {
+inline namespace v1_6 {
 namespace plugin {
 
 struct BasePlugin {
@@ -43,6 +44,7 @@ struct BasePlugin {
 };
 
 } /* namespace plugin */
+} /* inline namespace v1_6 */
 } /* namespace esl */
 
 #endif /* ESL_PLUGIN_BASEPLUGIN_H_ */

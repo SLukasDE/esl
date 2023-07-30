@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -126,6 +126,7 @@ SOFTWARE.
 #include <esl/utility/URL.h>
 
 namespace esl {
+inline namespace v1_6 {
 
 template <class E>
 inline system::Stacktrace::Injector<E> addStacktrace(const E& e) {
@@ -153,6 +154,7 @@ auto callStacktrace(F f, Args... args) -> decltype(f(args...)) {
     }
 }
 
+} /* inline namespace v1_6 */
 } /* namespace esl */
 
 #endif /* ESL_ESL_H_ */

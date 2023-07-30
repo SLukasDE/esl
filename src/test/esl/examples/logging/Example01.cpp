@@ -2,6 +2,7 @@
 #include <esl/logging/Logger.h>
 
 namespace esl {
+inline namespace v1_6 {
 namespace examples {
 namespace logging {
 
@@ -19,4 +20,5 @@ void example01() {
 
 } /* namespace logging */
 } /* namespace examples */
+} /* inline namespace v1_6 */
 } /* namespace esl */

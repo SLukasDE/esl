@@ -1,6 +1,6 @@
 /*
 MIT License
-Copyright (c) 2019-2022 Sven Lukas
+Copyright (c) 2019-2023 Sven Lukas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ SOFTWARE.
 #include <vector>
 
 namespace esl {
+inline namespace v1_6 {
 namespace logging {
 
 template<Level level = defaultLevel>
@@ -67,6 +68,7 @@ private:
 
 extern logging::Logger<> logger;
 
+} /* inline namespace v1_6 */
 } /* namespace esl */
 
 #define ESL__LOGGER_ERROR_OBJ(OBJ, ...) logger.write(logger.error, OBJ, __func__, __FILE__, __LINE__, __VA_ARGS__);
