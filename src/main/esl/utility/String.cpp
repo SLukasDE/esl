@@ -1,26 +1,5 @@
-/*
-MIT License
-Copyright (c) 2019-2023 Sven Lukas
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
 #include <esl/utility/String.h>
+
 #include <esl/system/Stacktrace.h>
 
 #include <algorithm>
@@ -164,21 +143,35 @@ std::string String::toLower(std::string str) {
 	return str;
 }
 
+bool String::toBool(const std::string& str) {
+	const std::string normalized = toUpper(trim(str));
+
+	if(normalized.empty() || normalized == "0" || normalized == "NO" || normalized == "FALSE") {
+		return false;
+	}
+
+	if(normalized == "1" || normalized == "-1" || normalized == "YES" || normalized == "TRUE") {
+		return true;
+	}
+
+	throw esl::system::Stacktrace::add(std::invalid_argument("Cannot convert '" + str + "' to boolean value"));
+}
+
 int String::toInt(const std::string& aStr) {
 	try {
 		return std::stoi(aStr);
 	}
 	catch(const std::invalid_argument& e) {
-		if(system::Stacktrace::get(e)) {
+		if(esl::system::Stacktrace::get(e)) {
 			throw;
 		}
-		throw system::Stacktrace::add(e);
+		throw esl::system::Stacktrace::add(e);
     }
 	catch(const std::out_of_range& e) {
-		if(system::Stacktrace::get(e)) {
+		if(esl::system::Stacktrace::get(e)) {
 			throw;
 		}
-		throw system::Stacktrace::add(e);
+		throw esl::system::Stacktrace::add(e);
     }
 }
 
@@ -187,16 +180,16 @@ long String::toLong(const std::string& aStr) {
 		return std::stol(aStr);
 	}
 	catch(const std::invalid_argument& e) {
-		if(system::Stacktrace::get(e)) {
+		if(esl::system::Stacktrace::get(e)) {
 			throw;
 		}
-		throw system::Stacktrace::add(e);
+		throw esl::system::Stacktrace::add(e);
     }
 	catch(const std::out_of_range& e) {
-		if(system::Stacktrace::get(e)) {
+		if(esl::system::Stacktrace::get(e)) {
 			throw;
 		}
-		throw system::Stacktrace::add(e);
+		throw esl::system::Stacktrace::add(e);
     }
 }
 

@@ -1,25 +1,3 @@
-/*
-MIT License
-Copyright (c) 2019-2023 Sven Lukas
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
 #ifndef ESL_ESL_H_
 #define ESL_ESL_H_
 
@@ -70,17 +48,17 @@ SOFTWARE.
 #include <esl/io/Standard.h>
 #include <esl/io/Writer.h>
 
-#include <esl/logging/Appender.h>
-#include <esl/logging/Layout.h>
-#include <esl/logging/Logging.h>
-#include <esl/logging/Level.h>
-#include <esl/logging/Location.h>
-#include <esl/logging/Logger.h>
-#include <esl/logging/OStream.h>
-#include <esl/logging/StreamEmpty.h>
-#include <esl/logging/StreamReal.h>
-#include <esl/logging/Streams.h>
-#include <esl/logging/StreamWriter.h>
+#include <esl/monitoring/Appender.h>
+#include <esl/monitoring/Layout.h>
+#include <esl/monitoring/Logging.h>
+#include <esl/monitoring/Level.h>
+#include <esl/monitoring/Location.h>
+#include <esl/monitoring/Logger.h>
+#include <esl/monitoring/OStream.h>
+#include <esl/monitoring/StreamEmpty.h>
+#include <esl/monitoring/StreamReal.h>
+#include <esl/monitoring/Streams.h>
+#include <esl/monitoring/StreamWriter.h>
 
 #include <esl/object/Bean.h>
 #include <esl/object/Cloneable.h>
@@ -91,26 +69,21 @@ SOFTWARE.
 #include <esl/object/InitializeContext.h>
 #include <esl/object/MetaData.h>
 #include <esl/object/Object.h>
+#include <esl/object/Procedure.h>
+#include <esl/object/ProcessingContext.h>
 #include <esl/object/Value.h>
 
 #include <esl/plugin/Library.h>
 #include <esl/plugin/Plugin.h>
 #include <esl/plugin/Registry.h>
 
-#include <esl/processing/BasicContext.h>
-#include <esl/processing/Context.h>
-#include <esl/processing/Procedure.h>
-#include <esl/processing/RefProcedure.h>
-#include <esl/processing/Status.h>
-#include <esl/processing/Task.h>
-#include <esl/processing/TaskDescriptor.h>
-#include <esl/processing/TaskFactory.h>
-
 #include <esl/system/exception/ProcessError.h>
 #include <esl/system/Arguments.h>
 #include <esl/system/Environment.h>
 #include <esl/system/FileDescriptor.h>
 #include <esl/system/Process.h>
+#include <esl/system/Task.h>
+#include <esl/system/TaskFactory.h>
 #include <esl/system/Transceiver.h>
 #include <esl/system/Signal.h>
 #include <esl/system/Stacktrace.h>
@@ -120,6 +93,7 @@ SOFTWARE.
 #include <esl/utility/HttpMethod.h>
 #include <esl/utility/MIME.h>
 #include <esl/utility/Protocol.h>
+#include <esl/utility/RefProcedure.h>
 #include <esl/utility/Signal.h>
 #include <esl/utility/String.h>
 #include <esl/utility/UniqueRef.h>

@@ -1,27 +1,5 @@
-/*
-MIT License
-Copyright (c) 2019-2023 Sven Lukas
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
-#ifndef SRC_MAIN_C___ESL_UTILITY_STRING_H_
-#define SRC_MAIN_C___ESL_UTILITY_STRING_H_
+#ifndef ESL_UTILITY_STRING_H_
+#define ESL_UTILITY_STRING_H_
 
 #include <functional>
 #include <set>
@@ -32,8 +10,10 @@ namespace esl {
 inline namespace v1_6 {
 namespace utility {
 
-class String {
+class String final {
 public:
+	String() = delete;
+
 	static std::vector<std::string> split(const std::string& str, const char separator, bool dropEmptyContent = false);
 	static std::vector<std::string> split(const std::string& str, const std::set<char>& separators, bool dropEmptyContent = false);
 
@@ -44,6 +24,7 @@ public:
 	static std::string toUpper(std::string str);
 	static std::string toLower(std::string str);
 
+	static bool toBool(const std::string& str);
 	static int toInt(const std::string& str);
 	static long toLong(const std::string& str);
 
@@ -70,14 +51,10 @@ public:
 	};
 	static std::string toBase64(const std::string& str, Base64Variant base64Variant = base64url, bool withPadding = false);
 	static std::string fromBase64(const std::string& base64str, bool acceptFormatting = false);
-
-private:
-	String() = default;
-	~String() = default;
 };
 
 } /* namespace utility */
 } /* inline namespace v1_6 */
 } /* namespace esl */
 
-#endif /* SRC_MAIN_C___ESL_UTILITY_STRING_H_ */
+#endif /* ESL_UTILITY_STRING_H_ */
