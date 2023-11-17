@@ -1,3 +1,21 @@
+/*
+ * This file is part of ESL.
+ * Copyright (C) 2020-2023 Sven Lukas
+ *
+ * ESL is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * ESL is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser Public License
+ * along with ESL.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #ifndef ESL_ESL_H_
 #define ESL_ESL_H_
 
@@ -51,14 +69,9 @@
 #include <esl/monitoring/Appender.h>
 #include <esl/monitoring/Layout.h>
 #include <esl/monitoring/Logging.h>
-#include <esl/monitoring/Level.h>
-#include <esl/monitoring/Location.h>
 #include <esl/monitoring/Logger.h>
 #include <esl/monitoring/OStream.h>
-#include <esl/monitoring/StreamEmpty.h>
-#include <esl/monitoring/StreamReal.h>
 #include <esl/monitoring/Streams.h>
-#include <esl/monitoring/StreamWriter.h>
 
 #include <esl/object/Bean.h>
 #include <esl/object/Cloneable.h>

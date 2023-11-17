@@ -16,19 +16,19 @@
  * along with ESL.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ESL_PLUGIN_REGISTRY_H_
-#define ESL_PLUGIN_REGISTRY_H_
+#ifndef ESL_OBJECT_METADATA_H_
+#define ESL_OBJECT_METADATA_H_
 
-#include <esa/plugin/Registry.h>
+#include <esa/object/MetaData.h>
 
 namespace esl {
 inline namespace v1_6 {
-namespace plugin {
+namespace object {
 
-using Registry = esa::plugin::Registry;
+using MetaData = esa::object::MetaData;
 
-} /* namespace plugin */
+} /* namespace object */
 } /* inline namespace v1_6 */
 } /* namespace esl */
 
-#endif /* ESL_PLUGIN_REGISTRY_H_ */
+#endif /* ESL_OBJECT_METADATA_H_ */

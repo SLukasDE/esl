@@ -16,19 +16,19 @@
  * along with ESL.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ESL_PLUGIN_REGISTRY_H_
-#define ESL_PLUGIN_REGISTRY_H_
+#ifndef ESL_UTILITY_EVENT_H_
+#define ESL_UTILITY_EVENT_H_
 
-#include <esa/plugin/Registry.h>
+#include <esa/utility/Event.h>
 
 namespace esl {
 inline namespace v1_6 {
-namespace plugin {
+namespace utility {
 
-using Registry = esa::plugin::Registry;
+using Event = esa::utility::Event;
 
-} /* namespace plugin */
+} /* namespace utility */
 } /* inline namespace v1_6 */
 } /* namespace esl */
 
-#endif /* ESL_PLUGIN_REGISTRY_H_ */
+#endif /* ESL_UTILITY_EVENT_H_ */
