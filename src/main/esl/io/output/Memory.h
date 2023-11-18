@@ -36,7 +36,7 @@ public:
 
 	Memory(const void* data, std::size_t size);
 
-	std::size_t produce(esl::io::Writer& writer) override;
+	std::size_t produce(Writer& writer) override;
 
 	const void* getData() const noexcept;
 	std::size_t getSize() const noexcept;

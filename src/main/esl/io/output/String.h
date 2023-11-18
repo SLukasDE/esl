@@ -30,13 +30,13 @@ inline namespace v1_6 {
 namespace io {
 namespace output {
 
-class String : public esl::io::Producer {
+class String : public Producer {
 public:
-	static esl::io::Output create(std::string content);
+	static Output create(std::string content);
 
 	String(std::string content);
 
-	std::size_t produce(esl::io::Writer& writer) override;
+	std::size_t produce(Writer& writer) override;
 
 private:
 	std::string str;

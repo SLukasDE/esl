@@ -26,7 +26,7 @@ inline namespace v1_6 {
 namespace io {
 namespace input {
 
-class String : Writer {
+class String : public Writer {
 public:
 	// if function is called with size=0, this signals that writing is done, so write will not be called anymore.
 	// -> this can be used for cleanup stuff.
