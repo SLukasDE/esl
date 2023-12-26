@@ -16,19 +16,19 @@
  * along with ESL.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ESL_OBJECT_CONTROL_H_
-#define ESL_OBJECT_CONTROL_H_
+#ifndef ESL_OBJECT_COMMAND_H_
+#define ESL_OBJECT_COMMAND_H_
 
-#include <esa/object/Control.h>
+#include <esa/object/Command.h>
 
 namespace esl {
 inline namespace v1_6 {
 namespace object {
 
-using Control = esa::object::Control;
+using Command = esa::object::Command;
 
 } /* namespace object */
 } /* inline namespace v1_6 */
 } /* namespace esl */
 
-#endif /* ESL_OBJECT_CONTROL_H_ */
+#endif /* ESL_OBJECT_COMMAND_H_ */
