@@ -18,10 +18,9 @@
 
 #include <esl/utility/String.h>
 
-#include <esl/system/Stacktrace.h>
-
 #include <algorithm>
 #include <cctype>
+#include <cstdio>
 #include <iterator>
 #include <map>
 #include <utility>
@@ -115,12 +114,6 @@ std::vector<std::string> String::split(const std::string& str, const std::set<ch
     return rv;
 }
 
-/*
-std::string &String::ltrim(std::string &s) {
-	s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
-	return s;
-}
-*/
 std::string String::ltrim(std::string str, char trimCharacter) {
     str.erase(std::begin(str), std::find_if(std::begin(str), std::end(str), [trimCharacter](int c) {
         return c != trimCharacter;
@@ -129,12 +122,6 @@ std::string String::ltrim(std::string str, char trimCharacter) {
     return str;
 }
 
-/*
-std::string &String::rtrim(std::string &s) {
-	s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
-	return s;
-}
-*/
 std::string String::rtrim(std::string str, char trimCharacter) {
     str.erase(std::find_if(str.rbegin(), str.rend(), [trimCharacter](int c) {
         return c != trimCharacter;
@@ -173,42 +160,6 @@ bool String::toBool(const std::string& str) {
 	}
 
 	throw esl::system::Stacktrace::add(std::invalid_argument("Cannot convert '" + str + "' to boolean value"));
-}
-
-int String::toInt(const std::string& aStr) {
-	try {
-		return std::stoi(aStr);
-	}
-	catch(const std::invalid_argument& e) {
-		if(esl::system::Stacktrace::get(e)) {
-			throw;
-		}
-		throw esl::system::Stacktrace::add(e);
-    }
-	catch(const std::out_of_range& e) {
-		if(esl::system::Stacktrace::get(e)) {
-			throw;
-		}
-		throw esl::system::Stacktrace::add(e);
-    }
-}
-
-long String::toLong(const std::string& aStr) {
-	try {
-		return std::stol(aStr);
-	}
-	catch(const std::invalid_argument& e) {
-		if(esl::system::Stacktrace::get(e)) {
-			throw;
-		}
-		throw esl::system::Stacktrace::add(e);
-    }
-	catch(const std::out_of_range& e) {
-		if(esl::system::Stacktrace::get(e)) {
-			throw;
-		}
-		throw esl::system::Stacktrace::add(e);
-    }
 }
 
 std::string String::toEscape(const std::string& str, std::function<std::string(char)> toEscapeSequenceFunction) {
@@ -365,6 +316,54 @@ std::string String::fromBase64(const std::string& base64str, bool acceptFormatti
 	}
 
 	return str;
+}
+
+std::string String::toURLEncoded(const std::string& str) {
+	std::string rv;
+
+	rv.reserve(str.size()*3);
+
+	for(const auto c : str) {
+		if(std::isalnum(static_cast<unsigned char>(c)) != 0
+		|| static_cast<unsigned char>(c) == '-'
+		|| static_cast<unsigned char>(c) == '_'
+		|| static_cast<unsigned char>(c) == '.'
+		|| static_cast<unsigned char>(c) == '~') {
+			rv += c;
+		}
+		else {
+			char buffer[3];
+			std::snprintf(buffer, 2, "%02x", static_cast<char>(c));
+			rv += '%';
+			rv += buffer;
+		}
+	}
+
+	return rv;
+}
+
+std::string String::fromURLEncoded(const std::string& urlEncodedStr) {
+	std::string rv;
+
+	rv.reserve(urlEncodedStr.size());
+
+	for(std::size_t i = 0; i < urlEncodedStr.size(); ++i) {
+		if(urlEncodedStr[i] != '%') {
+			rv += urlEncodedStr[i];
+		}
+		/* if string ends with '%', then just use this character instead of trying to decode it */
+		/* Another option would be to skip this character */
+		else if(i+1 == urlEncodedStr.size()) {
+			rv += urlEncodedStr[i];
+		}
+		else {
+			std::string part = urlEncodedStr.substr(i+1, i+2 == urlEncodedStr.size() ? 1 : 2);
+			char c = std::stoul(part, nullptr, 16);
+			rv += c;
+		}
+	}
+
+	return rv;
 }
 
 } /* namespace utility */
