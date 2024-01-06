@@ -16,19 +16,19 @@
  * along with ESL.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ESL_UTILITY_SIGNAL_H_
-#define ESL_UTILITY_SIGNAL_H_
+#ifndef ESL_SYSTEM_SIGNALMANAGER_H_
+#define ESL_SYSTEM_SIGNALMANAGER_H_
 
-#include <esa/utility/Signal.h>
+#include <esa/system/SignalManager.h>
 
 namespace esl {
 inline namespace v1_6 {
-namespace utility {
+namespace system {
 
-using Signal = esa::utility::Signal;
+using SignalManager = esa::system::SignalManager;
 
-} /* namespace utility */
+} /* namespace system */
 } /* inline namespace v1_6 */
 } /* namespace esl */
 
-#endif /* ESL_UTILITY_SIGNAL_H_ */
+#endif /* ESL_SYSTEM_SIGNALMANAGER_H_ */
