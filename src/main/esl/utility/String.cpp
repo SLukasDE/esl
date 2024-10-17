@@ -208,6 +208,21 @@ char String::fromEscapeSequence(std::string::const_iterator& escapeSequenceItera
 	return c;
 }
 
+std::string String::toBase16(const std::string& input) {
+	std::vector<char> output;
+	output.resize(1 + (input.size() * 2));
+
+	char* outputCurrent = &output[0];
+
+	for(auto inputCurrent : input) {
+		/* '%.2x' is the same as '%02x'. But du we better want to use '%.2X' or '%02X%' ? */
+		std::snprintf(outputCurrent, 3, "%.2x", static_cast<const unsigned char>(inputCurrent));
+		outputCurrent += 2;
+	}
+
+	return std::string(&output[0], input.size() * 2);
+}
+
 std::string String::toBase64(const std::string& str, Base64Variant base64Variant, bool withPadding) {
 	std::string result;
 
@@ -333,7 +348,8 @@ std::string String::toURLEncoded(const std::string& str) {
 		}
 		else {
 			char buffer[3];
-			std::snprintf(buffer, 2, "%02x", static_cast<char>(c));
+			/* '%.2x' is the same as '%02x'. But du we better want to use '%.2X' or '%02X%' ? */
+			std::snprintf(buffer, 3, "%02x", static_cast<char>(c));
 			rv += '%';
 			rv += buffer;
 		}
@@ -360,6 +376,7 @@ std::string String::fromURLEncoded(const std::string& urlEncodedStr) {
 			std::string part = urlEncodedStr.substr(i+1, i+2 == urlEncodedStr.size() ? 1 : 2);
 			char c = std::stoul(part, nullptr, 16);
 			rv += c;
+			i += (i+2 == urlEncodedStr.size()) ? 1 : 2;
 		}
 	}
 

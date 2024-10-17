@@ -39,8 +39,8 @@ public:
 	: value(std::move(aValue))
 	{ }
 
-	std::unique_ptr<Object> clone() const override {
-		return std::unique_ptr<Object>(new Value<T>(value));
+	std::unique_ptr<Cloneable> clone() const override {
+		return std::unique_ptr<Cloneable>(new Value<T>(value));
 	}
 
 	T& operator=(const T& aValue) {

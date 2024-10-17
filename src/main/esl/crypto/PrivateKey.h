@@ -16,24 +16,19 @@
  * along with ESL.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ESL_OBJECT_CLONEABLE_H_
-#define ESL_OBJECT_CLONEABLE_H_
+#ifndef ESL_CRYPTO_PRIVATEKEY_H_
+#define ESL_CRYPTO_PRIVATEKEY_H_
 
-#include <esl/object/Object.h>
-
-#include <memory>
+#include <esa/crypto/PrivateKey.h>
 
 namespace esl {
 inline namespace v1_6 {
-namespace object {
+namespace crypto {
 
-class Cloneable : public virtual Object {
-public:
-	virtual std::unique_ptr<Cloneable> clone() const = 0;
-};
+using PrivateKey = esa::crypto::PrivateKey;
 
-} /* namespace object */
+} /* namespace crypto */
 } /* inline namespace v1_6 */
 } /* namespace esl */
 
-#endif /* ESL_OBJECT_CLONEABLE_H_ */
+#endif /* ESL_CRYPTO_PRIVATEKEY_H_ */

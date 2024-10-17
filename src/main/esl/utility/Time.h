@@ -24,6 +24,12 @@
 #include <locale>
 #include <chrono>
 
+#ifdef _WIN32
+#include <time.h>
+#include <iomanip>
+#include <sstream>
+#endif
+
 namespace esl {
 inline namespace v1_6 {
 namespace utility {
@@ -45,12 +51,21 @@ public:
 
 	template<typename T>
 	static typename T::time_point fromString(const std::string& str, const char* format = "%Y-%m-%d %H:%M:%S") {
-		struct tm tm;
-		const char* ptr = strptime(str.c_str(), format, &tm);
+		struct tm timeStruct;
+#ifdef _WIN32
+		std::istringstream input(str.c_str());
+		input.imbue(std::locale(setlocale(LC_ALL, nullptr)));
+		input >> std::get_time(&timeStruct, format);
+		if (input.fail()) {
+			return std::chrono::time_point<std::chrono::system_clock>::min();
+		}
+#else
+		const char* ptr = strptime(str.c_str(), format, &timeStruct);
 		if(ptr == nullptr || *ptr != '\0') {
 			return std::chrono::time_point<std::chrono::system_clock>::min();
 		}
-		return T::from_time_t(mktime(&tm));
+#endif
+		return T::from_time_t(mktime(&timeStruct));
 	}
 
 private:

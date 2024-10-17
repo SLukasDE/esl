@@ -18,6 +18,8 @@
 
 #include <esl/utility/Ebcdic273.h>
 
+#include <cstdint>
+
 namespace esl {
 inline namespace v1_6 {
 namespace utility {

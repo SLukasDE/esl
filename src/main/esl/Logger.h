@@ -26,9 +26,9 @@ namespace esl {
 inline namespace v1_6 {
 
 #ifdef ESL_MONITORING_LEVEL_DEBUG
-using Logger = monitoring::Logger<monitoring::Streams::Level::TRACE>;
+using Logger = monitoring::Logger<monitoring::Streams::Level::trace>;
 #else
-using Logger = monitoring::Logger<monitoring::Streams::Level::WARN>;
+using Logger = monitoring::Logger<monitoring::Streams::Level::warn>;
 #endif
 
 } /* inline namespace v1_6 */

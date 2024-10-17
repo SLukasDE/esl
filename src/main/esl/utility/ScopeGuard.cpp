@@ -16,24 +16,41 @@
  * along with ESL.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ESL_OBJECT_CLONEABLE_H_
-#define ESL_OBJECT_CLONEABLE_H_
-
-#include <esl/object/Object.h>
-
-#include <memory>
+#include <esl/utility/ScopeGuard.h>
 
 namespace esl {
 inline namespace v1_6 {
-namespace object {
+namespace utility {
 
-class Cloneable : public virtual Object {
-public:
-	virtual std::unique_ptr<Cloneable> clone() const = 0;
-};
+ScopeGuard::ScopeGuard(std::function<void()> aLambda)
+: lambda(aLambda),
+  isEmpty(false)
+{ }
 
-} /* namespace object */
+ScopeGuard::ScopeGuard(ScopeGuard&& other)
+: lambda(std::move(other.lambda)),
+  isEmpty(false)
+{
+	other.isEmpty = true;
+}
+
+ScopeGuard::~ScopeGuard() {
+	if(!isEmpty) {
+		lambda();
+	}
+}
+
+ScopeGuard& ScopeGuard::operator=(ScopeGuard&& other) {
+	lambda = std::move(other.lambda);
+	isEmpty = false;
+	other.isEmpty = true;
+	return *this;
+}
+
+void ScopeGuard::clear() {
+	isEmpty = true;
+}
+
+} /* namespace utility */
 } /* inline namespace v1_6 */
 } /* namespace esl */
-
-#endif /* ESL_OBJECT_CLONEABLE_H_ */
