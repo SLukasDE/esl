@@ -14,6 +14,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(Packages)
 
 option(COMPILE_UNITTESTS "Weather to compile unittests" ON)
+option(BUILD_SHARED_LIBS "Weather to compile shared libs" ON)
 
 if(NOT ALL_IN_ONE_ESL)
     find_package_esa()
@@ -22,7 +23,7 @@ endif(NOT ALL_IN_ONE_ESL)
 
 add_subdirectory(src/main)
 
-if(COMPILE_UNITTESTS AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/test/main.cpp")
+if(NOT ALL_IN_ONE_ESL AND COMPILE_UNITTESTS AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/test/main.cpp")
     add_subdirectory(src/test)
 endif()
 
