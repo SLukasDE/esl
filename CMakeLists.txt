@@ -9,8 +9,9 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+message(STATUS "Test: ${${PROJECTC}_SOURCE_DIR}")
+list(APPEND CMAKE_MODULE_PATH "${${PROJECTC}_SOURCE_DIR}/cmake")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-
 include(Packages)
 
 option(COMPILE_UNITTESTS "Weather to compile unittests" ON)
