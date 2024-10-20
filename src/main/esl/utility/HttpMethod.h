@@ -25,6 +25,7 @@ namespace esl {
 inline namespace v1_6 {
 namespace utility {
 
+using HttpMethodType = esa::utility::HttpMethodType;
 using HttpMethod = esa::utility::HttpMethod;
 
 } /* namespace utility */

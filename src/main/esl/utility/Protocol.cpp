@@ -18,7 +18,7 @@
 
 #include <esl/utility/Protocol.h>
 
-namespace esl {
+namespace esa {
 inline namespace v1_6 {
 namespace utility {
 
@@ -44,4 +44,4 @@ const std::string& Enum<esl::utility::ProtocolType, esl::utility::ProtocolType::
 
 } /* namespace utility */
 } /* inline namespace v1_6 */
-} /* namespace esl */
+} /* namespace esa */
