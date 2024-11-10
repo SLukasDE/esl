@@ -31,6 +31,20 @@ public:
 	template <class E>
 	class Injector : public E {
 	friend class FilePosition;
+	public:
+		Injector(Injector const& e)
+		: E(e),
+		  filePosition(e.filePosition ? new FilePosition(filePosition->getFileName(), filePosition->getLineNo()) : nullptr)
+		{ }
+
+		Injector& operator=(Injector const& e)
+		{
+			static_cast<E&>(*this) = e;
+			if(e.filePosition) {
+				filePosition.reset(new FilePosition(e.filePosition->getFileName(), e.filePosition->getLineNo()));
+			}
+		}
+
 	private:
 	    Injector(E const & e, std::unique_ptr<FilePosition> aFilePosition)
 	    : E(e),
@@ -52,19 +66,19 @@ public:
 	static const FilePosition* get(const E& e);
 
 private:
-	const std::string fileName;
-	const int lineNo;
+	std::string fileName;
+	int lineNo;
 };
 
 template <class E>
 FilePosition::Injector<E> FilePosition::add(const std::string& fileName, int lineNo, const E& e) {
-	return FilePosition::Injector<E>(e, std::unique_ptr<FilePosition>(new FilePosition(fileName, lineNo)));
+	return FilePosition::Injector<E>(e, FilePosition(fileName, lineNo));
 }
 
 template <class E>
 const FilePosition* FilePosition::get(const E& e) {
 	const FilePosition::Injector<E>* injector = dynamic_cast<const FilePosition::Injector<E>*>(&e);
-    return injector ? injector->filePosition.get() : nullptr;
+    return injector ? &injector->filePosition : nullptr;
 }
 
 } /* namespace io */
