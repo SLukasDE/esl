@@ -1,33 +1,64 @@
 /*
- * This file is part of ESL.
- * Copyright (C) 2020-2023 Sven Lukas
- *
- * ESL is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * ESL is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser Public License for more details.
- *
- * You should have received a copy of the GNU Lesser Public License
- * along with ESL.  If not, see <https://www.gnu.org/licenses/>.
- */
+MIT License
+Copyright (c) 2019-2025 Sven Lukas
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
 
 #ifndef ESL_SYSTEM_SIGNAL_H_
 #define ESL_SYSTEM_SIGNAL_H_
 
-#include <esa/system/Signal.h>
+#include <esl/utility/Enum.h>
+
+#include <string>
 
 namespace esl {
 inline namespace v1_6 {
 namespace system {
 
-using Signal = esa::system::Signal;
-
+enum SignalType {
+    unknown,
+	hangUp, // ?, controlling terminal closed
+    interrupt, // interrupt process stream, ctrl-C
+    quit,      // like ctrl-C but with a core dump, interruption by error in code, ctl-/
+	ill,
+	trap,
+	abort,
+	busError,
+	floatingPointException,
+	segmentationViolation,
+	user1,
+	user2,
+	alarm,
+	child,
+	stackFault,
+    terminate, // terminate whenever/soft kill, typically sends SIGHUP as well?
+    pipe,
+	kill       // terminate immediately/hard kill, use when 15 doesn't work or when something disasterous might happen if process is allowed to cont., kill -9
+};
+using Signal = utility::Enum<SignalType, SignalType::unknown>;
 } /* namespace system */
+
+namespace utility {
+template<>
+const std::string& system::Signal::toString(system::SignalType signalType) noexcept;
+} /* namespace utility */
+
 } /* inline namespace v1_6 */
 } /* namespace esl */
 

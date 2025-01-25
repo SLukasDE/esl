@@ -41,9 +41,6 @@ else(ALL_IN_ONE_ESL)
     #add_library(esl::esl ALIAS ${PROJECT_NAME})
     add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
-    target_link_libraries(${PROJECT_NAME} PRIVATE
-        esa::esa)
-
 	#target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
     install(TARGETS ${PROJECT_NAME}

@@ -52,6 +52,3 @@ function(find_custom_package NAME URL TAG)
     endif()
 endfunction()
 
-function(find_package_esa)
-    find_custom_package(esa https://github.com/SLukasDE/esa master)
-endfunction()

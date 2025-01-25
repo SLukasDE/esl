@@ -1,32 +1,189 @@
 /*
- * This file is part of ESL.
- * Copyright (C) 2020-2023 Sven Lukas
- *
- * ESL is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * ESL is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser Public License for more details.
- *
- * You should have received a copy of the GNU Lesser Public License
- * along with ESL.  If not, see <https://www.gnu.org/licenses/>.
- */
+MIT License
+Copyright (c) 2019-2025 Sven Lukas
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
 
 #ifndef ESL_UTILITY_ENUM_H_
 #define ESL_UTILITY_ENUM_H_
 
-#include <esa/utility/Enum.h>
+#include <esl/system/Stacktrace.h>
+
+#include <memory>
+#include <stdexcept>
+#include <string>
 
 namespace esl {
 inline namespace v1_6 {
 namespace utility {
 
 template<typename EnumType, EnumType defaultType>
-using Enum = esa::utility::Enum<EnumType, defaultType>;
+class Enum {
+public:
+	using Type = EnumType;
+
+	Enum() = default;
+
+	Enum(EnumType type) noexcept
+	: hasEnum(true),
+	  enumType(type)
+	{ }
+
+	explicit Enum(std::string type) noexcept
+	: hasEnum(false),
+	  stringType(std::move(type))
+	{ }
+
+	explicit operator bool() const noexcept {
+		return hasEnum || !stringType.empty();
+	}
+
+
+
+	bool operator==(EnumType type) const noexcept {
+		return (*this == Enum(type));
+	}
+
+	bool operator==(const std::string& stringType) const noexcept {
+		return (toString() == stringType);
+	}
+
+	bool operator==(const Enum& aEnum) const noexcept {
+		if(hasEnum && aEnum.hasEnum) {
+			return enumType == aEnum.enumType;
+		}
+		return toString() == aEnum.toString();
+	}
+
+
+
+	bool operator!=(EnumType type) const noexcept {
+		return (*this != Enum(type));
+	}
+
+	bool operator!=(const std::string& stringType) const noexcept {
+		return (toString() != stringType);
+	}
+
+	bool operator!=(const Enum& aEnum) const noexcept {
+		if(hasEnum && aEnum.hasEnum) {
+			return enumType != aEnum.enumType;
+		}
+		return toString() != aEnum.toString();
+	}
+
+
+
+	bool operator<(EnumType type) const noexcept {
+		return (*this < Enum(type));
+	}
+
+	bool operator<(const std::string& stringType) const noexcept {
+		return (toString() < stringType);
+	}
+
+	bool operator<(const Enum& aEnum) const noexcept {
+		if(hasEnum && aEnum.hasEnum && enumType == aEnum.enumType) {
+			return false;
+		}
+		return toString() < aEnum.toString();
+	}
+
+
+
+	bool operator<=(EnumType type) const noexcept {
+		return (*this <= Enum(type));
+	}
+
+	bool operator<=(const std::string& stringType) const noexcept {
+		return (toString() <= stringType);
+	}
+
+	bool operator<=(const Enum& aEnum) const noexcept {
+		if(hasEnum && aEnum.hasEnum && enumType == aEnum.enumType) {
+			return true;
+		}
+		return toString() <= aEnum.toString();
+	}
+
+
+
+	bool operator>(EnumType type) const noexcept {
+		return (*this > Enum(type));
+	}
+
+	bool operator>(const std::string& stringType) const noexcept {
+		return (toString() > stringType);
+	}
+
+	bool operator>(const Enum& aEnum) const noexcept {
+		if(hasEnum && aEnum.hasEnum && enumType == aEnum.enumType) {
+			return false;
+		}
+		return toString() > aEnum.toString();
+	}
+
+
+
+	bool operator>=(EnumType type) const noexcept {
+		return (*this >= Enum(type));
+	}
+
+	bool operator>=(const std::string& stringType) const noexcept {
+		return (toString() >= stringType);
+	}
+
+	bool operator>=(const Enum& aEnum) const noexcept {
+		if(hasEnum && aEnum.hasEnum && enumType == aEnum.enumType) {
+			return true;
+		}
+		return toString() >= aEnum.toString();
+	}
+
+
+
+	bool isEnumType() const noexcept {
+		return hasEnum;
+	}
+
+	EnumType getEnumType() const {
+		if(!hasEnum) {
+			throw system::Stacktrace::add(std::runtime_error("cannot get enum type because it's a string"));
+		}
+		return enumType;
+	}
+
+	const std::string& toString() const noexcept {
+		if(hasEnum) {
+			return toString(enumType);
+		}
+
+		return stringType;
+	}
+
+	static const std::string& toString(EnumType mimeType) noexcept;
+
+private:
+	bool hasEnum = false;
+	EnumType enumType = defaultType;
+	std::string stringType;
+};
 
 } /* namespace utility */
 } /* inline namespace v1_6 */

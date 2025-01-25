@@ -1,32 +1,29 @@
-/*
- * This file is part of ESL.
- * Copyright (C) 2020-2023 Sven Lukas
- *
- * ESL is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * ESL is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser Public License for more details.
- *
- * You should have received a copy of the GNU Lesser Public License
- * along with ESL.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 #ifndef ESL_PLUGIN_EXCEPTION_PLUGINNOTFOUND_H_
 #define ESL_PLUGIN_EXCEPTION_PLUGINNOTFOUND_H_
 
-#include <esa/plugin/exception/PluginNotFound.h>
+#include <stdexcept>
+#include <string>
+#include <typeindex>
 
 namespace esl {
 inline namespace v1_6 {
 namespace plugin {
 namespace exception {
 
-using PluginNotFound = esa::plugin::exception::PluginNotFound;
+class PluginNotFound : public std::runtime_error {
+public:
+	PluginNotFound(std::type_index typeIndex);
+	PluginNotFound(std::type_index typeIndex, const std::string& implementation);
+	PluginNotFound(std::type_index typeIndex, const std::string& implementation, const char* message);
+	PluginNotFound(std::type_index typeIndex, const std::string& implementation, const std::string& message);
+
+	const std::string& getImplementation() const noexcept;
+	std::type_index getTypeIndex() const noexcept;
+
+private:
+	const std::type_index typeIndex;
+	const std::string implementation;
+};
 
 } /* namespace exception */
 } /* namespace plugin */
