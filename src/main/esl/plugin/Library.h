@@ -25,7 +25,7 @@ SOFTWARE.
 
 #include <string>
 
-//#define linux
+//#define __linux__
 
 namespace esl {
 inline namespace v1_6 {

@@ -26,7 +26,7 @@ SOFTWARE.
 #include <memory>
 #include <stdexcept>
 
-#ifdef linux
+#ifdef __linux__
 #include <dlfcn.h>
 #endif
 
@@ -38,7 +38,7 @@ namespace plugin {
 Library::Library(std::string aPath)
 : path(std::move(aPath))
 {
-#ifdef linux
+#ifdef __linux__
 	void* testNativeHandle = dlopen(path.c_str(), RTLD_NOLOAD | RTLD_NOW | RTLD_LOCAL );
     if(testNativeHandle != nullptr) {
        	throw std::runtime_error("Library loaded already");
@@ -56,7 +56,7 @@ Library::Library(std::string aPath)
 }
 
 Library::~Library() {
-#ifdef linux
+#ifdef __linux__
     if(dlclose(nativeHandle) != 0) {
     	// cannot close library
     }
@@ -75,7 +75,7 @@ void Library::install(Registry& registry, const char* data) {
 	using Install = void(*)(Registry*, const char*);
 	Install libInstall = nullptr;
 
-#ifdef linux
+#ifdef __linux__
     libInstall = reinterpret_cast<Install>(dlsym(nativeHandle, "esl__plugin__library__install"));
 #else
    	throw std::runtime_error("Library loader not implemented so far");
